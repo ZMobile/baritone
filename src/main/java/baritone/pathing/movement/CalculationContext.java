@@ -20,6 +20,7 @@ package baritone.pathing.movement;
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.ActionCosts;
+import baritone.api.utils.IPlayer;
 import baritone.cache.WorldData;
 import baritone.pathing.precompute.PrecomputedData;
 import baritone.utils.BlockStateInterface;
@@ -27,6 +28,7 @@ import baritone.utils.ToolSet;
 import baritone.utils.pathing.BetterWorldBorder;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -91,14 +93,29 @@ public class CalculationContext {
         this.precomputedData = new PrecomputedData();
         this.safeForThreadedUse = forUseOnAnotherThread;
         this.baritone = baritone;
-        LocalPlayer player = baritone.getPlayerContext().player();
+        IPlayer player = baritone.getPlayerContext().player();
         this.world = baritone.getPlayerContext().world();
         this.worldData = (WorldData) baritone.getPlayerContext().worldData();
         this.bsi = new BlockStateInterface(baritone.getPlayerContext(), forUseOnAnotherThread);
-        this.toolSet = new ToolSet(player);
-        this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
-        this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && Inventory.isHotbarSlot(player.getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) && world.dimension() != Level.NETHER;
-        this.canSprint = Baritone.settings().allowSprint.value && player.getFoodData().getFoodLevel() > 6;
+        int depth;
+        if (player.isLocalPlayer()) {
+            this.toolSet = new ToolSet(player.getPlayer());
+            this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
+            this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) && world.dimension() != Level.NETHER;
+            this.canSprint = Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
+            this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
+            depth = EnchantmentHelper.getDepthStrider(player.getPlayer());
+            if (depth > 3) {
+                depth = 3;
+            }
+        } else {
+            this.toolSet = null;
+            this.hasThrowaway = false;
+            this.hasWaterBucket = false;
+            this.canSprint = false;
+            this.frostWalker = 0;
+            depth = 0;
+        }
         this.placeBlockCost = Baritone.settings().blockPlacementPenalty.value;
         this.allowBreak = Baritone.settings().allowBreak.value;
         this.allowBreakAnyway = new ArrayList<>(Baritone.settings().allowBreakAnyway.value);
@@ -108,17 +125,12 @@ public class CalculationContext {
         this.allowParkourAscend = Baritone.settings().allowParkourAscend.value;
         this.assumeWalkOnWater = Baritone.settings().assumeWalkOnWater.value;
         this.allowFallIntoLava = false; // Super secret internal setting for ElytraBehavior
-        this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, baritone.getPlayerContext().player());
         this.allowDiagonalDescend = Baritone.settings().allowDiagonalDescend.value;
         this.allowDiagonalAscend = Baritone.settings().allowDiagonalAscend.value;
         this.allowDownward = Baritone.settings().allowDownward.value;
         this.minFallHeight = 3; // Minimum fall height used by MovementFall
         this.maxFallHeightNoWater = Baritone.settings().maxFallHeightNoWater.value;
         this.maxFallHeightBucket = Baritone.settings().maxFallHeightBucket.value;
-        int depth = EnchantmentHelper.getDepthStrider(player);
-        if (depth > 3) {
-            depth = 3;
-        }
         float mult = depth / 3.0F;
         this.waterWalkSpeed = ActionCosts.WALK_ONE_IN_WATER_COST * (1 - mult) + ActionCosts.WALK_ONE_BLOCK_COST * mult;
         this.breakBlockAdditionalCost = Baritone.settings().blockBreakAdditionalPenalty.value;

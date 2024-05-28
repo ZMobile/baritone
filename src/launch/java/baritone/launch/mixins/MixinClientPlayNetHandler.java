@@ -24,6 +24,7 @@ import baritone.api.event.events.BlockChangeEvent;
 import baritone.api.event.events.ChatEvent;
 import baritone.api.event.events.ChunkEvent;
 import baritone.api.event.events.type.EventState;
+import baritone.api.utils.IPlayer;
 import baritone.api.utils.Pair;
 import baritone.cache.CachedChunk;
 import net.minecraft.client.Minecraft;
@@ -102,16 +103,18 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
     )
     private void postHandleChunkData(ClientboundLevelChunkWithLightPacket packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            LocalPlayer player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == (ClientPacketListener) (Object) this) {
-                ibaritone.getGameEventHandler().onChunkEvent(
-                        new ChunkEvent(
-                                EventState.POST,
-                                !packetIn.isSkippable() ? ChunkEvent.Type.POPULATE_FULL : ChunkEvent.Type.POPULATE_PARTIAL,
-                                packetIn.getX(),
-                                packetIn.getZ()
-                        )
-                );
+            IPlayer player = ibaritone.getPlayerContext().player();
+            if (player.isLocalPlayer() && player.getPlayer() != null) {
+                if (player.getPlayer().connection == (ClientPacketListener) (Object) this) {
+                    ibaritone.getGameEventHandler().onChunkEvent(
+                            new ChunkEvent(
+                                    EventState.POST,
+                                    !packetIn.isSkippable() ? ChunkEvent.Type.POPULATE_FULL : ChunkEvent.Type.POPULATE_PARTIAL,
+                                    packetIn.getX(),
+                                    packetIn.getZ()
+                            )
+                    );
+                }
             }
         }
     }
@@ -122,11 +125,13 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
     )
     private void preChunkUnload(ClientboundForgetLevelChunkPacket packet, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            LocalPlayer player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == (ClientPacketListener) (Object) this) {
-                ibaritone.getGameEventHandler().onChunkEvent(
-                        new ChunkEvent(EventState.PRE, ChunkEvent.Type.UNLOAD, packet.pos().x, packet.pos().z)
-                );
+            IPlayer player = ibaritone.getPlayerContext().player();
+            if (player.isLocalPlayer() && player.getPlayer() != null) {
+                if (player.getPlayer().connection == (ClientPacketListener) (Object) this) {
+                    ibaritone.getGameEventHandler().onChunkEvent(
+                            new ChunkEvent(EventState.PRE, ChunkEvent.Type.UNLOAD, packet.pos().x, packet.pos().z)
+                    );
+                }
             }
         }
     }
@@ -137,11 +142,13 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
     )
     private void postChunkUnload(ClientboundForgetLevelChunkPacket packet, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            LocalPlayer player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == (ClientPacketListener) (Object) this) {
-                ibaritone.getGameEventHandler().onChunkEvent(
-                        new ChunkEvent(EventState.POST, ChunkEvent.Type.UNLOAD, packet.pos().x, packet.pos().z)
-                );
+            IPlayer player = ibaritone.getPlayerContext().player();
+            if (player.isLocalPlayer() && player.getPlayer() != null) {
+                if (player.getPlayer().connection == (ClientPacketListener) (Object) this) {
+                    ibaritone.getGameEventHandler().onChunkEvent(
+                            new ChunkEvent(EventState.POST, ChunkEvent.Type.UNLOAD, packet.pos().x, packet.pos().z)
+                    );
+                }
             }
         }
     }
@@ -158,16 +165,18 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             return;
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            LocalPlayer player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == (ClientPacketListener) (Object) this) {
-                ibaritone.getGameEventHandler().onChunkEvent(
-                        new ChunkEvent(
-                                EventState.POST,
-                                ChunkEvent.Type.POPULATE_FULL,
-                                packetIn.getPos().getX() >> 4,
-                                packetIn.getPos().getZ() >> 4
-                        )
-                );
+            IPlayer player = ibaritone.getPlayerContext().player();
+            if (player.isLocalPlayer() && player.getPlayer() != null) {
+                if (player.getPlayer().connection == (ClientPacketListener) (Object) this) {
+                    ibaritone.getGameEventHandler().onChunkEvent(
+                            new ChunkEvent(
+                                    EventState.POST,
+                                    ChunkEvent.Type.POPULATE_FULL,
+                                    packetIn.getPos().getX() >> 4,
+                                    packetIn.getPos().getZ() >> 4
+                            )
+                    );
+                }
             }
         }
     }
@@ -204,9 +213,11 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
     )
     private void onPlayerDeath(ClientboundPlayerCombatKillPacket packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            LocalPlayer player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == (ClientPacketListener) (Object) this) {
-                ibaritone.getGameEventHandler().onPlayerDeath();
+            IPlayer player = ibaritone.getPlayerContext().player();
+            if (player.isLocalPlayer() && player.getPlayer() != null) {
+                if (player.getPlayer().connection == (ClientPacketListener) (Object) this) {
+                    ibaritone.getGameEventHandler().onPlayerDeath();
+                }
             }
         }
     }

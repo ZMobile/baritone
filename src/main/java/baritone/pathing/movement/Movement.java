@@ -121,13 +121,17 @@ public abstract class Movement implements IMovement, MovementHelper {
      */
     @Override
     public MovementStatus update() {
-        ctx.player().getAbilities().flying = false;
+        if (ctx.player().isLocalPlayer()) {
+            ctx.player().getPlayer().getAbilities().flying = false;
+        }
         currentState = updateState(currentState);
-        if (MovementHelper.isLiquid(ctx, ctx.playerFeet()) && ctx.player().position().y < dest.y + 0.6) {
+        if (MovementHelper.isLiquid(ctx, ctx.playerFeet()) && ctx.player().getEntity().position().y < dest.y + 0.6) {
             currentState.setInput(Input.JUMP, true);
         }
-        if (ctx.player().isInWall()) {
-            ctx.getSelectedBlock().ifPresent(pos -> MovementHelper.switchToBestToolFor(ctx, BlockStateInterface.get(ctx, pos)));
+        if (ctx.player().getEntity().isInWall()) {
+            if (ctx.player().isLocalPlayer()) {
+                ctx.getSelectedBlock().ifPresent(pos -> MovementHelper.switchToBestToolFor(ctx, BlockStateInterface.get(ctx, pos)));
+            }
             currentState.setInput(Input.CLICK_LEFT, true);
         }
 

@@ -21,9 +21,11 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.command.ICommand;
 import baritone.api.command.ICommandSystem;
 import baritone.api.schematic.ISchematicSystem;
+import baritone.api.utils.IPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 import java.util.Objects;
@@ -68,6 +70,16 @@ public interface IBaritoneProvider {
         return null;
     }
 
+    default IBaritone getBaritoneForEntity(LivingEntity entity) {
+        for (IBaritone baritone : this.getAllBaritones()) {
+            if (Objects.equals(entity, baritone.getPlayerContext().player().getEntity())) {
+                return baritone;
+            }
+        }
+        return null;
+    }
+
+
     /**
      * Provides the {@link IBaritone} instance for a given {@link Minecraft}.
      *
@@ -91,9 +103,11 @@ public interface IBaritoneProvider {
      */
     default IBaritone getBaritoneForConnection(ClientPacketListener connection) {
         for (IBaritone baritone : this.getAllBaritones()) {
-            final LocalPlayer player = baritone.getPlayerContext().player();
-            if (player != null && player.connection == connection) {
-                return baritone;
+            final IPlayer player = baritone.getPlayerContext().player();
+            if (player.getPlayer() != null && player.isLocalPlayer()) {
+                if (player.getPlayer().connection == connection) {
+                    return baritone;
+                }
             }
         }
         return null;
@@ -107,6 +121,15 @@ public interface IBaritoneProvider {
      * @return The {@link IBaritone} instance
      */
     IBaritone createBaritone(Minecraft minecraft);
+
+    /**
+     * Creates and registers a new {@link IBaritone} instance using the specified {@link LivingEntity}. The existing
+     * instance is returned if already registered.
+     *
+     * @param minecraft The minecraft
+     * @return The {@link IBaritone} instance
+     */
+    IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
 
     /**
      * Destroys and removes the specified {@link IBaritone} instance. If the specified instance is the

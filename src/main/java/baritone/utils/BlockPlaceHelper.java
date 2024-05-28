@@ -41,16 +41,16 @@ public class BlockPlaceHelper {
             return;
         }
         HitResult mouseOver = ctx.objectMouseOver();
-        if (!rightClickRequested || ctx.player().isHandsBusy() || mouseOver == null || mouseOver.getType() != HitResult.Type.BLOCK) {
+        if (!rightClickRequested || ctx.player().getPlayer().isHandsBusy() || mouseOver == null || mouseOver.getType() != HitResult.Type.BLOCK) {
             return;
         }
         rightClickTimer = Baritone.settings().rightClickSpeed.value - BASE_PLACE_DELAY;
         for (InteractionHand hand : InteractionHand.values()) {
-            if (ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), hand, (BlockHitResult) mouseOver) == InteractionResult.SUCCESS) {
-                ctx.player().swing(hand);
+            if (ctx.playerController().processRightClickBlock(ctx.player().getPlayer(), ctx.world(), hand, (BlockHitResult) mouseOver) == InteractionResult.SUCCESS) {
+                ctx.player().getPlayer().swing(hand);
                 return;
             }
-            if (!ctx.player().getItemInHand(hand).isEmpty() && ctx.playerController().processRightClick(ctx.player(), ctx.world(), hand) == InteractionResult.SUCCESS) {
+            if (!ctx.player().getPlayer().getItemInHand(hand).isEmpty() && ctx.playerController().processRightClick(ctx.player().getPlayer(), ctx.world(), hand) == InteractionResult.SUCCESS) {
                 return;
             }
         }

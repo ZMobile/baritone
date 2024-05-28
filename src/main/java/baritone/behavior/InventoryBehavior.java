@@ -60,7 +60,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
         if (event.getType() == TickEvent.Type.OUT) {
             return;
         }
-        if (ctx.player().containerMenu != ctx.player().inventoryMenu) {
+        if (ctx.player().getPlayer().containerMenu != ctx.player().getPlayer().inventoryMenu) {
             // we have a crafting table or a chest or something open
             return;
         }
@@ -92,7 +92,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
         // we're using 0 and 8 for pickaxe and throwaway
         ArrayList<Integer> candidates = new ArrayList<>();
         for (int i = 1; i < 8; i++) {
-            if (ctx.player().getInventory().items.get(i).isEmpty() && !disallowedHotbar.test(i)) {
+            if (ctx.player().getPlayer().getInventory().items.get(i).isEmpty() && !disallowedHotbar.test(i)) {
                 candidates.add(i);
             }
         }
@@ -119,14 +119,14 @@ public final class InventoryBehavior extends Behavior implements Helper {
             logDebug("Inventory move requested but delaying until stationary");
             return false;
         }
-        ctx.playerController().windowClick(ctx.player().inventoryMenu.containerId, inInventory < 9 ? inInventory + 36 : inInventory, inHotbar, ClickType.SWAP, ctx.player());
+        ctx.playerController().windowClick(ctx.player().getPlayer().inventoryMenu.containerId, inInventory < 9 ? inInventory + 36 : inInventory, inHotbar, ClickType.SWAP, ctx.player().getPlayer());
         ticksSinceLastInventoryMove = 0;
         lastTickRequestedMove = null;
         return true;
     }
 
     private int firstValidThrowaway() { // TODO offhand idk
-        NonNullList<ItemStack> invy = ctx.player().getInventory().items;
+        NonNullList<ItemStack> invy = ctx.player().getPlayer().getInventory().items;
         for (int i = 0; i < invy.size(); i++) {
             if (Baritone.settings().acceptableThrowawayItems.value.contains(invy.get(i).getItem())) {
                 return i;
@@ -136,7 +136,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     private int bestToolAgainst(Block against, Class<? extends DiggerItem> cla$$) {
-        NonNullList<ItemStack> invy = ctx.player().getInventory().items;
+        NonNullList<ItemStack> invy = ctx.player().getPlayer().getInventory().items;
         int bestInd = -1;
         double bestSpeed = -1;
         for (int i = 0; i < invy.size(); i++) {
@@ -169,7 +169,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
 
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
         BlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.player(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.player().position().x, ctx.player().position().y, ctx.player().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
+        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.player().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.player().getEntity().position().x, ctx.player().getEntity().position().y, ctx.player().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
             return true; // gotem
         }
         if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock().equals(maybe.getBlock()))) {
@@ -188,7 +188,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean throwaway(boolean select, Predicate<? super ItemStack> desired, boolean allowInventory) {
-        LocalPlayer p = ctx.player();
+        LocalPlayer p = ctx.player().getPlayer();
         NonNullList<ItemStack> inv = p.getInventory().items;
         for (int i = 0; i < 9; i++) {
             ItemStack item = inv.get(i);

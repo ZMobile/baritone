@@ -27,6 +27,7 @@ import baritone.command.CommandSystem;
 import baritone.command.ExampleBaritoneControl;
 import baritone.utils.schematic.SchematicSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,15 @@ public final class BaritoneProvider implements IBaritoneProvider {
         IBaritone baritone = this.getBaritoneForMinecraft(minecraft);
         if (baritone == null) {
             this.all.add(baritone = new Baritone(minecraft));
+        }
+        return baritone;
+    }
+
+    @Override
+    public synchronized IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity) {
+        IBaritone baritone = this.getBaritoneForEntity(livingEntity);
+        if (baritone == null) {
+            //this.all.add(baritone = new Baritone(minecraft, livingEntity));
         }
         return baritone;
     }

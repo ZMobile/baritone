@@ -74,7 +74,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (desiredQuantity > 0) {
-            int curr = ctx.player().getInventory().items.stream()
+            int curr = ctx.player().getPlayer().getInventory().items.stream()
                     .filter(stack -> filter.has(stack))
                     .mapToInt(ItemStack::getCount).sum();
             System.out.println("Currently have " + curr + " valid items");
@@ -121,7 +121,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                 .filter(pos -> !(BlockStateInterface.get(ctx, pos).getBlock() instanceof AirBlock)) // after breaking a block, it takes mineGoalUpdateInterval ticks for it to actually update this list =(
                 .min(Comparator.comparingDouble(ctx.playerFeet()::distSqr));
         baritone.getInputOverrideHandler().clearAllKeys();
-        if (shaft.isPresent() && ctx.player().onGround()) {
+        if (shaft.isPresent() && ctx.player().getEntity().onGround()) {
             BlockPos pos = shaft.get();
             BlockState state = baritone.bsi.get0(pos);
             if (!MovementHelper.avoidBreaking(baritone.bsi, pos.getX(), pos.getY(), pos.getZ(), state)) {
@@ -460,7 +460,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
 
                 .filter(pos -> !blacklist.contains(pos))
 
-                .sorted(Comparator.comparingDouble(ctx.getBaritone().getPlayerContext().player().blockPosition()::distSqr))
+                .sorted(Comparator.comparingDouble(ctx.getBaritone().getPlayerContext().player().getEntity().blockPosition()::distSqr))
                 .collect(Collectors.toList());
 
         if (locs.size() > max) {

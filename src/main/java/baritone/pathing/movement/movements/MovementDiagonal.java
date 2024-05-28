@@ -35,6 +35,7 @@ import java.util.Set;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -60,11 +61,11 @@ public class MovementDiagonal extends Movement {
     protected boolean safeToCancel(MovementState state) {
         //too simple. backfill does not work after cornering with this
         //return context.precomputedData.canWalkOn(ctx, ctx.playerFeet().down());
-        LocalPlayer player = ctx.player();
+        LivingEntity entity = ctx.player().getEntity();
         double offset = 0.25;
-        double x = player.position().x;
-        double y = player.position().y - 1;
-        double z = player.position().z;
+        double x = entity.position().x;
+        double y = entity.position().y - 1;
+        double z = entity.position().z;
         //standard
         if (ctx.playerFeet().equals(src)) {
             return true;
@@ -264,7 +265,7 @@ public class MovementDiagonal extends Movement {
         } else if (!playerInValidPosition() && !(MovementHelper.isLiquid(ctx, src) && getValidPositions().contains(ctx.playerFeet().above()))) {
             return state.setStatus(MovementStatus.UNREACHABLE);
         }
-        if (dest.y > src.y && ctx.player().position().y < src.y + 0.1 && ctx.player().horizontalCollision) {
+        if (dest.y > src.y && ctx.player().getEntity().position().y < src.y + 0.1 && ctx.player().getEntity().horizontalCollision) {
             state.setInput(Input.JUMP, true);
         }
         if (sprint()) {

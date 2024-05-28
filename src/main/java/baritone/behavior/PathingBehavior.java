@@ -421,43 +421,45 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
      * @return The starting {@link BlockPos} for a new path
      */
     public BetterBlockPos pathStart() { // TODO move to a helper or util class
-        BetterBlockPos feet = ctx.playerFeet();
-        if (!MovementHelper.canWalkOn(ctx, feet.below())) {
-            if (ctx.player().onGround()) {
-                double playerX = ctx.player().position().x;
-                double playerZ = ctx.player().position().z;
-                ArrayList<BetterBlockPos> closest = new ArrayList<>();
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dz = -1; dz <= 1; dz++) {
-                        closest.add(new BetterBlockPos(feet.x + dx, feet.y, feet.z + dz));
+        if (ctx.player().getEntity() != null) {
+            BetterBlockPos feet = ctx.playerFeet();
+            if (!MovementHelper.canWalkOn(ctx, feet.below())) {
+                if (ctx.player().getEntity().onGround()) {
+                    double playerX = ctx.player().getEntity().position().x;
+                    double playerZ = ctx.player().getEntity().position().z;
+                    ArrayList<BetterBlockPos> closest = new ArrayList<>();
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            closest.add(new BetterBlockPos(feet.x + dx, feet.y, feet.z + dz));
+                        }
                     }
-                }
-                closest.sort(Comparator.comparingDouble(pos -> ((pos.x + 0.5D) - playerX) * ((pos.x + 0.5D) - playerX) + ((pos.z + 0.5D) - playerZ) * ((pos.z + 0.5D) - playerZ)));
-                for (int i = 0; i < 4; i++) {
-                    BetterBlockPos possibleSupport = closest.get(i);
-                    double xDist = Math.abs((possibleSupport.x + 0.5D) - playerX);
-                    double zDist = Math.abs((possibleSupport.z + 0.5D) - playerZ);
-                    if (xDist > 0.8 && zDist > 0.8) {
-                        // can't possibly be sneaking off of this one, we're too far away
-                        continue;
+                    closest.sort(Comparator.comparingDouble(pos -> ((pos.x + 0.5D) - playerX) * ((pos.x + 0.5D) - playerX) + ((pos.z + 0.5D) - playerZ) * ((pos.z + 0.5D) - playerZ)));
+                    for (int i = 0; i < 4; i++) {
+                        BetterBlockPos possibleSupport = closest.get(i);
+                        double xDist = Math.abs((possibleSupport.x + 0.5D) - playerX);
+                        double zDist = Math.abs((possibleSupport.z + 0.5D) - playerZ);
+                        if (xDist > 0.8 && zDist > 0.8) {
+                            // can't possibly be sneaking off of this one, we're too far away
+                            continue;
+                        }
+                        if (MovementHelper.canWalkOn(ctx, possibleSupport.below()) && MovementHelper.canWalkThrough(ctx, possibleSupport) && MovementHelper.canWalkThrough(ctx, possibleSupport.above())) {
+                            // this is plausible
+                            //logDebug("Faking path start assuming player is standing off the edge of a block");
+                            return possibleSupport;
+                        }
                     }
-                    if (MovementHelper.canWalkOn(ctx, possibleSupport.below()) && MovementHelper.canWalkThrough(ctx, possibleSupport) && MovementHelper.canWalkThrough(ctx, possibleSupport.above())) {
-                        // this is plausible
-                        //logDebug("Faking path start assuming player is standing off the edge of a block");
-                        return possibleSupport;
-                    }
-                }
 
-            } else {
-                // !onGround
-                // we're in the middle of a jump
-                if (MovementHelper.canWalkOn(ctx, feet.below().below())) {
-                    //logDebug("Faking path start assuming player is midair and falling");
-                    return feet.below();
+                } else {
+                    // !onGround
+                    // we're in the middle of a jump
+                    if (MovementHelper.canWalkOn(ctx, feet.below().below())) {
+                        //logDebug("Faking path start assuming player is midair and falling");
+                        return feet.below();
+                    }
                 }
             }
-        }
-        return feet;
+            return feet;
+        } return null;
     }
 
     /**

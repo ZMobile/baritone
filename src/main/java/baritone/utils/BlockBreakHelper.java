@@ -62,10 +62,10 @@ public final class BlockBreakHelper {
             if (ctx.playerController().hasBrokenBlock()) {
                 ctx.playerController().syncHeldItem();
                 ctx.playerController().clickBlock(((BlockHitResult) trace).getBlockPos(), ((BlockHitResult) trace).getDirection());
-                ctx.player().swing(InteractionHand.MAIN_HAND);
+                ctx.player().getPlayer().swing(InteractionHand.MAIN_HAND);
             } else {
                 if (ctx.playerController().onPlayerDamageBlock(((BlockHitResult) trace).getBlockPos(), ((BlockHitResult) trace).getDirection())) {
-                    ctx.player().swing(InteractionHand.MAIN_HAND);
+                    ctx.player().getPlayer().swing(InteractionHand.MAIN_HAND);
                 }
                 if (ctx.playerController().hasBrokenBlock()) { // block broken this tick
                     // break delay timer only applies for multi-tick block breaks like vanilla

@@ -516,7 +516,7 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean canUseFrostWalker(IPlayerContext ctx, BlockPos pos) {
         BlockState state = BlockStateInterface.get(ctx, pos);
-        return EnchantmentHelper.hasFrostWalker(ctx.player())
+        return ctx.player().isLocalPlayer() && EnchantmentHelper.hasFrostWalker(ctx.player().getPlayer())
                 && state == FrostedIceBlock.meltsInto()
                 && ((Integer) state.getValue(LiquidBlock.LEVEL)) == 0;
     }
@@ -632,7 +632,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param b   the blockstate to mine
      */
     static void switchToBestToolFor(IPlayerContext ctx, BlockState b) {
-        switchToBestToolFor(ctx, b, new ToolSet(ctx.player()), BaritoneAPI.getSettings().preferSilkTouch.value);
+        switchToBestToolFor(ctx, b, new ToolSet(ctx.player().getPlayer()), BaritoneAPI.getSettings().preferSilkTouch.value);
     }
 
     /**
@@ -643,8 +643,8 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param ts  previously calculated ToolSet
      */
     static void switchToBestToolFor(IPlayerContext ctx, BlockState b, ToolSet ts, boolean preferSilkTouch) {
-        if (Baritone.settings().autoTool.value && !Baritone.settings().assumeExternalAutoTool.value) {
-            ctx.player().getInventory().selected = ts.getBestSlot(b.getBlock(), preferSilkTouch);
+        if (ctx.player().isLocalPlayer() && Baritone.settings().autoTool.value && !Baritone.settings().assumeExternalAutoTool.value) {
+            ctx.player().getPlayer().getInventory().selected = ts.getBestSlot(b.getBlock(), preferSilkTouch);
         }
     }
 
@@ -758,9 +758,9 @@ public interface MovementHelper extends ActionCosts, Helper {
                 double faceX = (placeAt.getX() + against1.getX() + 1.0D) * 0.5D;
                 double faceY = (placeAt.getY() + against1.getY() + 0.5D) * 0.5D;
                 double faceZ = (placeAt.getZ() + against1.getZ() + 1.0D) * 0.5D;
-                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player()) : ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
+                Rotation place = RotationUtils.calcRotationFromVec3d(wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.player().getEntity()) : ctx.playerHead(), new Vec3(faceX, faceY, faceZ), ctx.playerRotations());
                 Rotation actual = baritone.getLookBehavior().getAimProcessor().peekRotation(place);
-                HitResult res = RayTraceUtils.rayTraceTowards(ctx.player(), actual, ctx.playerController().getBlockReachDistance(), wouldSneak);
+                HitResult res = RayTraceUtils.rayTraceTowards(ctx.player().getEntity(), actual, ctx.playerController().getBlockReachDistance(), wouldSneak);
                 if (res != null && res.getType() == HitResult.Type.BLOCK && ((BlockHitResult) res).getBlockPos().equals(against1) && ((BlockHitResult) res).getBlockPos().relative(((BlockHitResult) res).getDirection()).equals(placeAt)) {
                     state.setTarget(new MovementTarget(place, true));
                     found = true;

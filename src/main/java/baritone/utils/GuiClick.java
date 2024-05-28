@@ -33,6 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -76,8 +77,8 @@ public class GuiClick extends Screen implements Helper {
         if (near != null && far != null) {
             ///
             Vec3 viewerPos = new Vec3(PathRenderer.posX(), PathRenderer.posY(), PathRenderer.posZ());
-            LocalPlayer player = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player();
-            HitResult result = player.level().clip(new ClipContext(near.add(viewerPos), far.add(viewerPos), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            LivingEntity entity = BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().getEntity();
+            HitResult result = entity.level().clip(new ClipContext(near.add(viewerPos), far.add(viewerPos), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity));
             if (result != null && result.getType() == HitResult.Type.BLOCK) {
                 currentMouseOver = ((BlockHitResult) result).getBlockPos();
                 System.out.println("currentMouseOver = " + currentMouseOver);

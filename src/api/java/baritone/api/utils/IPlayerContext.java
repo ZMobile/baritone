@@ -41,7 +41,7 @@ public interface IPlayerContext {
 
     Minecraft minecraft();
 
-    LocalPlayer player();
+    IPlayer player();
 
     IPlayerController playerController();
 
@@ -62,7 +62,7 @@ public interface IPlayerContext {
 
     default BetterBlockPos playerFeet() {
         // TODO find a better way to deal with soul sand!!!!!
-        BetterBlockPos feet = new BetterBlockPos(player().position().x, player().position().y + 0.1251, player().position().z);
+        BetterBlockPos feet = new BetterBlockPos(player().getEntity().position().x, player().getEntity().position().y + 0.1251, player().getEntity().position().z);
 
         // sometimes when calling this from another thread or while world is null, it'll throw a NullPointerException
         // that causes the game to immediately crash
@@ -82,21 +82,21 @@ public interface IPlayerContext {
     }
 
     default Vec3 playerFeetAsVec() {
-        return new Vec3(player().position().x, player().position().y, player().position().z);
+        return new Vec3(player().getEntity().position().x, player().getEntity().position().y, player().getEntity().position().z);
     }
 
     default Vec3 playerHead() {
-        return new Vec3(player().position().x, player().position().y + player().getEyeHeight(), player().position().z);
+        return new Vec3(player().getEntity().position().x, player().getEntity().position().y + player().getEntity().getEyeHeight(), player().getEntity().position().z);
     }
 
     default Vec3 playerMotion() {
-        return player().getDeltaMovement();
+        return player().getEntity().getDeltaMovement();
     }
 
     BetterBlockPos viewerPos();
 
     default Rotation playerRotations() {
-        return new Rotation(player().getYRot(), player().getXRot());
+        return new Rotation(player().getEntity().getYRot(), player().getEntity().getXRot());
     }
 
     static double eyeHeight(boolean ifSneaking) {

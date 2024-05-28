@@ -235,8 +235,8 @@ public class PathExecutor implements IPathExecutor, Helper {
             return true;
         } else {
             sprintNextTick = shouldSprintNextTick();
-            if (!sprintNextTick) {
-                ctx.player().setSprinting(false); // letting go of control doesn't make you stop sprinting actually
+            if (ctx.player().isLocalPlayer() && !sprintNextTick) {
+                ctx.player().getPlayer().setSprinting(false); // letting go of control doesn't make you stop sprinting actually
             }
             ticksOnCurrent++;
             if (ticksOnCurrent > currentMovementOriginalCostEstimate + Baritone.settings().movementTimeoutTicks.value) {
@@ -257,7 +257,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         BlockPos bestPos = null;
         for (IMovement movement : path.movements()) {
             for (BlockPos pos : ((Movement) movement).getValidPositions()) {
-                double dist = VecUtils.entityDistanceToCenter(ctx.player(), pos);
+                double dist = VecUtils.entityDistanceToCenter(ctx.player().getEntity(), pos);
                 if (dist < best || best == -1) {
                     best = dist;
                     bestPos = pos;
@@ -272,7 +272,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         if (!current.isPresent()) {
             return false;
         }
-        if (!ctx.player().onGround()) {
+        if (!ctx.player().getEntity().onGround()) {
             return false;
         }
         if (!MovementHelper.canWalkOn(ctx, ctx.playerFeet().below())) {
@@ -306,7 +306,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             // when we're midair in the middle of a fall, we're very far from both the beginning and the end, but we aren't actually off path
             if (path.movements().get(pathPosition) instanceof MovementFall) {
                 BlockPos fallDest = path.positions().get(pathPosition + 1); // .get(pathPosition) is the block we fell off of
-                return VecUtils.entityFlatDistanceToCenter(ctx.player(), fallDest) >= leniency; // ignore Y by using flat distance
+                return VecUtils.entityFlatDistanceToCenter(ctx.player().getEntity(), fallDest) >= leniency; // ignore Y by using flat distance
             } else {
                 return true;
             }
@@ -321,12 +321,12 @@ public class PathExecutor implements IPathExecutor, Helper {
      * @return Whether or not it was possible to snap to the current player feet
      */
     public boolean snipsnapifpossible() {
-        if (!ctx.player().onGround() && ctx.world().getFluidState(ctx.playerFeet()).isEmpty()) {
+        if (!ctx.player().getEntity().onGround() && ctx.world().getFluidState(ctx.playerFeet()).isEmpty()) {
             // if we're falling in the air, and not in water, don't splice
             return false;
         } else {
             // we are either onGround or in liquid
-            if (ctx.player().getDeltaMovement().y < -0.1) {
+            if (ctx.player().getEntity().getDeltaMovement().y < -0.1) {
                 // if we are strictly moving downwards (not stationary)
                 // we could be falling through water, which could be unsafe to splice
                 return false; // so don't
@@ -342,131 +342,133 @@ public class PathExecutor implements IPathExecutor, Helper {
     }
 
     private boolean shouldSprintNextTick() {
-        boolean requested = behavior.baritone.getInputOverrideHandler().isInputForcedDown(Input.SPRINT);
+        if (ctx.player().isLocalPlayer()) {
+            boolean requested = behavior.baritone.getInputOverrideHandler().isInputForcedDown(Input.SPRINT);
 
-        // we'll take it from here, no need for minecraft to see we're holding down control and sprint for us
-        behavior.baritone.getInputOverrideHandler().setInputForceState(Input.SPRINT, false);
+            // we'll take it from here, no need for minecraft to see we're holding down control and sprint for us
+            behavior.baritone.getInputOverrideHandler().setInputForceState(Input.SPRINT, false);
 
-        // first and foremost, if allowSprint is off, or if we don't have enough hunger, don't try and sprint
-        if (!new CalculationContext(behavior.baritone, false).canSprint) {
-            return false;
-        }
-        IMovement current = path.movements().get(pathPosition);
-
-        // traverse requests sprinting, so we need to do this check first
-        if (current instanceof MovementTraverse && pathPosition < path.length() - 3) {
-            IMovement next = path.movements().get(pathPosition + 1);
-            if (next instanceof MovementAscend && sprintableAscend(ctx, (MovementTraverse) current, (MovementAscend) next, path.movements().get(pathPosition + 2))) {
-                if (skipNow(ctx, current)) {
-                    logDebug("Skipping traverse to straight ascend");
-                    pathPosition++;
-                    onChangeInPathPosition();
-                    onTick();
-                    behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, true);
-                    return true;
-                } else {
-                    logDebug("Too far to the side to safely sprint ascend");
-                }
-            }
-        }
-
-        // if the movement requested sprinting, then we're done
-        if (requested) {
-            return true;
-        }
-
-        // however, descend and ascend don't request sprinting, because they don't know the context of what movement comes after it
-        if (current instanceof MovementDescend) {
-
-            if (pathPosition < path.length() - 2) {
-                // keep this out of onTick, even if that means a tick of delay before it has an effect
-                IMovement next = path.movements().get(pathPosition + 1);
-                if (MovementHelper.canUseFrostWalker(ctx, next.getDest().below())) {
-                    // frostwalker only works if you cross the edge of the block on ground so in some cases we may not overshoot
-                    // Since MovementDescend can't know the next movement we have to tell it
-                    if (next instanceof MovementTraverse || next instanceof MovementParkour) {
-                        boolean couldPlaceInstead = Baritone.settings().allowPlace.value && behavior.baritone.getInventoryBehavior().hasGenericThrowaway() && next instanceof MovementParkour; // traverse doesn't react fast enough
-                        // this is true if the next movement does not ascend or descends and goes into the same cardinal direction (N-NE-E-SE-S-SW-W-NW) as the descend
-                        // in that case current.getDirection() is e.g. (0, -1, 1) and next.getDirection() is e.g. (0, 0, 3) so the cross product of (0, 0, 1) and (0, 0, 3) is taken, which is (0, 0, 0) because the vectors are colinear (don't form a plane)
-                        // since movements in exactly the opposite direction (e.g. descend (0, -1, 1) and traverse (0, 0, -1)) would also pass this check we also have to rule out that case
-                        // we can do that by adding the directions because traverse is always 1 long like descend and parkour can't jump through current.getSrc().down()
-                        boolean sameFlatDirection = !current.getDirection().above().offset(next.getDirection()).equals(BlockPos.ZERO)
-                                && current.getDirection().above().cross(next.getDirection()).equals(BlockPos.ZERO); // here's why you learn maths in school
-                        if (sameFlatDirection && !couldPlaceInstead) {
-                            ((MovementDescend) current).forceSafeMode();
-                        }
-                    }
-                }
-            }
-            if (((MovementDescend) current).safeMode() && !((MovementDescend) current).skipToAscend()) {
-                logDebug("Sprinting would be unsafe");
+            // first and foremost, if allowSprint is off, or if we don't have enough hunger, don't try and sprint
+            if (!new CalculationContext(behavior.baritone, false).canSprint) {
                 return false;
             }
+            IMovement current = path.movements().get(pathPosition);
 
-            if (pathPosition < path.length() - 2) {
+            // traverse requests sprinting, so we need to do this check first
+            if (current instanceof MovementTraverse && pathPosition < path.length() - 3) {
                 IMovement next = path.movements().get(pathPosition + 1);
-                if (next instanceof MovementAscend && current.getDirection().above().equals(next.getDirection().below())) {
-                    // a descend then an ascend in the same direction
-                    pathPosition++;
-                    onChangeInPathPosition();
-                    onTick();
-                    // okay to skip clearKeys and / or onChangeInPathPosition here since this isn't possible to repeat, since it's asymmetric
-                    logDebug("Skipping descend to straight ascend");
-                    return true;
-                }
-                if (canSprintFromDescendInto(ctx, current, next)) {
-
-                    if (next instanceof MovementDescend && pathPosition < path.length() - 3) {
-                        IMovement next_next = path.movements().get(pathPosition + 2);
-                        if (next_next instanceof MovementDescend && !canSprintFromDescendInto(ctx, next, next_next)) {
-                            return false;
-                        }
-
-                    }
-                    if (ctx.playerFeet().equals(current.getDest())) {
+                if (next instanceof MovementAscend && sprintableAscend(ctx, (MovementTraverse) current, (MovementAscend) next, path.movements().get(pathPosition + 2))) {
+                    if (skipNow(ctx, current)) {
+                        logDebug("Skipping traverse to straight ascend");
                         pathPosition++;
                         onChangeInPathPosition();
                         onTick();
+                        behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, true);
+                        return true;
+                    } else {
+                        logDebug("Too far to the side to safely sprint ascend");
                     }
+                }
+            }
 
-                    return true;
-                }
-                //logDebug("Turning off sprinting " + movement + " " + next + " " + movement.getDirection() + " " + next.getDirection().down() + " " + next.getDirection().down().equals(movement.getDirection()));
-            }
-        }
-        if (current instanceof MovementAscend && pathPosition != 0) {
-            IMovement prev = path.movements().get(pathPosition - 1);
-            if (prev instanceof MovementDescend && prev.getDirection().above().equals(current.getDirection().below())) {
-                BlockPos center = current.getSrc().above();
-                // playerFeet adds 0.1251 to account for soul sand
-                // farmland is 0.9375
-                // 0.07 is to account for farmland
-                if (ctx.player().position().y >= center.getY() - 0.07) {
-                    behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, false);
-                    return true;
-                }
-            }
-            if (pathPosition < path.length() - 2 && prev instanceof MovementTraverse && sprintableAscend(ctx, (MovementTraverse) prev, (MovementAscend) current, path.movements().get(pathPosition + 1))) {
+            // if the movement requested sprinting, then we're done
+            if (requested) {
                 return true;
             }
-        }
-        if (current instanceof MovementFall) {
-            Tuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
-            if (data != null) {
-                BetterBlockPos fallDest = new BetterBlockPos(data.getB());
-                if (!path.positions().contains(fallDest)) {
-                    throw new IllegalStateException();
+
+            // however, descend and ascend don't request sprinting, because they don't know the context of what movement comes after it
+            if (current instanceof MovementDescend) {
+
+                if (pathPosition < path.length() - 2) {
+                    // keep this out of onTick, even if that means a tick of delay before it has an effect
+                    IMovement next = path.movements().get(pathPosition + 1);
+                    if (MovementHelper.canUseFrostWalker(ctx, next.getDest().below())) {
+                        // frostwalker only works if you cross the edge of the block on ground so in some cases we may not overshoot
+                        // Since MovementDescend can't know the next movement we have to tell it
+                        if (next instanceof MovementTraverse || next instanceof MovementParkour) {
+                            boolean couldPlaceInstead = Baritone.settings().allowPlace.value && behavior.baritone.getInventoryBehavior().hasGenericThrowaway() && next instanceof MovementParkour; // traverse doesn't react fast enough
+                            // this is true if the next movement does not ascend or descends and goes into the same cardinal direction (N-NE-E-SE-S-SW-W-NW) as the descend
+                            // in that case current.getDirection() is e.g. (0, -1, 1) and next.getDirection() is e.g. (0, 0, 3) so the cross product of (0, 0, 1) and (0, 0, 3) is taken, which is (0, 0, 0) because the vectors are colinear (don't form a plane)
+                            // since movements in exactly the opposite direction (e.g. descend (0, -1, 1) and traverse (0, 0, -1)) would also pass this check we also have to rule out that case
+                            // we can do that by adding the directions because traverse is always 1 long like descend and parkour can't jump through current.getSrc().down()
+                            boolean sameFlatDirection = !current.getDirection().above().offset(next.getDirection()).equals(BlockPos.ZERO)
+                                    && current.getDirection().above().cross(next.getDirection()).equals(BlockPos.ZERO); // here's why you learn maths in school
+                            if (sameFlatDirection && !couldPlaceInstead) {
+                                ((MovementDescend) current).forceSafeMode();
+                            }
+                        }
+                    }
                 }
-                if (ctx.playerFeet().equals(fallDest)) {
-                    pathPosition = path.positions().indexOf(fallDest);
-                    onChangeInPathPosition();
-                    onTick();
+                if (((MovementDescend) current).safeMode() && !((MovementDescend) current).skipToAscend()) {
+                    logDebug("Sprinting would be unsafe");
+                    return false;
+                }
+
+                if (pathPosition < path.length() - 2) {
+                    IMovement next = path.movements().get(pathPosition + 1);
+                    if (next instanceof MovementAscend && current.getDirection().above().equals(next.getDirection().below())) {
+                        // a descend then an ascend in the same direction
+                        pathPosition++;
+                        onChangeInPathPosition();
+                        onTick();
+                        // okay to skip clearKeys and / or onChangeInPathPosition here since this isn't possible to repeat, since it's asymmetric
+                        logDebug("Skipping descend to straight ascend");
+                        return true;
+                    }
+                    if (canSprintFromDescendInto(ctx, current, next)) {
+
+                        if (next instanceof MovementDescend && pathPosition < path.length() - 3) {
+                            IMovement next_next = path.movements().get(pathPosition + 2);
+                            if (next_next instanceof MovementDescend && !canSprintFromDescendInto(ctx, next, next_next)) {
+                                return false;
+                            }
+
+                        }
+                        if (ctx.playerFeet().equals(current.getDest())) {
+                            pathPosition++;
+                            onChangeInPathPosition();
+                            onTick();
+                        }
+
+                        return true;
+                    }
+                    //logDebug("Turning off sprinting " + movement + " " + next + " " + movement.getDirection() + " " + next.getDirection().down() + " " + next.getDirection().down().equals(movement.getDirection()));
+                }
+            }
+            if (current instanceof MovementAscend && pathPosition != 0) {
+                IMovement prev = path.movements().get(pathPosition - 1);
+                if (prev instanceof MovementDescend && prev.getDirection().above().equals(current.getDirection().below())) {
+                    BlockPos center = current.getSrc().above();
+                    // playerFeet adds 0.1251 to account for soul sand
+                    // farmland is 0.9375
+                    // 0.07 is to account for farmland
+                    if (ctx.player().getEntity().position().y >= center.getY() - 0.07) {
+                        behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, false);
+                        return true;
+                    }
+                }
+                if (pathPosition < path.length() - 2 && prev instanceof MovementTraverse && sprintableAscend(ctx, (MovementTraverse) prev, (MovementAscend) current, path.movements().get(pathPosition + 1))) {
                     return true;
                 }
-                clearKeys();
-                behavior.baritone.getLookBehavior().updateTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), data.getA(), ctx.playerRotations()), false);
-                behavior.baritone.getInputOverrideHandler().setInputForceState(Input.MOVE_FORWARD, true);
-                return true;
+            }
+            if (current instanceof MovementFall) {
+                Tuple<Vec3, BlockPos> data = overrideFall((MovementFall) current);
+                if (data != null) {
+                    BetterBlockPos fallDest = new BetterBlockPos(data.getB());
+                    if (!path.positions().contains(fallDest)) {
+                        throw new IllegalStateException();
+                    }
+                    if (ctx.playerFeet().equals(fallDest)) {
+                        pathPosition = path.positions().indexOf(fallDest);
+                        onChangeInPathPosition();
+                        onTick();
+                        return true;
+                    }
+                    clearKeys();
+                    behavior.baritone.getLookBehavior().updateTarget(RotationUtils.calcRotationFromVec3d(ctx.playerHead(), data.getA(), ctx.playerRotations()), false);
+                    behavior.baritone.getInputOverrideHandler().setInputForceState(Input.MOVE_FORWARD, true);
+                    return true;
+                }
             }
         }
         return false;
@@ -512,7 +514,7 @@ public class PathExecutor implements IPathExecutor, Helper {
     }
 
     private static boolean skipNow(IPlayerContext ctx, IMovement current) {
-        double offTarget = Math.abs(current.getDirection().getX() * (current.getSrc().z + 0.5D - ctx.player().position().z)) + Math.abs(current.getDirection().getZ() * (current.getSrc().x + 0.5D - ctx.player().position().x));
+        double offTarget = Math.abs(current.getDirection().getX() * (current.getSrc().z + 0.5D - ctx.player().getEntity().position().z)) + Math.abs(current.getDirection().getZ() * (current.getSrc().x + 0.5D - ctx.player().getEntity().position().x));
         if (offTarget > 0.1) {
             return false;
         }
@@ -522,7 +524,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             return true;
         }
         // wait 0.3
-        double flatDist = Math.abs(current.getDirection().getX() * (headBonk.getX() + 0.5D - ctx.player().position().x)) + Math.abs(current.getDirection().getZ() * (headBonk.getZ() + 0.5 - ctx.player().position().z));
+        double flatDist = Math.abs(current.getDirection().getX() * (headBonk.getX() + 0.5D - ctx.player().getEntity().position().x)) + Math.abs(current.getDirection().getZ() * (headBonk.getZ() + 0.5 - ctx.player().getEntity().position().z));
         return flatDist > 0.8;
     }
 

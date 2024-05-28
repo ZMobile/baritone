@@ -60,7 +60,8 @@ public final class InputOverrideHandler extends Behavior implements IInputOverri
      */
     @Override
     public final boolean isInputForcedDown(Input input) {
-        return input == null ? false : this.inputForceStateMap.getOrDefault(input, false);
+        //return input == null ? false : this.inputForceStateMap.getOrDefault(input, false);
+        return false;
     }
 
     /**
@@ -84,7 +85,7 @@ public final class InputOverrideHandler extends Behavior implements IInputOverri
 
     @Override
     public final void onTick(TickEvent event) {
-        if (event.getType() == TickEvent.Type.OUT) {
+        /*if (event.getType() == TickEvent.Type.OUT) {
             return;
         }
         if (isInputForcedDown(Input.CLICK_LEFT)) {
@@ -101,7 +102,7 @@ public final class InputOverrideHandler extends Behavior implements IInputOverri
             if (ctx.player().input.getClass() == PlayerMovementInput.class) { // allow other movement inputs that aren't this one, e.g. for a freecam
                 ctx.player().input = new KeyboardInput(ctx.minecraft().options);
             }
-        }
+        }*/
         // only set it if it was previously incorrect
         // gotta do it this way, or else it constantly thinks you're beginning a double tap W sprint lol
     }

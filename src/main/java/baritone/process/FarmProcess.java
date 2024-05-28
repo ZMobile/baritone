@@ -273,7 +273,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             boolean soulsand = openSoulsand.contains(pos);
             Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), ctx.playerController().getBlockReachDistance(), false);
             if (rot.isPresent() && isSafeToCancel && baritone.getInventoryBehavior().throwaway(true, soulsand ? this::isNetherWart : this::isPlantable)) {
-                HitResult result = RayTraceUtils.rayTraceTowards(ctx.player(), rot.get(), ctx.playerController().getBlockReachDistance());
+                HitResult result = RayTraceUtils.rayTraceTowards(ctx.player().getEntity(), rot.get(), ctx.playerController().getBlockReachDistance());
                 if (result instanceof BlockHitResult && ((BlockHitResult) result).getDirection() == Direction.UP) {
                     baritone.getLookBehavior().updateTarget(rot.get(), true);
                     if (ctx.isLookingAt(pos)) {
@@ -291,7 +291,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                 Vec3 faceCenter = Vec3.atCenterOf(pos).add(Vec3.atLowerCornerOf(dir.getNormal()).scale(0.5));
                 Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, faceCenter, ctx.playerController().getBlockReachDistance(), false);
                 if (rot.isPresent() && isSafeToCancel && baritone.getInventoryBehavior().throwaway(true, this::isCocoa)) {
-                    HitResult result = RayTraceUtils.rayTraceTowards(ctx.player(), rot.get(), ctx.playerController().getBlockReachDistance());
+                    HitResult result = RayTraceUtils.rayTraceTowards(ctx.player().getEntity(), rot.get(), ctx.playerController().getBlockReachDistance());
                     if (result instanceof BlockHitResult && ((BlockHitResult) result).getDirection() == dir) {
                         baritone.getLookBehavior().updateTarget(rot.get(), true);
                         if (ctx.isLookingAt(pos)) {
