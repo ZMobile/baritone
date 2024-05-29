@@ -37,7 +37,6 @@ import baritone.utils.InputOverrideHandler;
 import baritone.utils.PathingControlManager;
 import baritone.utils.player.BaritonePlayerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,9 +83,9 @@ public class Baritone implements IBaritone {
 
     private final PathingControlManager pathingControlManager;
     private final SelectionManager selectionManager;
-    private CommandManager commandManager;
+    private final CommandManager commandManager;
 
-    private IPlayerContext playerContext;
+    private final IPlayerContext playerContext;
     private final WorldProvider worldProvider;
 
     public BlockStateInterface bsi;
@@ -131,49 +130,6 @@ public class Baritone implements IBaritone {
         this.selectionManager = new SelectionManager(this);
         this.commandManager = new CommandManager(this);
     }
-
-    /*Baritone(Minecraft mc, LivingEntity livingEntity) {
-        // Testing engaged
-        this.mc = mc;
-        this.gameEventHandler = new GameEventHandler(this);
-
-        this.directory = mc.gameDirectory.toPath().resolve("baritone");
-        if (!Files.exists(this.directory)) {
-            try {
-                Files.createDirectories(this.directory);
-            } catch (IOException ignored) {}
-        }
-
-        // Define this before behaviors try and get it, or else it will be null and the builds will fail!
-        //Player context removed
-        this.playerContext = new BaritonePlayerContext(this, mc, livingEntity);
-
-        {
-            this.lookBehavior         = this.registerBehavior(LookBehavior::new);
-            this.pathingBehavior      = this.registerBehavior(PathingBehavior::new);
-            this.inventoryBehavior    = null;
-            this.inputOverrideHandler = null;
-            this.registerBehavior(WaypointBehavior::new);
-        }
-
-        this.pathingControlManager = new PathingControlManager(this);
-        {
-            this.followProcess           = this.registerProcess(FollowProcess::new);
-            this.mineProcess             = null;
-            this.customGoalProcess       = this.registerProcess(CustomGoalProcess::new); // very high iq
-            this.getToBlockProcess       = this.registerProcess(GetToBlockProcess::new);
-            this.builderProcess          = null;
-            this.exploreProcess          = this.registerProcess(ExploreProcess::new);
-            this.farmProcess             = null;
-            this.inventoryPauserProcess  = null;
-            this.elytraProcess           = null;
-            this.registerProcess(BackfillProcess::new);
-        }
-
-        this.worldProvider = new WorldProvider(this);
-        this.selectionManager = new SelectionManager(this);
-        this.commandManager = new CommandManager(this);
-    }*/
 
     public void registerBehavior(IBehavior behavior) {
         this.gameEventHandler.registerEventListener(behavior);

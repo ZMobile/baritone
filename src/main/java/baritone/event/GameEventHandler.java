@@ -76,6 +76,7 @@ public final class GameEventHandler implements IEventBus, Helper {
 
     @Override
     public final void onSendChatMessage(ChatEvent event) {
+        System.out.println("onSendChatMessage called");
         listeners.forEach(l -> l.onSendChatMessage(event));
     }
 

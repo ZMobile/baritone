@@ -18,18 +18,26 @@
 package baritone.utils.player;
 
 import baritone.api.utils.IPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaritonePlayer implements IPlayer {
-    private LocalPlayer player;
+    private Minecraft minecraft;
     private LivingEntity entity;
     private boolean isLocalPlayer;
 
-    public BaritonePlayer(LocalPlayer player) {
-        this.player = player;
-        this.entity = player;
+    public BaritonePlayer(Minecraft minecraft) {
         this.isLocalPlayer = true;
+        this.minecraft = minecraft;
     }
 
     public BaritonePlayer(LivingEntity livingEntity) {
@@ -38,7 +46,11 @@ public class BaritonePlayer implements IPlayer {
     }
 
     public LocalPlayer getPlayer() {
-        return player;
+        if (isLocalPlayer) {
+            return minecraft.player;
+        } else {
+            return null;
+        }
     }
 
     public boolean isLocalPlayer() {
@@ -47,6 +59,9 @@ public class BaritonePlayer implements IPlayer {
 
     @Override
     public LivingEntity getEntity() {
+        if (isLocalPlayer) {
+            return getPlayer();
+        }
         return entity;
     }
 }

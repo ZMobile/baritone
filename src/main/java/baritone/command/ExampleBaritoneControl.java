@@ -58,6 +58,7 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
 
     @Override
     public void onSendChatMessage(ChatEvent event) {
+        System.out.println("onSendChatMessage");
         String msg = event.getMessage();
         String prefix = settings.prefix.value;
         boolean forceRun = msg.startsWith(FORCE_COMMAND_PREFIX);
@@ -92,6 +93,7 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
     }
 
     public boolean runCommand(String msg) {
+        System.out.println("ExampleBaritoneControl.runCommand");
         if (msg.trim().equalsIgnoreCase("damn")) {
             logDirect("daniel");
             return false;

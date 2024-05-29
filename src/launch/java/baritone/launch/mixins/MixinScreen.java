@@ -48,9 +48,11 @@ public abstract class MixinScreen implements IGuiScreen {
             return;
         }
         IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
-        if (baritone != null) {
-            baritone.getGameEventHandler().onSendChatMessage(new ChatEvent(clickEvent.getValue()));
+        if (baritone == null) {
+            return;
+
         }
+        baritone.getGameEventHandler().onSendChatMessage(new ChatEvent(clickEvent.getValue()));
         cir.setReturnValue(true);
         cir.cancel();
     }

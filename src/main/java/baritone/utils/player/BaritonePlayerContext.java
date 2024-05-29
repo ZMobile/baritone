@@ -54,7 +54,7 @@ public final class BaritonePlayerContext implements IPlayerContext {
         this.baritone = baritone;
         this.mc = mc;
         this.playerController = new BaritonePlayerController(mc);
-        this.player = new BaritonePlayer(mc.player);
+        this.player = new BaritonePlayer(mc);
     }
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc, LivingEntity livingEntity) {
@@ -117,7 +117,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public IPlayerController playerController() {
-        //logStackTraceToFile("C:/Users/hzant/OneDrive/Documents/LocalGPT/player-fetched.txt", true);
         return this.playerController;
         //return null;
     }

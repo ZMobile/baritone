@@ -63,7 +63,7 @@ public interface IBaritoneProvider {
      */
     default IBaritone getBaritoneForPlayer(LocalPlayer player) {
         for (IBaritone baritone : this.getAllBaritones()) {
-            if (Objects.equals(player, baritone.getPlayerContext().player())) {
+            if (Objects.equals(player, baritone.getPlayerContext().player().getPlayer())) {
                 return baritone;
             }
         }

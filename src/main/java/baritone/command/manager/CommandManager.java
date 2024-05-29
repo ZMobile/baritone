@@ -139,9 +139,11 @@ public class CommandManager implements ICommandManager {
         }
 
         private void execute() {
+            System.out.println("Command execution called");
             try {
                 this.command.execute(this.label, this.args);
             } catch (Throwable t) {
+                t.printStackTrace();
                 // Create a handleable exception, wrap if needed
                 ICommandException exception = t instanceof ICommandException
                         ? (ICommandException) t
