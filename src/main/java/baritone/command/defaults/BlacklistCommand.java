@@ -38,6 +38,9 @@ public class BlacklistCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         IGetToBlockProcess proc = baritone.getGetToBlockProcess();
+        if (proc == null) {
+            throw new CommandInvalidStateException("GetToBlockProcess is not currently active");
+        }
         if (!proc.isActive()) {
             throw new CommandInvalidStateException("GetToBlockProcess is not currently active");
         }
