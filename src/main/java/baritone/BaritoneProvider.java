@@ -74,7 +74,7 @@ public final class BaritoneProvider implements IBaritoneProvider {
     public synchronized IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity) {
         IBaritone baritone = this.getBaritoneForEntity(livingEntity);
         if (baritone == null) {
-            //this.all.add(baritone = new Baritone(minecraft, livingEntity));
+            this.all.add(baritone = new Baritone(minecraft, livingEntity));
         }
         return baritone;
     }

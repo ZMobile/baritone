@@ -70,6 +70,12 @@ public interface IBaritoneProvider {
         return null;
     }
 
+    /**
+     * Provides the {@link IBaritone} instance for a given {@link LivingEntity}.
+     *
+     * @param entity The player
+     * @return The {@link IBaritone} instance.
+     */
     default IBaritone getBaritoneForEntity(LivingEntity entity) {
         for (IBaritone baritone : this.getAllBaritones()) {
             if (Objects.equals(entity, baritone.getPlayerContext().player().getEntity())) {
@@ -129,6 +135,8 @@ public interface IBaritoneProvider {
      * @param minecraft The minecraft
      * @return The {@link IBaritone} instance
      */
+
+
     IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
 
     /**
