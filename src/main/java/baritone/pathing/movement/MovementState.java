@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class MovementState {
-    List<String> excludedStackTraces = new ArrayList<>();
     private MovementStatus status;
     private MovementTarget target = new MovementTarget();
     private final Map<Input, Boolean> inputState = new HashMap<>();
@@ -44,43 +43,7 @@ public class MovementState {
     }
 
     public MovementTarget getTarget() {
-        //logStackTraceToFile("C:/Users/hzant/OneDrive/Documents/LocalGPT/movement-state-fetched.txt");
         return this.target;
-    }
-
-    private void logStackTraceToFile(String filePath) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                Files.createFile(file.toPath());
-            } catch (IOException e) {
-                System.err.println("An error occurred while creating the file: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        try (FileWriter fileWriter = new FileWriter(filePath, true);
-             PrintWriter printWriter = new PrintWriter(fileWriter)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                stringBuilder.append(element);
-            }
-            //Remove the first line
-            stringBuilder.delete(0, stringBuilder.indexOf("\n") + 1);
-            if (excludedStackTraces.contains(stringBuilder.toString())) {
-                return;
-            }
-            excludedStackTraces.add(stringBuilder.toString());
-            printWriter.println();
-            printWriter.println("Movement state queried");
-            printWriter.println("Stack trace at " + java.time.LocalDateTime.now() + ":");
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                printWriter.println(element);
-            }
-            printWriter.println();
-        } catch (IOException e) {
-            System.err.println("An error occurred while writing the stack trace to the file: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public MovementState setTarget(MovementTarget target) {

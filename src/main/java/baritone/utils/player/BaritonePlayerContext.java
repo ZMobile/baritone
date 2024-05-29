@@ -42,15 +42,12 @@ import java.util.List;
  * @since 11/12/2018
  */
 public final class BaritonePlayerContext implements IPlayerContext {
-    List<String> excludedStackTraces = new ArrayList<>();
-
     private final Baritone baritone;
     private final Minecraft mc;
     private final IPlayer player;
     private final IPlayerController playerController;
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc) {
-        this.excludedStackTraces = new ArrayList<>();
         this.baritone = baritone;
         this.mc = mc;
         this.playerController = new BaritonePlayerController(mc);
@@ -58,7 +55,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
     }
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc, LivingEntity livingEntity) {
-        this.excludedStackTraces = new ArrayList<>();
         this.baritone = baritone;
         this.mc = mc;
         this.playerController = new BaritonePlayerController(mc);
@@ -74,45 +70,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
     @Override
     public IPlayer player() {
         return this.player;
-    }
-
-    private void logStackTraceToFile(String filePath, boolean controller) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                Files.createFile(file.toPath());
-            } catch (IOException e) {
-                System.err.println("An error occurred while creating the file: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        try (FileWriter fileWriter = new FileWriter(filePath, true);
-             PrintWriter printWriter = new PrintWriter(fileWriter)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                stringBuilder.append(element);
-            }
-            //Remove the first line
-            stringBuilder.delete(0, stringBuilder.indexOf("\n") + 1);
-            if (excludedStackTraces.contains(stringBuilder.toString())) {
-                return;
-            }
-            excludedStackTraces.add(stringBuilder.toString());
-            printWriter.println();
-            if (controller) {
-                printWriter.println("Player Controller Fetched");
-            } else {
-                printWriter.println("Player Fetched");
-            }
-            printWriter.println("Stack trace at " + java.time.LocalDateTime.now() + ":");
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                printWriter.println(element);
-            }
-            printWriter.println();
-        } catch (IOException e) {
-            System.err.println("An error occurred while writing the stack trace to the file: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     @Override
