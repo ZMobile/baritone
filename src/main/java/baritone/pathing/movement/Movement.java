@@ -140,14 +140,16 @@ public abstract class Movement implements IMovement, MovementHelper {
                 baritone.getLookBehavior().updateTarget(
                         rotation,
                         currentState.getTarget().hasToForceRotations()));
-        baritone.getInputOverrideHandler().clearAllKeys();
-        currentState.getInputStates().forEach((input, forced) -> {
-            baritone.getInputOverrideHandler().setInputForceState(input, forced);
-        });
+        if (baritone.getInputOverrideHandler() != null) {
+            baritone.getInputOverrideHandler().clearAllKeys();
+            currentState.getInputStates().forEach((input, forced) -> {
+                baritone.getInputOverrideHandler().setInputForceState(input, forced);
+            });
+        }
         currentState.getInputStates().clear();
 
         // If the current status indicates a completed movement
-        if (currentState.getStatus().isComplete()) {
+        if (baritone.getInputOverrideHandler() != null && currentState.getStatus().isComplete()) {
             baritone.getInputOverrideHandler().clearAllKeys();
         }
 

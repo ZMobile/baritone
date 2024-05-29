@@ -459,7 +459,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         } else {
             ticks--;
         }
-        baritone.getInputOverrideHandler().clearAllKeys();
+        if (baritone.getInputOverrideHandler() != null) {
+            baritone.getInputOverrideHandler().clearAllKeys();
+        }
         if (paused) {
             return new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);
         }

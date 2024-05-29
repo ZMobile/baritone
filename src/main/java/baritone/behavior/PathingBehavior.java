@@ -119,8 +119,10 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         if (pauseRequestedLastTick && safeToCancel) {
             pauseRequestedLastTick = false;
             if (unpausedLastTick) {
-                baritone.getInputOverrideHandler().clearAllKeys();
-                baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+                if (baritone.getInputOverrideHandler() != null) {
+                    baritone.getInputOverrideHandler().clearAllKeys();
+                    baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+                }
             }
             unpausedLastTick = false;
             pausedThisTick = true;
@@ -129,7 +131,9 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         unpausedLastTick = true;
         if (cancelRequested) {
             cancelRequested = false;
-            baritone.getInputOverrideHandler().clearAllKeys();
+            if (baritone.getInputOverrideHandler() != null) {
+                baritone.getInputOverrideHandler().clearAllKeys();
+            }
         }
         synchronized (pathPlanLock) {
             synchronized (pathCalcLock) {
@@ -362,8 +366,10 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
             if (current != null) {
                 current = null;
                 next = null;
-                baritone.getInputOverrideHandler().clearAllKeys();
-                baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+                if (baritone.getInputOverrideHandler() != null) {
+                    baritone.getInputOverrideHandler().clearAllKeys();
+                    baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+                }
             }
         }
     }

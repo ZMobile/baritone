@@ -584,7 +584,10 @@ public class PathExecutor implements IPathExecutor, Helper {
 
     private void clearKeys() {
         // i'm just sick and tired of this snippet being everywhere lol
-        behavior.baritone.getInputOverrideHandler().clearAllKeys();
+        // seconded.
+        if (behavior.baritone.getInputOverrideHandler() != null) {
+            behavior.baritone.getInputOverrideHandler().clearAllKeys();
+        }
     }
 
     private void cancel() {

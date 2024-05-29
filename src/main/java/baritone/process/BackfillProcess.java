@@ -60,7 +60,9 @@ public final class BackfillProcess extends BaritoneProcessHelper {
             }
         }
         amIBreakingABlockHMMMMMMM();
-        baritone.getInputOverrideHandler().clearAllKeys();
+        if (baritone.getInputOverrideHandler() != null) {
+            baritone.getInputOverrideHandler().clearAllKeys();
+        }
 
         return !toFillIn().isEmpty();
     }
@@ -70,7 +72,9 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         if (!isSafeToCancel) {
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
         }
-        baritone.getInputOverrideHandler().clearAllKeys();
+        if (baritone.getInputOverrideHandler() != null) {
+            baritone.getInputOverrideHandler().clearAllKeys();
+        }
         for (BlockPos toPlace : toFillIn()) {
             MovementState fake = new MovementState();
             switch (MovementHelper.attemptToPlaceABlock(fake, baritone, toPlace, false, false)) {
