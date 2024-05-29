@@ -66,6 +66,7 @@ import java.util.*;
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 public class ElytraProcess extends BaritoneProcessHelper implements IBaritoneProcess, IElytraProcess, AbstractGameEventListener {
+    List<String> excludedStackTraces = new ArrayList<>();
     public State state;
     private boolean goingToLandingSpot;
     private BetterBlockPos landingSpot;
@@ -97,7 +98,44 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
     @Override
     public boolean isActive() {
+        System.out.println("Checking if elytra is active");
+        logStackTraceToFile("C:/Users/hzant/OneDrive/Documents/LocalGPT/elytra-process-active-fetched.txt");
         return this.behavior != null;
+    }
+
+    private void logStackTraceToFile(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            try {
+                Files.createFile(file.toPath());
+            } catch (IOException e) {
+                System.err.println("An error occurred while creating the file: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        try (FileWriter fileWriter = new FileWriter(filePath, true);
+             PrintWriter printWriter = new PrintWriter(fileWriter)) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+                stringBuilder.append(element);
+            }
+            //Remove the first line
+            stringBuilder.delete(0, stringBuilder.indexOf("\n") + 1);
+            if (excludedStackTraces.contains(stringBuilder.toString())) {
+                return;
+            }
+            excludedStackTraces.add(stringBuilder.toString());
+            printWriter.println();
+            printWriter.println("Movement state queried");
+            printWriter.println("Stack trace at " + java.time.LocalDateTime.now() + ":");
+            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+                printWriter.println(element);
+            }
+            printWriter.println();
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing the stack trace to the file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

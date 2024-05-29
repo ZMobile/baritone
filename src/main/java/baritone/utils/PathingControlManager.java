@@ -183,6 +183,9 @@ public class PathingControlManager implements IPathingControlManager {
 
     public PathingCommand executeProcesses() {
         for (IBaritoneProcess process : processes) {
+            if (process == null) {
+                continue;
+            }
             if (process.isActive()) {
                 if (!active.contains(process)) {
                     // put a newly active process at the very front of the queue
@@ -198,6 +201,9 @@ public class PathingControlManager implements IPathingControlManager {
         Iterator<IBaritoneProcess> iterator = active.iterator();
         while (iterator.hasNext()) {
             IBaritoneProcess proc = iterator.next();
+            if (proc == null) {
+                continue;
+            }
 
             PathingCommand exec = proc.onTick(Objects.equals(proc, inControlLastTick) && baritone.getPathingBehavior().calcFailedLastTick(), baritone.getPathingBehavior().isSafeToCancel());
             if (exec == null) {
