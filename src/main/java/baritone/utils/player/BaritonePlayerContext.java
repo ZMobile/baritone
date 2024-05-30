@@ -44,21 +44,22 @@ import java.util.List;
 public final class BaritonePlayerContext implements IPlayerContext {
     private final Baritone baritone;
     private final Minecraft mc;
-    private final IPlayer player;
     private final IPlayerController playerController;
+    private final IPlayer baritonePlayer;
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc) {
         this.baritone = baritone;
         this.mc = mc;
         this.playerController = new BaritonePlayerController(mc);
-        this.player = new BaritonePlayer(mc);
+        this.baritonePlayer = new BaritonePlayer(mc);
     }
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc, LivingEntity livingEntity) {
         this.baritone = baritone;
         this.mc = mc;
-        this.playerController = new BaritonePlayerController(mc);
-        this.player = new BaritonePlayer(livingEntity);
+        //this.playerController = new BaritonePlayerController(mc);
+        this.playerController = null;
+        this.baritonePlayer = new BaritonePlayer(livingEntity);
     }
 
 
@@ -68,8 +69,19 @@ public final class BaritonePlayerContext implements IPlayerContext {
     }
 
     @Override
-    public IPlayer player() {
-        return this.player;
+    public IPlayer baritonePlayer() {
+        return this.baritonePlayer;
+    }
+
+    //For backwards compatibility
+    @Override
+    public LocalPlayer player() {
+       return baritonePlayer.getPlayer();
+    }
+
+    @Override
+    public LivingEntity entity() {
+        return this.baritonePlayer.getEntity();
     }
 
     @Override
@@ -101,6 +113,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public HitResult objectMouseOver() {
-        return RayTraceUtils.rayTraceTowards(player().getEntity(), playerRotations(), playerController().getBlockReachDistance());
+        return RayTraceUtils.rayTraceTowards(baritonePlayer().getEntity(), playerRotations(), playerController().getBlockReachDistance());
     }
 }

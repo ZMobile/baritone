@@ -94,10 +94,10 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
                     return;
                 }
 
-                this.prevRotation = new Rotation(ctx.player().getEntity().getYRot(), ctx.player().getEntity().getXRot());
+                this.prevRotation = new Rotation(ctx.baritonePlayer().getEntity().getYRot(), ctx.baritonePlayer().getEntity().getXRot());
                 final Rotation actual = this.processor.peekRotation(this.target.rotation);
-                ctx.player().getEntity().setYRot(actual.getYaw());
-                ctx.player().getEntity().setXRot(actual.getPitch());
+                ctx.baritonePlayer().getEntity().setYRot(actual.getYaw());
+                ctx.baritonePlayer().getEntity().setXRot(actual.getPitch());
                 break;
             }
             case POST: {
@@ -112,16 +112,16 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
                         this.smoothPitchBuffer.removeFirst();
                     }
                     if (this.target.mode == Target.Mode.SERVER) {
-                        ctx.player().getEntity().setYRot(this.prevRotation.getYaw());
-                        ctx.player().getEntity().setXRot(this.prevRotation.getPitch());
-                    } else if (ctx.player().getEntity().isFallFlying() ? Baritone.settings().elytraSmoothLook.value : Baritone.settings().smoothLook.value) {
-                        ctx.player().getEntity().setYRot((float) this.smoothYawBuffer.stream().mapToDouble(d -> d).average().orElse(this.prevRotation.getYaw()));
-                        if (ctx.player().getEntity().isFallFlying()) {
-                            ctx.player().getEntity().setXRot((float) this.smoothPitchBuffer.stream().mapToDouble(d -> d).average().orElse(this.prevRotation.getPitch()));
+                        ctx.baritonePlayer().getEntity().setYRot(this.prevRotation.getYaw());
+                        ctx.baritonePlayer().getEntity().setXRot(this.prevRotation.getPitch());
+                    } else if (ctx.baritonePlayer().getEntity().isFallFlying() ? Baritone.settings().elytraSmoothLook.value : Baritone.settings().smoothLook.value) {
+                        ctx.baritonePlayer().getEntity().setYRot((float) this.smoothYawBuffer.stream().mapToDouble(d -> d).average().orElse(this.prevRotation.getYaw()));
+                        if (ctx.baritonePlayer().getEntity().isFallFlying()) {
+                            ctx.baritonePlayer().getEntity().setXRot((float) this.smoothPitchBuffer.stream().mapToDouble(d -> d).average().orElse(this.prevRotation.getPitch()));
                         }
                     }
-                    //ctx.player().xRotO = prevRotation.getPitch();
-                    //ctx.player().yRotO = prevRotation.getYaw();
+                    //ctx.baritonePlayer().xRotO = prevRotation.getPitch();
+                    //ctx.baritonePlayer().yRotO = prevRotation.getYaw();
                     this.prevRotation = null;
                 }
                 // The target is done being used for this game tick, so it can be invalidated
@@ -154,7 +154,7 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
     public void pig() {
         if (this.target != null) {
             final Rotation actual = this.processor.peekRotation(this.target.rotation);
-            ctx.player().getEntity().setYRot(actual.getYaw());
+            ctx.baritonePlayer().getEntity().setYRot(actual.getYaw());
         }
     }
 
@@ -338,7 +338,7 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
                 final boolean antiCheat = settings.antiCheatCompatibility.value;
                 final boolean blockFreeLook = settings.blockFreeLook.value;
 
-                if (ctx.player().getEntity().isFallFlying()) {
+                if (ctx.baritonePlayer().getEntity().isFallFlying()) {
                     // always need to set angles while flying
                     return settings.elytraFreeLook.value ? SERVER : CLIENT;
                 } else if (settings.freeLook.value) {

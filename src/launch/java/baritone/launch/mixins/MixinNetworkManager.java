@@ -58,10 +58,10 @@ public class MixinNetworkManager {
         }
 
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            if (ibaritone.getPlayerContext().player().getPlayer() == null) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer() == null) {
                 continue;
             }
-            if (ibaritone.getPlayerContext().player().getPlayer().connection.getConnection() == (Connection) (Object) this) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer().connection.getConnection() == (Connection) (Object) this) {
                 ibaritone.getGameEventHandler().onSendPacket(new PacketEvent((Connection) (Object) this, EventState.PRE, packet));
             }
         }
@@ -77,10 +77,10 @@ public class MixinNetworkManager {
         }
 
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            if (ibaritone.getPlayerContext().player().getPlayer() == null) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer() == null) {
                 continue;
             }
-            if (ibaritone.getPlayerContext().player().getPlayer().connection.getConnection() == (Connection) (Object) this) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer().connection.getConnection() == (Connection) (Object) this) {
                 ibaritone.getGameEventHandler().onSendPacket(new PacketEvent((Connection) (Object) this, EventState.POST, packet));
             }
         }
@@ -98,10 +98,10 @@ public class MixinNetworkManager {
             return;
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            if (ibaritone.getPlayerContext().player().getPlayer() == null) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer() == null) {
                 continue;
             }
-            if (ibaritone.getPlayerContext().player().getPlayer().connection.getConnection() == (Connection) (Object) this) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer().connection.getConnection() == (Connection) (Object) this) {
                 ibaritone.getGameEventHandler().onReceivePacket(new PacketEvent((Connection) (Object) this, EventState.PRE, packet));
             }
         }
@@ -116,10 +116,10 @@ public class MixinNetworkManager {
             return;
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            if (ibaritone.getPlayerContext().player().getPlayer() == null) {
+            if (ibaritone.getPlayerContext().baritonePlayer().getPlayer() == null) {
                 continue;
             }
-            if (ibaritone.getPlayerContext().player().isLocalPlayer() && ibaritone.getPlayerContext().player() != null && ibaritone.getPlayerContext().player().getPlayer().connection.getConnection() == (Connection) (Object) this) {
+            if (ibaritone.getPlayerContext().baritonePlayer().isLocalPlayer() && ibaritone.getPlayerContext().baritonePlayer() != null && ibaritone.getPlayerContext().baritonePlayer().getPlayer().connection.getConnection() == (Connection) (Object) this) {
                 ibaritone.getGameEventHandler().onReceivePacket(new PacketEvent((Connection) (Object) this, EventState.POST, packet));
             }
         }

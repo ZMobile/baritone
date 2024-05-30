@@ -93,7 +93,7 @@ public class CalculationContext {
         this.precomputedData = new PrecomputedData();
         this.safeForThreadedUse = forUseOnAnotherThread;
         this.baritone = baritone;
-        IPlayer player = baritone.getPlayerContext().player();
+        IPlayer player = baritone.getPlayerContext().baritonePlayer();
         this.world = baritone.getPlayerContext().world();
         this.worldData = (WorldData) baritone.getPlayerContext().worldData();
         this.bsi = new BlockStateInterface(baritone.getPlayerContext(), forUseOnAnotherThread);

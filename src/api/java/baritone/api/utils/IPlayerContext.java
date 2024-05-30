@@ -23,6 +23,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.phys.BlockHitResult;
@@ -40,8 +41,12 @@ import java.util.stream.StreamSupport;
 public interface IPlayerContext {
 
     Minecraft minecraft();
+    
+    IPlayer baritonePlayer();
 
-    IPlayer player();
+    LocalPlayer player();
+
+    LivingEntity entity();
 
     IPlayerController playerController();
 
@@ -62,7 +67,7 @@ public interface IPlayerContext {
 
     default BetterBlockPos playerFeet() {
         // TODO find a better way to deal with soul sand!!!!!
-        BetterBlockPos feet = new BetterBlockPos(player().getEntity().position().x, player().getEntity().position().y + 0.1251, player().getEntity().position().z);
+        BetterBlockPos feet = new BetterBlockPos(baritonePlayer().getEntity().position().x, baritonePlayer().getEntity().position().y + 0.1251, baritonePlayer().getEntity().position().z);
 
         // sometimes when calling this from another thread or while world is null, it'll throw a NullPointerException
         // that causes the game to immediately crash
@@ -82,21 +87,21 @@ public interface IPlayerContext {
     }
 
     default Vec3 playerFeetAsVec() {
-        return new Vec3(player().getEntity().position().x, player().getEntity().position().y, player().getEntity().position().z);
+        return new Vec3(baritonePlayer().getEntity().position().x, baritonePlayer().getEntity().position().y, baritonePlayer().getEntity().position().z);
     }
 
     default Vec3 playerHead() {
-        return new Vec3(player().getEntity().position().x, player().getEntity().position().y + player().getEntity().getEyeHeight(), player().getEntity().position().z);
+        return new Vec3(baritonePlayer().getEntity().position().x, baritonePlayer().getEntity().position().y + baritonePlayer().getEntity().getEyeHeight(), baritonePlayer().getEntity().position().z);
     }
 
     default Vec3 playerMotion() {
-        return player().getEntity().getDeltaMovement();
+        return baritonePlayer().getEntity().getDeltaMovement();
     }
 
     BetterBlockPos viewerPos();
 
     default Rotation playerRotations() {
-        return new Rotation(player().getEntity().getYRot(), player().getEntity().getXRot());
+        return new Rotation(baritonePlayer().getEntity().getYRot(), baritonePlayer().getEntity().getXRot());
     }
 
     static double eyeHeight(boolean ifSneaking) {

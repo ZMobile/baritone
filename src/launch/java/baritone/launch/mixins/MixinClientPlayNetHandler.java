@@ -61,7 +61,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
     )
     private void preRead(SPacketChunkData packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            ClientPlayerEntity player = ibaritone.getPlayerContext().player();
+            ClientPlayerEntity player = ibaritone.getPlayerContext().baritonePlayer();
             if (player != null && player.connection == (ClientPlayNetHandler) (Object) this) {
                 ibaritone.getGameEventHandler().onChunkEvent(
                         new ChunkEvent(
@@ -106,7 +106,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             if (ibaritone == null) {
                 continue;
             }
-            LocalPlayer player = ibaritone.getPlayerContext().player().getPlayer();
+            LocalPlayer player = ibaritone.getPlayerContext().baritonePlayer().getPlayer();
             if (player == null) {
                 continue;
             }
@@ -132,7 +132,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             if (ibaritone == null) {
                 continue;
             }
-            LocalPlayer player = ibaritone.getPlayerContext().player().getPlayer();
+            LocalPlayer player = ibaritone.getPlayerContext().baritonePlayer().getPlayer();
             if (player == null) {
                 continue;
             }
@@ -153,7 +153,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             if (ibaritone == null) {
                 continue;
             }
-            LocalPlayer player = ibaritone.getPlayerContext().player().getPlayer();
+            LocalPlayer player = ibaritone.getPlayerContext().baritonePlayer().getPlayer();
             if (player == null) {
                 continue;
             }
@@ -180,7 +180,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             if (ibaritone == null) {
                 continue;
             }
-            LocalPlayer player = ibaritone.getPlayerContext().player().getPlayer();
+            LocalPlayer player = ibaritone.getPlayerContext().baritonePlayer().getPlayer();
             if (player == null) {
                 continue;
             }
@@ -232,7 +232,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
             if (ibaritone == null) {
                 continue;
             }
-            LocalPlayer player = ibaritone.getPlayerContext().player().getPlayer();
+            LocalPlayer player = ibaritone.getPlayerContext().baritonePlayer().getPlayer();
             if (player == null) {
                 continue;
             }

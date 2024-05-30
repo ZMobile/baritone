@@ -271,15 +271,15 @@ public class MovementParkour extends Movement {
                 // but i did it anyway
                 return state.setStatus(MovementStatus.SUCCESS);
             }
-            if (ctx.player().getEntity().position().y - ctx.playerFeet().getY() < 0.094) { // lilypads
+            if (ctx.baritonePlayer().getEntity().position().y - ctx.playerFeet().getY() < 0.094) { // lilypads
                 state.setStatus(MovementStatus.SUCCESS);
             }
         } else if (!ctx.playerFeet().equals(src)) {
-            if (ctx.playerFeet().equals(src.relative(direction)) || ctx.player().getEntity().position().y - src.y > 0.0001) {
+            if (ctx.playerFeet().equals(src.relative(direction)) || ctx.baritonePlayer().getEntity().position().y - src.y > 0.0001) {
                 if (Baritone.settings().allowPlace.value // see PR #3775
                         && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway()
                         && !MovementHelper.canWalkOn(ctx, dest.below())
-                        && !ctx.player().getEntity().onGround()
+                        && !ctx.baritonePlayer().getEntity().onGround()
                         && MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), true, false) == PlaceResult.READY_TO_PLACE
                 ) {
                     // go in the opposite order to check DOWN before all horizontals -- down is preferable because you don't have to look to the side while in midair, which could mess up the trajectory
@@ -287,8 +287,8 @@ public class MovementParkour extends Movement {
                 }
                 // prevent jumping too late by checking for ascend
                 if (dist == 3 && !ascend) { // this is a 2 block gap, dest = src + direction * 3
-                    double xDiff = (src.x + 0.5) - ctx.player().getEntity().position().x;
-                    double zDiff = (src.z + 0.5) - ctx.player().getEntity().position().z;
+                    double xDiff = (src.x + 0.5) - ctx.baritonePlayer().getEntity().position().x;
+                    double zDiff = (src.z + 0.5) - ctx.baritonePlayer().getEntity().position().z;
                     double distFromStart = Math.max(Math.abs(xDiff), Math.abs(zDiff));
                     if (distFromStart < 0.7) {
                         return state;

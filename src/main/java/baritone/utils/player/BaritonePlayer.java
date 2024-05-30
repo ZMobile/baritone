@@ -60,7 +60,7 @@ public class BaritonePlayer implements IPlayer {
     @Override
     public LivingEntity getEntity() {
         if (isLocalPlayer) {
-            return getPlayer();
+            return minecraft.player;
         }
         return entity;
     }

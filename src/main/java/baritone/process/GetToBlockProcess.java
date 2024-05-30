@@ -218,8 +218,8 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
                 baritone.getLookBehavior().updateTarget(reachable.get(), true);
                 if (knownLocations.contains(ctx.getSelectedBlock().orElse(null))) {
                     baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true); // TODO find some way to right click even if we're in an ESC menu
-                    if (ctx.player().isLocalPlayer() && !(ctx.player().getPlayer().containerMenu instanceof InventoryMenu)) {
-                        System.out.println(ctx.player().getPlayer().containerMenu);
+                    if (ctx.baritonePlayer().isLocalPlayer() && !(ctx.baritonePlayer().getPlayer().containerMenu instanceof InventoryMenu)) {
+                        System.out.println(ctx.baritonePlayer().getPlayer().containerMenu);
                         return true;
                     }
                 }

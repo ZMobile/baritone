@@ -38,7 +38,7 @@ public class ThisWayCommand extends Command {
         args.requireExactly(1);
         GoalXZ goal = GoalXZ.fromDirection(
                 ctx.playerFeetAsVec(),
-                ctx.player().getEntity().getYHeadRot(),
+                ctx.baritonePlayer().getEntity().getYHeadRot(),
                 args.getAs(Double.class)
         );
         baritone.getCustomGoalProcess().setGoal(goal);

@@ -176,7 +176,7 @@ public class MovementAscend extends Movement {
             ticksWithoutPlacement++;
             if (MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), false, true) == PlaceResult.READY_TO_PLACE) {
                 state.setInput(Input.SNEAK, true);
-                if (ctx.player().getEntity().isCrouching()) {
+                if (ctx.baritonePlayer().getEntity().isCrouching()) {
                     state.setInput(Input.CLICK_RIGHT, true);
                 }
             }
@@ -199,10 +199,10 @@ public class MovementAscend extends Movement {
 
         int xAxis = Math.abs(src.getX() - dest.getX()); // either 0 or 1
         int zAxis = Math.abs(src.getZ() - dest.getZ()); // either 0 or 1
-        double flatDistToNext = xAxis * Math.abs((dest.getX() + 0.5D) - ctx.player().getEntity().position().x) + zAxis * Math.abs((dest.getZ() + 0.5D) - ctx.player().getEntity().position().z);
-        double sideDist = zAxis * Math.abs((dest.getX() + 0.5D) - ctx.player().getEntity().position().x) + xAxis * Math.abs((dest.getZ() + 0.5D) - ctx.player().getEntity().position().z);
+        double flatDistToNext = xAxis * Math.abs((dest.getX() + 0.5D) - ctx.baritonePlayer().getEntity().position().x) + zAxis * Math.abs((dest.getZ() + 0.5D) - ctx.baritonePlayer().getEntity().position().z);
+        double sideDist = zAxis * Math.abs((dest.getX() + 0.5D) - ctx.baritonePlayer().getEntity().position().x) + xAxis * Math.abs((dest.getZ() + 0.5D) - ctx.baritonePlayer().getEntity().position().z);
 
-        double lateralMotion = xAxis * ctx.player().getEntity().getDeltaMovement().z + zAxis * ctx.player().getEntity().getDeltaMovement().x;
+        double lateralMotion = xAxis * ctx.baritonePlayer().getEntity().getDeltaMovement().z + zAxis * ctx.baritonePlayer().getEntity().getDeltaMovement().x;
         if (Math.abs(lateralMotion) > 0.1) {
             return state;
         }

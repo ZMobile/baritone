@@ -83,7 +83,7 @@ public class MixinMinecraft {
         this.tickProvider = TickEvent.createNextProvider();
 
         for (IBaritone baritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            TickEvent.Type type = baritone.getPlayerContext().player() != null && baritone.getPlayerContext().world() != null
+            TickEvent.Type type = baritone.getPlayerContext().baritonePlayer() != null && baritone.getPlayerContext().world() != null
                     ? TickEvent.Type.IN
                     : TickEvent.Type.OUT;
             baritone.getGameEventHandler().onTick(this.tickProvider.apply(EventState.PRE, type));
@@ -100,7 +100,7 @@ public class MixinMinecraft {
         }
 
         for (IBaritone baritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            TickEvent.Type type = baritone.getPlayerContext().player() != null && baritone.getPlayerContext().world() != null
+            TickEvent.Type type = baritone.getPlayerContext().baritonePlayer() != null && baritone.getPlayerContext().world() != null
                     ? TickEvent.Type.IN
                     : TickEvent.Type.OUT;
             baritone.getGameEventHandler().onPostTick(this.tickProvider.apply(EventState.POST, type));

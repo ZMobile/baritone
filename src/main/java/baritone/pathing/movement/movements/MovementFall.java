@@ -77,7 +77,7 @@ public class MovementFall extends Movement {
     }
 
     private boolean willPlaceBucket() {
-        if (ctx.player().isLocalPlayer()) {
+        if (ctx.baritonePlayer().isLocalPlayer()) {
             CalculationContext context = new CalculationContext(baritone);
             MutableMoveResult result = new MutableMoveResult();
             return MovementDescend.dynamicFallCost(context, src.x, src.y, src.z, dest.x, dest.z, 0, context.get(dest.x, src.y - 2, dest.z), result);
@@ -100,12 +100,12 @@ public class MovementFall extends Movement {
         Block destBlock = destState.getBlock();
         boolean isWater = destState.getFluidState().getType() instanceof WaterFluid;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            if (!Inventory.isHotbarSlot(ctx.player().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) || ctx.world().dimension() == Level.NETHER) {
+            if (!Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) || ctx.world().dimension() == Level.NETHER) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
-            if (ctx.player().getEntity().position().y - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.player().getEntity().onGround()) {
-                ctx.player().getPlayer().getInventory().selected = ctx.player().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER);
+            if (ctx.baritonePlayer().getEntity().position().y - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.baritonePlayer().getEntity().onGround()) {
+                ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER);
 
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);
 
@@ -119,17 +119,17 @@ public class MovementFall extends Movement {
         } else {
             state.setTarget(new MovementTarget(toDest, false));
         }
-        if (playerFeet.equals(dest) && (ctx.player().getEntity().position().y - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
+        if (playerFeet.equals(dest) && (ctx.baritonePlayer().getEntity().position().y - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
             if (isWater) { // only match water, not flowing water (which we cannot pick up with a bucket)
-                if (ctx.player().isLocalPlayer() && Inventory.isHotbarSlot(ctx.player().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY))) {
-                    ctx.player().getPlayer().getInventory().selected = ctx.player().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY);
-                    if (ctx.player().getPlayer().getDeltaMovement().y >= 0) {
+                if (ctx.baritonePlayer().isLocalPlayer() && Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY))) {
+                    ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY);
+                    if (ctx.baritonePlayer().getPlayer().getDeltaMovement().y >= 0) {
                         return state.setInput(Input.CLICK_RIGHT, true);
                     } else {
                         return state;
                     }
                 } else {
-                    if (ctx.player().getEntity().getDeltaMovement().y >= 0) {
+                    if (ctx.baritonePlayer().getEntity().getDeltaMovement().y >= 0) {
                         return state.setStatus(MovementStatus.SUCCESS);
                     } // don't else return state; we need to stay centered because this water might be flowing under the surface
                 }
@@ -138,8 +138,8 @@ public class MovementFall extends Movement {
             }
         }
         Vec3 destCenter = VecUtils.getBlockPosCenter(dest); // we are moving to the 0.5 center not the edge (like if we were falling on a ladder)
-        if (Math.abs(ctx.player().getEntity().position().x + ctx.player().getEntity().getDeltaMovement().x - destCenter.x) > 0.1 || Math.abs(ctx.player().getEntity().position().z + ctx.player().getEntity().getDeltaMovement().z - destCenter.z) > 0.1) {
-            if (!ctx.player().getEntity().onGround() && Math.abs(ctx.player().getEntity().getDeltaMovement().y) > 0.4) {
+        if (Math.abs(ctx.baritonePlayer().getEntity().position().x + ctx.baritonePlayer().getEntity().getDeltaMovement().x - destCenter.x) > 0.1 || Math.abs(ctx.baritonePlayer().getEntity().position().z + ctx.baritonePlayer().getEntity().getDeltaMovement().z - destCenter.z) > 0.1) {
+            if (!ctx.baritonePlayer().getEntity().onGround() && Math.abs(ctx.baritonePlayer().getEntity().getDeltaMovement().y) > 0.4) {
                 state.setInput(Input.SNEAK, true);
             }
             state.setInput(Input.MOVE_FORWARD, true);
@@ -148,10 +148,10 @@ public class MovementFall extends Movement {
         if (avoid == null) {
             avoid = src.subtract(dest);
         } else {
-            double dist = Math.abs(avoid.getX() * (destCenter.x - avoid.getX() / 2.0 - ctx.player().getEntity().position().x)) + Math.abs(avoid.getZ() * (destCenter.z - avoid.getZ() / 2.0 - ctx.player().getEntity().position().z));
+            double dist = Math.abs(avoid.getX() * (destCenter.x - avoid.getX() / 2.0 - ctx.baritonePlayer().getEntity().position().x)) + Math.abs(avoid.getZ() * (destCenter.z - avoid.getZ() / 2.0 - ctx.baritonePlayer().getEntity().position().z));
             if (dist < 0.6) {
                 state.setInput(Input.MOVE_FORWARD, true);
-            } else if (!ctx.player().getEntity().onGround()) {
+            } else if (!ctx.baritonePlayer().getEntity().onGround()) {
                 state.setInput(Input.SNEAK, false);
             }
         }

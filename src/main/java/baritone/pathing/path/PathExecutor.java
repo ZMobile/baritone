@@ -235,8 +235,8 @@ public class PathExecutor implements IPathExecutor, Helper {
             return true;
         } else {
             sprintNextTick = shouldSprintNextTick();
-            if (ctx.player().isLocalPlayer() && !sprintNextTick) {
-                ctx.player().getPlayer().setSprinting(false); // letting go of control doesn't make you stop sprinting actually
+            if (ctx.baritonePlayer().isLocalPlayer() && !sprintNextTick) {
+                ctx.baritonePlayer().getPlayer().setSprinting(false); // letting go of control doesn't make you stop sprinting actually
             }
             ticksOnCurrent++;
             if (ticksOnCurrent > currentMovementOriginalCostEstimate + Baritone.settings().movementTimeoutTicks.value) {
@@ -257,7 +257,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         BlockPos bestPos = null;
         for (IMovement movement : path.movements()) {
             for (BlockPos pos : ((Movement) movement).getValidPositions()) {
-                double dist = VecUtils.entityDistanceToCenter(ctx.player().getEntity(), pos);
+                double dist = VecUtils.entityDistanceToCenter(ctx.baritonePlayer().getEntity(), pos);
                 if (dist < best || best == -1) {
                     best = dist;
                     bestPos = pos;
@@ -272,7 +272,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         if (!current.isPresent()) {
             return false;
         }
-        if (!ctx.player().getEntity().onGround()) {
+        if (!ctx.baritonePlayer().getEntity().onGround()) {
             return false;
         }
         if (!MovementHelper.canWalkOn(ctx, ctx.playerFeet().below())) {
@@ -306,7 +306,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             // when we're midair in the middle of a fall, we're very far from both the beginning and the end, but we aren't actually off path
             if (path.movements().get(pathPosition) instanceof MovementFall) {
                 BlockPos fallDest = path.positions().get(pathPosition + 1); // .get(pathPosition) is the block we fell off of
-                return VecUtils.entityFlatDistanceToCenter(ctx.player().getEntity(), fallDest) >= leniency; // ignore Y by using flat distance
+                return VecUtils.entityFlatDistanceToCenter(ctx.baritonePlayer().getEntity(), fallDest) >= leniency; // ignore Y by using flat distance
             } else {
                 return true;
             }
@@ -321,12 +321,12 @@ public class PathExecutor implements IPathExecutor, Helper {
      * @return Whether or not it was possible to snap to the current player feet
      */
     public boolean snipsnapifpossible() {
-        if (!ctx.player().getEntity().onGround() && ctx.world().getFluidState(ctx.playerFeet()).isEmpty()) {
+        if (!ctx.baritonePlayer().getEntity().onGround() && ctx.world().getFluidState(ctx.playerFeet()).isEmpty()) {
             // if we're falling in the air, and not in water, don't splice
             return false;
         } else {
             // we are either onGround or in liquid
-            if (ctx.player().getEntity().getDeltaMovement().y < -0.1) {
+            if (ctx.baritonePlayer().getEntity().getDeltaMovement().y < -0.1) {
                 // if we are strictly moving downwards (not stationary)
                 // we could be falling through water, which could be unsafe to splice
                 return false; // so don't
@@ -342,7 +342,7 @@ public class PathExecutor implements IPathExecutor, Helper {
     }
 
     private boolean shouldSprintNextTick() {
-        if (ctx.player().isLocalPlayer()) {
+        if (ctx.baritonePlayer().isLocalPlayer()) {
             boolean requested = behavior.baritone.getInputOverrideHandler().isInputForcedDown(Input.SPRINT);
 
             // we'll take it from here, no need for minecraft to see we're holding down control and sprint for us
@@ -442,7 +442,7 @@ public class PathExecutor implements IPathExecutor, Helper {
                     // playerFeet adds 0.1251 to account for soul sand
                     // farmland is 0.9375
                     // 0.07 is to account for farmland
-                    if (ctx.player().getEntity().position().y >= center.getY() - 0.07) {
+                    if (ctx.baritonePlayer().getEntity().position().y >= center.getY() - 0.07) {
                         behavior.baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, false);
                         return true;
                     }
@@ -514,7 +514,7 @@ public class PathExecutor implements IPathExecutor, Helper {
     }
 
     private static boolean skipNow(IPlayerContext ctx, IMovement current) {
-        double offTarget = Math.abs(current.getDirection().getX() * (current.getSrc().z + 0.5D - ctx.player().getEntity().position().z)) + Math.abs(current.getDirection().getZ() * (current.getSrc().x + 0.5D - ctx.player().getEntity().position().x));
+        double offTarget = Math.abs(current.getDirection().getX() * (current.getSrc().z + 0.5D - ctx.baritonePlayer().getEntity().position().z)) + Math.abs(current.getDirection().getZ() * (current.getSrc().x + 0.5D - ctx.baritonePlayer().getEntity().position().x));
         if (offTarget > 0.1) {
             return false;
         }
@@ -524,7 +524,7 @@ public class PathExecutor implements IPathExecutor, Helper {
             return true;
         }
         // wait 0.3
-        double flatDist = Math.abs(current.getDirection().getX() * (headBonk.getX() + 0.5D - ctx.player().getEntity().position().x)) + Math.abs(current.getDirection().getZ() * (headBonk.getZ() + 0.5 - ctx.player().getEntity().position().z));
+        double flatDist = Math.abs(current.getDirection().getX() * (headBonk.getX() + 0.5D - ctx.baritonePlayer().getEntity().position().x)) + Math.abs(current.getDirection().getZ() * (headBonk.getZ() + 0.5 - ctx.baritonePlayer().getEntity().position().z));
         return flatDist > 0.8;
     }
 
@@ -592,7 +592,9 @@ public class PathExecutor implements IPathExecutor, Helper {
 
     private void cancel() {
         clearKeys();
-        behavior.baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+        if (behavior.baritone.getInputOverrideHandler() != null) {
+            behavior.baritone.getInputOverrideHandler().getBlockBreakHelper().stopBreakingBlock();
+        }
         pathPosition = path.length() + 3;
         failed = true;
     }

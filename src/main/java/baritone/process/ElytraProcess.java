@@ -66,7 +66,6 @@ import java.util.*;
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
 public class ElytraProcess extends BaritoneProcessHelper implements IBaritoneProcess, IElytraProcess, AbstractGameEventListener {
-    List<String> excludedStackTraces = new ArrayList<>();
     public State state;
     private boolean goingToLandingSpot;
     private BetterBlockPos landingSpot;
@@ -98,44 +97,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
     @Override
     public boolean isActive() {
-        System.out.println("Checking if elytra is active");
-        logStackTraceToFile("C:/Users/hzant/OneDrive/Documents/LocalGPT/elytra-process-active-fetched.txt");
         return this.behavior != null;
-    }
-
-    private void logStackTraceToFile(String filePath) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                Files.createFile(file.toPath());
-            } catch (IOException e) {
-                System.err.println("An error occurred while creating the file: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        try (FileWriter fileWriter = new FileWriter(filePath, true);
-             PrintWriter printWriter = new PrintWriter(fileWriter)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                stringBuilder.append(element);
-            }
-            //Remove the first line
-            stringBuilder.delete(0, stringBuilder.indexOf("\n") + 1);
-            if (excludedStackTraces.contains(stringBuilder.toString())) {
-                return;
-            }
-            excludedStackTraces.add(stringBuilder.toString());
-            printWriter.println();
-            printWriter.println("Movement state queried");
-            printWriter.println("Stack trace at " + java.time.LocalDateTime.now() + ":");
-            for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                printWriter.println(element);
-            }
-            printWriter.println();
-        } catch (IOException e) {
-            System.err.println("An error occurred while writing the stack trace to the file: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -172,7 +134,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
         }
 
         boolean safetyLanding = false;
-        if (ctx.player().getEntity().isFallFlying() && shouldLandForSafety()) {
+        if (ctx.baritonePlayer().getEntity().isFallFlying() && shouldLandForSafety()) {
             if (Baritone.settings().elytraAllowEmergencyLand.value) {
                 logDirect("Emergency landing - almost out of elytra durability or fireworks");
                 safetyLanding = true;
@@ -180,9 +142,9 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
                 logDirect("almost out of elytra durability or fireworks, but I'm going to continue since elytraAllowEmergencyLand is false");
             }
         }
-        if (ctx.player().getEntity().isFallFlying() && this.state != State.LANDING && (this.behavior.pathManager.isComplete() || safetyLanding)) {
+        if (ctx.baritonePlayer().getEntity().isFallFlying() && this.state != State.LANDING && (this.behavior.pathManager.isComplete() || safetyLanding)) {
             final BetterBlockPos last = this.behavior.pathManager.path.getLast();
-            if (last != null && (ctx.player().getEntity().position().distanceToSqr(last.getCenter()) < (48 * 48) || safetyLanding) && (!goingToLandingSpot || (safetyLanding && this.landingSpot == null))) {
+            if (last != null && (ctx.baritonePlayer().getEntity().position().distanceToSqr(last.getCenter()) < (48 * 48) || safetyLanding) && (!goingToLandingSpot || (safetyLanding && this.landingSpot == null))) {
                 logDirect("Path complete, picking a nearby safe landing spot...");
                 BetterBlockPos landingSpot = findSafeLandingSpot(ctx.playerFeet());
                 // if this fails we will just keep orbiting the last node until we run out of rockets or the user intervenes
@@ -193,7 +155,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
                 this.goingToLandingSpot = true;
             }
 
-            if (last != null && ctx.player().getEntity().position().distanceToSqr(last.getCenter()) < 1) {
+            if (last != null && ctx.baritonePlayer().getEntity().position().distanceToSqr(last.getCenter()) < 1) {
                 if (Baritone.settings().notificationOnPathComplete.value && !reachedGoal) {
                     logNotification("Pathing complete", false);
                 }
@@ -215,20 +177,20 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
         if (this.state == State.LANDING) {
             final BetterBlockPos endPos = this.landingSpot != null ? this.landingSpot : behavior.pathManager.path.getLast();
-            if (ctx.player().getEntity().isFallFlying() && endPos != null) {
-                Vec3 from = ctx.player().getEntity().position();
+            if (ctx.baritonePlayer().getEntity().isFallFlying() && endPos != null) {
+                Vec3 from = ctx.baritonePlayer().getEntity().position();
                 Vec3 to = new Vec3(((double) endPos.x) + 0.5, from.y, ((double) endPos.z) + 0.5);
                 Rotation rotation = RotationUtils.calcRotationFromVec3d(from, to, ctx.playerRotations());
                 baritone.getLookBehavior().updateTarget(new Rotation(rotation.getYaw(), 0), false); // this will be overwritten, probably, by behavior tick
 
-                if (ctx.player().getEntity().position().y < endPos.y - LANDING_COLUMN_HEIGHT) {
+                if (ctx.baritonePlayer().getEntity().position().y < endPos.y - LANDING_COLUMN_HEIGHT) {
                     logDirect("bad landing spot, trying again...");
                     landingSpotIsBad(endPos);
                 }
             }
         }
 
-        if (ctx.player().getEntity().isFallFlying()) {
+        if (ctx.baritonePlayer().getEntity().isFallFlying()) {
             behavior.landingMode = this.state == State.LANDING;
             this.goal = null;
             baritone.getInputOverrideHandler().clearAllKeys();
@@ -247,7 +209,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
         }
 
         if (this.state == State.FLYING || this.state == State.START_FLYING) {
-            this.state = ctx.player().getEntity().onGround() && Baritone.settings().elytraAutoJump.value
+            this.state = ctx.baritonePlayer().getEntity().onGround() && Baritone.settings().elytraAutoJump.value
                     ? State.LOCATE_JUMP
                     : State.START_FLYING;
         }
@@ -297,7 +259,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
         if (this.state == State.GET_TO_JUMP) {
             final IPathExecutor executor = baritone.getPathingBehavior().getCurrent();
-            final boolean canStartFlying = ctx.player().getEntity().fallDistance > 1.0f
+            final boolean canStartFlying = ctx.baritonePlayer().getEntity().fallDistance > 1.0f
                     && !isSafeToCancel
                     && executor != null
                     && executor.getPath().movements().get(executor.getPosition()) instanceof MovementFall;
@@ -315,7 +277,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
                 baritone.getPathingBehavior().secretInternalSegmentCancel();
             }
             baritone.getInputOverrideHandler().clearAllKeys();
-            if (ctx.player().getEntity().fallDistance > 1.0f) {
+            if (ctx.baritonePlayer().getEntity().fallDistance > 1.0f) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.JUMP, true);
             }
         }
@@ -365,7 +327,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
     }
 
     private void pathTo0(BlockPos destination, boolean appendDestination) {
-        if (ctx.player() == null || ctx.player().getEntity().level().dimension() != Level.NETHER) {
+        if (ctx.baritonePlayer() == null || ctx.baritonePlayer().getEntity().level().dimension() != Level.NETHER) {
             return;
         }
         this.onLostControl();
@@ -402,13 +364,13 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
     }
 
     private boolean shouldLandForSafety() {
-        ItemStack chest = ctx.player().getPlayer().getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack chest = ctx.baritonePlayer().getPlayer().getItemBySlot(EquipmentSlot.CHEST);
         if (chest.getItem() != Items.ELYTRA || chest.getItem().getMaxDamage() - chest.getDamageValue() < Baritone.settings().elytraMinimumDurability.value) {
             // elytrabehavior replaces when durability <= minimumDurability, so if durability < minimumDurability then we can reasonably assume that the elytra will soon be broken without replacement
             return true;
         }
 
-        NonNullList<ItemStack> inv = ctx.player().getPlayer().getInventory().items;
+        NonNullList<ItemStack> inv = ctx.baritonePlayer().getPlayer().getInventory().items;
         int qty = 0;
         for (int i = 0; i < 36; i++) {
             if (ElytraBehavior.isFireworks(inv.get(i))) {

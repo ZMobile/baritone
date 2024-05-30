@@ -61,7 +61,7 @@ public class MovementDiagonal extends Movement {
     protected boolean safeToCancel(MovementState state) {
         //too simple. backfill does not work after cornering with this
         //return context.precomputedData.canWalkOn(ctx, ctx.playerFeet().down());
-        LivingEntity entity = ctx.player().getEntity();
+        LivingEntity entity = ctx.baritonePlayer().getEntity();
         double offset = 0.25;
         double x = entity.position().x;
         double y = entity.position().y - 1;
@@ -265,7 +265,7 @@ public class MovementDiagonal extends Movement {
         } else if (!playerInValidPosition() && !(MovementHelper.isLiquid(ctx, src) && getValidPositions().contains(ctx.playerFeet().above()))) {
             return state.setStatus(MovementStatus.UNREACHABLE);
         }
-        if (dest.y > src.y && ctx.player().getEntity().position().y < src.y + 0.1 && ctx.player().getEntity().horizontalCollision) {
+        if (dest.y > src.y && ctx.baritonePlayer().getEntity().position().y < src.y + 0.1 && ctx.baritonePlayer().getEntity().horizontalCollision) {
             state.setInput(Input.JUMP, true);
         }
         if (sprint()) {

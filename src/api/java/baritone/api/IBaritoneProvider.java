@@ -63,7 +63,7 @@ public interface IBaritoneProvider {
      */
     default IBaritone getBaritoneForPlayer(LocalPlayer player) {
         for (IBaritone baritone : this.getAllBaritones()) {
-            if (Objects.equals(player, baritone.getPlayerContext().player().getPlayer())) {
+            if (Objects.equals(player, baritone.getPlayerContext().baritonePlayer().getPlayer())) {
                 return baritone;
             }
         }
@@ -78,7 +78,7 @@ public interface IBaritoneProvider {
      */
     default IBaritone getBaritoneForEntity(LivingEntity entity) {
         for (IBaritone baritone : this.getAllBaritones()) {
-            if (Objects.equals(entity, baritone.getPlayerContext().player().getEntity())) {
+            if (Objects.equals(entity, baritone.getPlayerContext().baritonePlayer().getEntity())) {
                 return baritone;
             }
         }
@@ -109,7 +109,7 @@ public interface IBaritoneProvider {
      */
     default IBaritone getBaritoneForConnection(ClientPacketListener connection) {
         for (IBaritone baritone : this.getAllBaritones()) {
-            final IPlayer player = baritone.getPlayerContext().player();
+            final IPlayer player = baritone.getPlayerContext().baritonePlayer();
             if (player.getPlayer() != null && player.isLocalPlayer()) {
                 if (player.getPlayer().connection == connection) {
                     return baritone;
