@@ -30,23 +30,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Zombie.class)
+//Example usage of Baritone with mobs
+//@Mixin(Zombie.class)
 public abstract class MixinZombie extends PathfinderMob {
 
     protected MixinZombie(EntityType<? extends PathfinderMob> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Inject(method = "registerGoals", at = @At("TAIL"))
+    /*@Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
-        // Debug log to indicate injection point
-        // Ensure we don't block the default behavior
-        // Add the custom goal with a lower priority to avoid blocking essential default goals
         GoalBlock goal = new GoalBlock(0, 60, 200);
         BaritoneAPI.getProvider().createBaritone(Minecraft.getInstance(), this);
         BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
         //this.goalSelector.add(6, new BreakBlockAndChaseGoal(this, this.goalSelector));
         // Debug log to verify goal addition
         System.out.println("Baritone goal successfully added to ZombieEntity");
-    }
+    }*/
 }
