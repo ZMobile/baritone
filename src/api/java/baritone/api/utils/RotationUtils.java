@@ -155,7 +155,7 @@ public final class RotationUtils {
     }
 
     public static Optional<Rotation> reachable(IPlayerContext ctx, BlockPos pos, boolean wouldSneak) {
-        return reachable(ctx, pos, ctx.playerController().getBlockReachDistance(), wouldSneak);
+        return reachable(ctx, pos, ctx.baritonePlayer().getBlockReachDistance(), wouldSneak);
     }
 
     /**

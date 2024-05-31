@@ -18,33 +18,49 @@
 package baritone.launch.mixins;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.IBaritone;
 import baritone.api.pathing.goals.GoalBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //Example usage of Baritone with mobs
-//@Mixin(Zombie.class)
+@Mixin(Zombie.class)
 public abstract class MixinZombie extends PathfinderMob {
 
     protected MixinZombie(EntityType<? extends PathfinderMob> entityType, Level world) {
         super(entityType, world);
     }
 
-    /*@Inject(method = "registerGoals", at = @At("TAIL"))
+    @Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
-        GoalBlock goal = new GoalBlock(0, 60, 200);
+        //GoalBlock goal = new GoalBlock(0, 60, 200);
         BaritoneAPI.getProvider().createBaritone(Minecraft.getInstance(), this);
-        BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
+        //BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
         //this.goalSelector.add(6, new BreakBlockAndChaseGoal(this, this.goalSelector));
         // Debug log to verify goal addition
         System.out.println("Baritone goal successfully added to ZombieEntity");
-    }*/
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void checkZombieState(CallbackInfo info) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            Vec3 playerPosition = Minecraft.getInstance().player.position();
+            GoalBlock goal = new GoalBlock((int) playerPosition.x, (int) playerPosition.y, (int) playerPosition.z);
+            IBaritone goalBaritone = BaritoneAPI.getProvider().getBaritoneForEntity(this);
+            if (goalBaritone != null) {
+                goalBaritone.getCustomGoalProcess().setGoalAndPath(goal);
+            }
+        }
+    }
 }

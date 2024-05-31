@@ -87,7 +87,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
     @Override
     public IPlayerController playerController() {
         return this.playerController;
-        //return null;
     }
 
     @Override
@@ -113,6 +112,6 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public HitResult objectMouseOver() {
-        return RayTraceUtils.rayTraceTowards(baritonePlayer().getEntity(), playerRotations(), playerController().getBlockReachDistance());
+        return RayTraceUtils.rayTraceTowards(baritonePlayer().getEntity(), playerRotations(), baritonePlayer().getBlockReachDistance());
     }
 }

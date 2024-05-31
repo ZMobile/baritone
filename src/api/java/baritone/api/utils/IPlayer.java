@@ -27,4 +27,6 @@ public interface IPlayer {
     boolean isLocalPlayer();
 
     LivingEntity getEntity();
+
+    double getBlockReachDistance();
 }

@@ -104,7 +104,7 @@ public class MovementFall extends Movement {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
-            if (ctx.baritonePlayer().getEntity().position().y - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.baritonePlayer().getEntity().onGround()) {
+            if (ctx.baritonePlayer().getEntity().position().y - dest.getY() < ctx.baritonePlayer().getBlockReachDistance() && !ctx.baritonePlayer().getEntity().onGround()) {
                 ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER);
 
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);

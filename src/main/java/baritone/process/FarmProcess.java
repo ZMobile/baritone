@@ -271,9 +271,9 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         both.addAll(openSoulsand);
         for (BlockPos pos : both) {
             boolean soulsand = openSoulsand.contains(pos);
-            Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), ctx.playerController().getBlockReachDistance(), false);
+            Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), ctx.baritonePlayer().getBlockReachDistance(), false);
             if (rot.isPresent() && isSafeToCancel && baritone.getInventoryBehavior().throwaway(true, soulsand ? this::isNetherWart : this::isPlantable)) {
-                HitResult result = RayTraceUtils.rayTraceTowards(ctx.baritonePlayer().getEntity(), rot.get(), ctx.playerController().getBlockReachDistance());
+                HitResult result = RayTraceUtils.rayTraceTowards(ctx.baritonePlayer().getEntity(), rot.get(), ctx.baritonePlayer().getBlockReachDistance());
                 if (result instanceof BlockHitResult && ((BlockHitResult) result).getDirection() == Direction.UP) {
                     baritone.getLookBehavior().updateTarget(rot.get(), true);
                     if (ctx.isLookingAt(pos)) {
@@ -289,9 +289,9 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
                     continue;
                 }
                 Vec3 faceCenter = Vec3.atCenterOf(pos).add(Vec3.atLowerCornerOf(dir.getNormal()).scale(0.5));
-                Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, faceCenter, ctx.playerController().getBlockReachDistance(), false);
+                Optional<Rotation> rot = RotationUtils.reachableOffset(ctx, pos, faceCenter, ctx.baritonePlayer().getBlockReachDistance(), false);
                 if (rot.isPresent() && isSafeToCancel && baritone.getInventoryBehavior().throwaway(true, this::isCocoa)) {
-                    HitResult result = RayTraceUtils.rayTraceTowards(ctx.baritonePlayer().getEntity(), rot.get(), ctx.playerController().getBlockReachDistance());
+                    HitResult result = RayTraceUtils.rayTraceTowards(ctx.baritonePlayer().getEntity(), rot.get(), ctx.baritonePlayer().getBlockReachDistance());
                     if (result instanceof BlockHitResult && ((BlockHitResult) result).getDirection() == dir) {
                         baritone.getLookBehavior().updateTarget(rot.get(), true);
                         if (ctx.isLookingAt(pos)) {

@@ -17,6 +17,7 @@
 
 package baritone.utils.player;
 
+import baritone.api.BaritoneAPI;
 import baritone.api.utils.IPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -63,5 +64,14 @@ public class BaritonePlayer implements IPlayer {
             return minecraft.player;
         }
         return entity;
+    }
+
+    @Override
+    public double getBlockReachDistance() {
+        if (isLocalPlayer) {
+            return this.minecraft.gameMode.getPlayerMode().isCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
+        } else {
+            return BaritoneAPI.getSettings().blockReachDistance.value;
+        }
     }
 }
