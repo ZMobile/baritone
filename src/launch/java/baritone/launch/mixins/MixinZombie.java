@@ -34,14 +34,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //Example usage of Baritone with mobs
-@Mixin(Zombie.class)
+//@Mixin(Zombie.class)
 public abstract class MixinZombie extends PathfinderMob {
 
     protected MixinZombie(EntityType<? extends PathfinderMob> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Inject(method = "registerGoals", at = @At("TAIL"))
+    //@Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
         //GoalBlock goal = new GoalBlock(0, 60, 200);
         BaritoneAPI.getProvider().createBaritone(Minecraft.getInstance(), this);
@@ -51,7 +51,7 @@ public abstract class MixinZombie extends PathfinderMob {
         System.out.println("Baritone goal successfully added to ZombieEntity");
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    //@Inject(method = "tick", at = @At("HEAD"))
     private void checkZombieState(CallbackInfo info) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
