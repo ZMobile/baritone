@@ -25,7 +25,6 @@
     "MixinPalettedContainer$Data",
     "MixinPlayerController",
     "MixinScreen",
-    "MixinWorldRenderer",
-    "MixinZombie"
+    "MixinWorldRenderer"
   ]
 }
