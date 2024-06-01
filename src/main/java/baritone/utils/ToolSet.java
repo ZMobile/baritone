@@ -18,9 +18,11 @@
 package baritone.utils;
 
 import baritone.Baritone;
+import baritone.api.utils.IPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -50,9 +52,9 @@ public class ToolSet {
      */
     private final Function<Block, Double> backendCalculation;
 
-    private final LocalPlayer player;
+    private final IPlayer player;
 
-    public ToolSet(LocalPlayer player) {
+    public ToolSet(IPlayer player) {
         breakStrengthCache = new HashMap<>();
         this.player = player;
 
@@ -109,13 +111,15 @@ public class ToolSet {
     }
 
     public int getBestSlot(Block b, boolean preferSilkTouch, boolean pathingCalculation) {
-
+        if (!player.isLocalPlayer()) {
+            return 0;
+        }
         /*
         If we actually want know what efficiency our held item has instead of the best one
         possible, this lets us make pathing depend on the actual tool to be used (if auto tool is disabled)
         */
         if (!Baritone.settings().autoTool.value && pathingCalculation) {
-            return player.getInventory().selected;
+            return player.getPlayer().getInventory().selected;
         }
 
         int best = 0;
@@ -124,7 +128,7 @@ public class ToolSet {
         boolean bestSilkTouch = false;
         BlockState blockState = b.defaultBlockState();
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = player.getInventory().getItem(i);
+            ItemStack itemStack = player.getPlayer().getInventory().getItem(i);
             if (!Baritone.settings().useSwordToMine.value && itemStack.getItem() instanceof SwordItem) {
                 continue;
             }
@@ -160,7 +164,12 @@ public class ToolSet {
      * @return A double containing the destruction ticks with the best tool
      */
     private double getBestDestructionTime(Block b) {
-        ItemStack stack = player.getInventory().getItem(getBestSlot(b, false, true));
+        ItemStack stack;
+        if (player.isLocalPlayer()) {
+            stack = player.getPlayer().getInventory().getItem(getBestSlot(b, false, true));
+        } else {
+            stack = new ItemStack(Items.AIR);
+        }
         return calculateSpeedVsBlock(stack, b.defaultBlockState()) * avoidanceMultiplier(b);
     }
 
@@ -211,11 +220,11 @@ public class ToolSet {
      */
     private double potionAmplifier() {
         double speed = 1;
-        if (player.hasEffect(MobEffects.DIG_SPEED)) {
-            speed *= 1 + (player.getEffect(MobEffects.DIG_SPEED).getAmplifier() + 1) * 0.2;
+        if (player.getEntity().hasEffect(MobEffects.DIG_SPEED)) {
+            speed *= 1 + (player.getEntity().getEffect(MobEffects.DIG_SPEED).getAmplifier() + 1) * 0.2;
         }
-        if (player.hasEffect(MobEffects.DIG_SLOWDOWN)) {
-            switch (player.getEffect(MobEffects.DIG_SLOWDOWN).getAmplifier()) {
+        if (player.getEntity().hasEffect(MobEffects.DIG_SLOWDOWN)) {
+            switch (player.getEntity().getEffect(MobEffects.DIG_SLOWDOWN).getAmplifier()) {
                 case 0:
                     speed *= 0.3;
                     break;
