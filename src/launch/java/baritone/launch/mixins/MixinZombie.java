@@ -22,6 +22,7 @@ import baritone.api.IBaritone;
 import baritone.api.pathing.goals.GoalBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -60,6 +61,19 @@ public abstract class MixinZombie extends PathfinderMob {
             IBaritone goalBaritone = BaritoneAPI.getProvider().getBaritoneForEntity(this);
             if (goalBaritone != null) {
                 goalBaritone.getCustomGoalProcess().setGoalAndPath(goal);
+            }
+        }
+    }
+
+    //@Inject(method = "tick", at = @At("TAIL"))
+    private void onZombieDespawn(CallbackInfo info) {
+        if (!this.isAlive()) {
+            IBaritone goalBaritone = BaritoneAPI.getProvider().getBaritoneForEntity(this);
+            if (goalBaritone != null) {
+                // Clean up Baritone instance for this entity
+                BaritoneAPI.getProvider().destroyBaritone(goalBaritone);
+                // Debug log to verify cleanup
+                System.out.println("Baritone instance successfully removed for ZombieEntity on despawn");
             }
         }
     }
