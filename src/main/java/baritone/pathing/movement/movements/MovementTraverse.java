@@ -194,7 +194,7 @@ public class MovementTraverse extends Movement {
             if (dist < 0.83) {
                 return state;
             }
-            if (!state.getTarget().getRotation().isPresent()) {
+            if (state.getTarget() != null && !state.getTarget().getRotation().isPresent()) {
                 // this can happen rarely when the server lags and doesn't send the falling sand entity until you've already walked through the block and are now mining the next one
                 return state;
             }
@@ -202,7 +202,12 @@ public class MovementTraverse extends Movement {
             // combine the yaw to the center of the destination, and the pitch to the specific block we're trying to break
             // it's safe to do this since the two blocks we break (in a traverse) are right on top of each other and so will have the same yaw
             float yawToDest = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.calculateBlockCenter(ctx.world(), dest), ctx.playerRotations()).getYaw();
-            float pitchToBreak = state.getTarget().getRotation().get().getPitch();
+            float pitchToBreak;
+            if (state.getTarget() != null) {
+                pitchToBreak = state.getTarget().getRotation().get().getPitch();
+            } else {
+                pitchToBreak = 26;
+            }
             if ((MovementHelper.isBlockNormalCube(pb0) || pb0.getBlock() instanceof AirBlock && (MovementHelper.isBlockNormalCube(pb1) || pb1.getBlock() instanceof AirBlock))) {
                 // in the meantime, before we're right up against the block, we can break efficiently at this angle
                 pitchToBreak = 26;
@@ -311,11 +316,11 @@ public class MovementTraverse extends Movement {
                     if (dist1 > 0.83) {
                         // might need to go forward a bit
                         float yaw = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations()).getYaw();
-                        if (Math.abs(state.getTarget().rotation.getYaw() - yaw) < 0.1) {
+                        if (state.getTarget() != null && Math.abs(state.getTarget().rotation.getYaw() - yaw) < 0.1) {
                             // but only if our attempted place is straight ahead
                             return state.setInput(Input.MOVE_FORWARD, true);
                         }
-                    } else if (ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
+                    } else if (state.getTarget() != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
                         // well i guess theres something in the way
                         return state.setInput(Input.CLICK_LEFT, true);
                     }
@@ -347,7 +352,7 @@ public class MovementTraverse extends Movement {
                     return state.setInput(Input.CLICK_RIGHT, true); // wait to right click until we are able to place
                 }
                 // Out.log("Trying to look at " + goalLook + ", actually looking at" + Baritone.whatAreYouLookingAt());
-                if (ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
+                if (state.getTarget() != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
                     state.setInput(Input.CLICK_LEFT, true);
                 }
                 return state;
