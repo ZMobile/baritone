@@ -234,6 +234,9 @@ public final class RotationUtils {
     public static Optional<Rotation> reachableOffset(IPlayerContext ctx, BlockPos pos, Vec3 offsetPos, double blockReachDistance, boolean wouldSneak) {
         Vec3 eyes = wouldSneak ? RayTraceUtils.inferSneakingEyePosition(ctx.baritonePlayer().getEntity()) : ctx.baritonePlayer().getEntity().getEyePosition(1.0F);
         Rotation rotation = calcRotationFromVec3d(eyes, offsetPos, ctx.playerRotations());
+        if (BaritoneAPI.getProvider().getBaritoneForEntity(ctx.baritonePlayer().getEntity()) == null) {
+            return Optional.empty();
+        }
         Rotation actualRotation = BaritoneAPI.getProvider().getBaritoneForEntity(ctx.baritonePlayer().getEntity()).getLookBehavior().getAimProcessor().peekRotation(rotation);
         HitResult result = RayTraceUtils.rayTraceTowards(ctx.baritonePlayer().getEntity(), actualRotation, blockReachDistance, wouldSneak);
         //System.out.println(result);
