@@ -316,11 +316,11 @@ public class MovementTraverse extends Movement {
                     if (dist1 > 0.83) {
                         // might need to go forward a bit
                         float yaw = RotationUtils.calcRotationFromVec3d(ctx.playerHead(), VecUtils.getBlockPosCenter(dest), ctx.playerRotations()).getYaw();
-                        if (state.getTarget() != null && Math.abs(state.getTarget().rotation.getYaw() - yaw) < 0.1) {
+                        if (state.getTarget() != null && state.getTarget().rotation != null && Math.abs(state.getTarget().rotation.getYaw() - yaw) < 0.1) {
                             // but only if our attempted place is straight ahead
                             return state.setInput(Input.MOVE_FORWARD, true);
                         }
-                    } else if (state.getTarget() != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
+                    } else if (state.getTarget() != null && state.getTarget().rotation != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
                         // well i guess theres something in the way
                         return state.setInput(Input.CLICK_LEFT, true);
                     }
@@ -352,7 +352,7 @@ public class MovementTraverse extends Movement {
                     return state.setInput(Input.CLICK_RIGHT, true); // wait to right click until we are able to place
                 }
                 // Out.log("Trying to look at " + goalLook + ", actually looking at" + Baritone.whatAreYouLookingAt());
-                if (state.getTarget() != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
+                if (state.getTarget() != null && state.getTarget().rotation != null && ctx.playerRotations().isReallyCloseTo(state.getTarget().rotation)) {
                     state.setInput(Input.CLICK_LEFT, true);
                 }
                 return state;
