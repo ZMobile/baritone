@@ -125,7 +125,18 @@ public class WorldProvider implements IWorldProvider {
         Path readmeDir;
 
         // If there is an integrated server running (Aka Singleplayer) then do magic to find the world save file
-        if (ctx.minecraft().hasSingleplayerServer()) {
+        if (ctx.minecraft() == null) {
+            worldDir = ctx.server().getWorldPath(LevelResource.ROOT);
+
+            // Gets the "depth" of this directory relative to the game's run directory, 2 is the location of the world
+            if (worldDir.relativize(ctx.server().getServerDirectory().toPath()).getNameCount() != 2) {
+                // subdirectory of the main save directory for this world
+                worldDir = worldDir.getParent();
+            }
+
+            worldDir = worldDir.resolve("baritone");
+            readmeDir = worldDir;
+        } else if (ctx.minecraft() != null && ctx.minecraft().hasSingleplayerServer()) {
             worldDir = ctx.minecraft().getSingleplayerServer().getWorldPath(LevelResource.ROOT);
 
             // Gets the "depth" of this directory relative to the game's run directory, 2 is the location of the world

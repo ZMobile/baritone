@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -41,6 +42,8 @@ import java.util.stream.StreamSupport;
 public interface IPlayerContext {
 
     Minecraft minecraft();
+
+    MinecraftServer server();
     
     IPlayer baritonePlayer();
 

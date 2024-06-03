@@ -22,6 +22,7 @@ import baritone.api.cache.IWorldData;
 import baritone.api.utils.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -44,12 +45,15 @@ import java.util.List;
 public final class BaritonePlayerContext implements IPlayerContext {
     private final Baritone baritone;
     private final Minecraft mc;
+    private final MinecraftServer mcs;
     private final IPlayerController playerController;
     private final IPlayer baritonePlayer;
 
     public BaritonePlayerContext(Baritone baritone, Minecraft mc) {
         this.baritone = baritone;
         this.mc = mc;
+        //this.mc = null;
+        this.mcs = null;
         this.playerController = new BaritonePlayerController(mc);
         this.baritonePlayer = new BaritonePlayer(mc);
     }
@@ -57,6 +61,16 @@ public final class BaritonePlayerContext implements IPlayerContext {
     public BaritonePlayerContext(Baritone baritone, Minecraft mc, LivingEntity livingEntity) {
         this.baritone = baritone;
         this.mc = mc;
+        this.mcs = null;
+        //this.playerController = new BaritonePlayerController(mc);
+        this.playerController = null;
+        this.baritonePlayer = new BaritonePlayer(livingEntity);
+    }
+
+    public BaritonePlayerContext(Baritone baritone, MinecraftServer minecraftServer, LivingEntity livingEntity) {
+        this.baritone = baritone;
+        this.mc = null;
+        this.mcs = minecraftServer;
         //this.playerController = new BaritonePlayerController(mc);
         this.playerController = null;
         this.baritonePlayer = new BaritonePlayer(livingEntity);
@@ -66,6 +80,11 @@ public final class BaritonePlayerContext implements IPlayerContext {
     @Override
     public Minecraft minecraft() {
         return this.mc;
+    }
+
+    @Override
+    public MinecraftServer server() {
+        return this.mcs;
     }
 
     @Override
@@ -91,7 +110,10 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public Level world() {
-        return this.mc.level;
+        if (this.mc != null) {
+            return this.mc.level;
+        }
+        return this.entity().level();
     }
 
     @Override
