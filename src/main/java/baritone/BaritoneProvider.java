@@ -80,7 +80,7 @@ public final class BaritoneProvider implements IBaritoneProvider {
         return baritone;
     }
 
-    @Override
+    //@Override
     public synchronized IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity) {
         IBaritone baritone = this.getBaritoneForEntity(livingEntity);
         if (baritone == null) {

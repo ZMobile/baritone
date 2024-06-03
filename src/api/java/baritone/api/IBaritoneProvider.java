@@ -140,7 +140,7 @@ public interface IBaritoneProvider {
 
     IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
 
-    IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity);
+    //IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity);
 
     /**
      * Destroys and removes the specified {@link IBaritone} instance. If the specified instance is the
