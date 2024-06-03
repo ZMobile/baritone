@@ -58,7 +58,8 @@ public class MovementPillar extends Movement {
     public static double cost(CalculationContext context, int x, int y, int z) {
         BlockState fromState = context.get(x, y, z);
         Block from = fromState.getBlock();
-        boolean ladder = from == Blocks.LADDER || from == Blocks.VINE;
+        //boolean ladder = from == Blocks.LADDER || from == Blocks.VINE;
+        boolean ladder = false;
         BlockState fromDown = context.get(x, y - 1, z);
         if (!ladder) {
             if (fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE) {
@@ -109,9 +110,9 @@ public class MovementPillar extends Movement {
             return COST_INF;
         }
         if (hardness != 0) {
-            if (toBreakBlock == Blocks.LADDER || toBreakBlock == Blocks.VINE) {
-                hardness = 0; // we won't actually need to break the ladder / vine because we're going to use it
-            } else {
+            /*if (toBreakBlock == Blocks.LADDER || toBreakBlock == Blocks.VINE) {
+                //hardness = 0; // we won't actually need to break the ladder / vine because we're going to use it
+            } else {*/
                 BlockState check = context.get(x, y + 3, z); // the block on top of the one we're going to break, could it fall on us?
                 if (check.getBlock() instanceof FallingBlock) {
                     // see MovementAscend's identical check for breaking a falling block above our head
@@ -129,12 +130,14 @@ public class MovementPillar extends Movement {
                 // but I don't understand why canWalkThrough makes it impossible
                 //    return COST_INF;
                 //}
-            }
+            //}
         }
         if (ladder) {
-            return LADDER_UP_ONE_COST + hardness * 5;
+//return LADDER_UP_ONE_COST + hardness * 5;
+            return COST_INF;
         } else {
-            return JUMP_ONE_BLOCK_COST + placeCost + context.jumpPenalty + hardness;
+            //return JUMP_ONE_BLOCK_COST + placeCost + context.jumpPenalty + hardness;
+            return COST_INF;
         }
     }
 
@@ -185,7 +188,8 @@ public class MovementPillar extends Movement {
             }
             return state;
         }
-        boolean ladder = fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE;
+        //boolean ladder = fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE;
+        boolean ladder = false;
         boolean vine = fromDown.getBlock() == Blocks.VINE;
         Rotation rotation = RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
                 VecUtils.getBlockPosCenter(positionToPlace),
