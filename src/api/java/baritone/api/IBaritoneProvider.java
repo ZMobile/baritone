@@ -25,7 +25,6 @@ import baritone.api.utils.IPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -139,8 +138,6 @@ public interface IBaritoneProvider {
 
 
     IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
-
-    //IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity);
 
     /**
      * Destroys and removes the specified {@link IBaritone} instance. If the specified instance is the
