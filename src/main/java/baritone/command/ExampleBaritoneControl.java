@@ -93,6 +93,9 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
     }
 
     public boolean runCommand(String msg) {
+        if (this.manager == null) {
+            return false;
+        }
         System.out.println("ExampleBaritoneControl.runCommand");
         if (msg.trim().equalsIgnoreCase("damn")) {
             logDirect("daniel");
@@ -189,6 +192,9 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
                         return Stream.of(SettingsUtil.settingValueToString(setting));
                     }
                 }
+            }
+            if (this.manager == null) {
+                return Stream.empty();
             }
             return this.manager.tabComplete(msg);
         } catch (CommandNotEnoughArgumentsException ignored) { // Shouldn't happen, the operation is safe
