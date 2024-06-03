@@ -18,6 +18,10 @@
 package baritone.api.pathing.path;
 
 import baritone.api.pathing.calc.IPath;
+import net.minecraft.core.BlockPos;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Brady
@@ -28,4 +32,10 @@ public interface IPathExecutor {
     IPath getPath();
 
     int getPosition();
+
+    Set<BlockPos> toBreak();
+
+    Set<BlockPos> toPlace();
+
+    Set<BlockPos> toWalkInto();
 }
