@@ -127,7 +127,7 @@ public class WorldProvider implements IWorldProvider {
         // Otherwise, the server must be remote...
 
                 //replaymod causes null currentServer and false singleplayer.
-                System.out.println("World seems to be a replay. Not loading Baritone cache.");
+                //System.out.println("World seems to be a replay. Not loading Baritone cache.");
             currentWorld = null;
             mcWorld = ctx.world();
             return Optional.empty();
@@ -156,7 +156,7 @@ public class WorldProvider implements IWorldProvider {
                 initWorld(ctx.world());
             }
         } else if (this.currentWorld == null && ctx.world() != null) {
-            System.out.println("Retrying to load Baritone cache");
+            //System.out.println("Retrying to load Baritone cache");
             initWorld(ctx.world());
         }
     }
