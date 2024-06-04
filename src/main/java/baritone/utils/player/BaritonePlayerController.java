@@ -19,81 +19,79 @@ package baritone.utils.player;
 
 import baritone.api.utils.IPlayerController;
 import baritone.utils.accessor.IPlayerControllerMP;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-
 
 /**
  * Implementation of {@link IPlayerController} that chains to the primary player controller's methods
+ * for server-side usage.
  *
- * @author Brady
  * @since 12/14/2018
  */
 public final class BaritonePlayerController implements IPlayerController {
 
-    private final Minecraft mc;
+    /*private final ServerPlayer player;
 
-    public BaritonePlayerController(Minecraft mc) {
-        this.mc = mc;
+    public BaritonePlayerController(ServerPlayer player) {
+        this.player = player;
     }
 
     @Override
     public void syncHeldItem() {
-        ((IPlayerControllerMP) mc.gameMode).callSyncCurrentPlayItem();
+        // Synchronize the held item on the server
+        player.connection.send(player.getInventory().getCarried());
     }
 
     @Override
     public boolean hasBrokenBlock() {
-        return !((IPlayerControllerMP) mc.gameMode).isHittingBlock();
+        return !((IPlayerControllerMP) player.gameMode).isHittingBlock();
     }
 
     @Override
     public boolean onPlayerDamageBlock(BlockPos pos, Direction side) {
-        return mc.gameMode.continueDestroyBlock(pos, side);
+        return player.gameMode.handleBlockBreakAction(pos, ServerPlayerInteractionManager.Action.START_DESTROY_BLOCK, side, player.level.getBlockState(pos), player.level);
     }
 
     @Override
     public void resetBlockRemoving() {
-        mc.gameMode.stopDestroyBlock();
+        player.gameMode.breakingBlock = false;
     }
 
     @Override
     public void windowClick(int windowId, int slotId, int mouseButton, ClickType type, Player player) {
-        mc.gameMode.handleInventoryMouseClick(windowId, slotId, mouseButton, type, player);
+        this.player.connection.handleContainerClick(new ServerboundContainerClickPacket(windowId, slotId, mouseButton, type, player.getInventory().getCarried(), player.containerMenu.getStateId()));
     }
 
     @Override
     public GameType getGameType() {
-        return mc.gameMode.getPlayerMode();
+        return player.gameMode.getGameModeForPlayer();
     }
 
     @Override
-    public InteractionResult processRightClickBlock(LocalPlayer player, Level world, InteractionHand hand, BlockHitResult result) {
-        // primaryplayercontroller is always in a ClientWorld so this is ok
-        return mc.gameMode.useItemOn(player, hand, result);
+    public InteractionResult processRightClickBlock(ServerPlayer player, ServerLevel world, InteractionHand hand, BlockHitResult result) {
+        return player.gameMode.useItemOn(player, world, hand, result);
     }
 
     @Override
-    public InteractionResult processRightClick(LocalPlayer player, Level world, InteractionHand hand) {
-        return mc.gameMode.useItem(player, hand);
+    public InteractionResult processRightClick(ServerPlayer player, ServerLevel world, InteractionHand hand) {
+        return player.gameMode.useItem(player, world, hand);
     }
 
     @Override
     public boolean clickBlock(BlockPos loc, Direction face) {
-        return mc.gameMode.startDestroyBlock(loc, face);
+        return player.gameMode.handleBlockBreakAction(loc, ServerPlayerInteractionManager.Action.START_DESTROY_BLOCK, face, player.level.getBlockState(loc), player.level);
     }
 
     @Override
     public void setHittingBlock(boolean hittingBlock) {
-        ((IPlayerControllerMP) mc.gameMode).setIsHittingBlock(hittingBlock);
-    }
+        ((IPlayerControllerMP) player.gameMode).setIsHittingBlock(hittingBlock);
+    }*/
 }

@@ -61,9 +61,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public final class FarmProcess extends BaritoneProcessHelper implements IFarmProcess {
+public final class FarmProcess /*extends BaritoneProcessHelper implements IFarmProcess*/ {
 
-    private boolean active;
+    /*private boolean active;
 
     private List<BlockPos> locations;
     private int tickCount;
@@ -370,5 +370,5 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     @Override
     public String displayName0() {
         return "Farming";
-    }
+    }*/
 }

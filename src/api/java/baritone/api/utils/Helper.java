@@ -20,8 +20,6 @@ package baritone.api.utils;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.GuiMessageTag;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -30,8 +28,7 @@ import java.util.Calendar;
 import java.util.stream.Stream;
 
 /**
- * An ease-of-access interface to provide the {@link Minecraft} game instance,
- * chat and console logging mechanisms, and the Baritone chat prefix.
+ * An ease-of-access interface to provide the chat and console logging mechanisms, and the Baritone chat prefix.
  *
  * @author Brady
  * @since 8/1/2018
@@ -42,18 +39,6 @@ public interface Helper {
      * Instance of {@link Helper}. Used for static-context reference.
      */
     Helper HELPER = new Helper() {};
-
-    /**
-     * The main game instance returned by {@link Minecraft#getInstance()}.
-     * Deprecated since {@link IPlayerContext#minecraft()} should be used instead (In the majority of cases).
-     */
-    @Deprecated
-    Minecraft mc = Minecraft.getInstance();
-
-    /**
-     * The tag to assign to chat messages when {@link Settings#useMessageTag} is {@code true}.
-     */
-    GuiMessageTag MESSAGE_TAG = new GuiMessageTag(0xFF55FF, null, Component.literal("Baritone message."), "Baritone");
 
     static Component getPrefix() {
         // Inner text component
@@ -79,7 +64,7 @@ public interface Helper {
      * @param message The message to display in the popup
      */
     default void logToast(Component title, Component message) {
-        Minecraft.getInstance().execute(() -> BaritoneAPI.getSettings().toaster.value.accept(title, message));
+        //BaritoneAPI.getSettings().toaster.value.accept(title, message);
     }
 
     /**
@@ -140,7 +125,7 @@ public interface Helper {
      * @param error   Whether to log as an error
      */
     default void logNotificationDirect(String message, boolean error) {
-        Minecraft.getInstance().execute(() -> BaritoneAPI.getSettings().notifier.value.accept(message, error));
+        BaritoneAPI.getSettings().notifier.value.accept(message, error);
     }
 
     /**
@@ -150,12 +135,8 @@ public interface Helper {
      */
     default void logDebug(String message) {
         if (!BaritoneAPI.getSettings().chatDebug.value) {
-            //System.out.println("Suppressed debug message:");
-            //System.out.println(message);
             return;
         }
-        // We won't log debug chat into toasts
-        // Because only a madman would want that extreme spam -_-
         logDirect(message, false);
     }
 
@@ -175,7 +156,7 @@ public interface Helper {
         if (logAsToast) {
             logToast(getPrefix(), component);
         } else {
-            Minecraft.getInstance().execute(() -> BaritoneAPI.getSettings().logger.value.accept(component));
+            BaritoneAPI.getSettings().logger.value.accept(component);
         }
     }
 

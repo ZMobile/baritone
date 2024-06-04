@@ -18,14 +18,13 @@
 package baritone.launch.mixins;
 
 import baritone.utils.accessor.IEntityRenderManager;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(EntityRenderDispatcher.class)
-public class MixinEntityRenderManager implements IEntityRenderManager {
+//@Mixin(EntityRenderDispatcher.class)
+public class MixinEntityRenderManager /*implements IEntityRenderManager*/ {
 
 
-    @Override
+    /*@Override
     public double renderPosX() {
         return ((EntityRenderDispatcher) (Object) this).camera.getPosition().x;
     }
@@ -38,5 +37,5 @@ public class MixinEntityRenderManager implements IEntityRenderManager {
     @Override
     public double renderPosZ() {
         return ((EntityRenderDispatcher) (Object) this).camera.getPosition().z;
-    }
+    }*/
 }

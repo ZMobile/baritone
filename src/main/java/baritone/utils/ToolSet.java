@@ -19,7 +19,6 @@ package baritone.utils;
 
 import baritone.Baritone;
 import baritone.api.utils.IPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -119,7 +118,7 @@ public class ToolSet {
         possible, this lets us make pathing depend on the actual tool to be used (if auto tool is disabled)
         */
         if (!Baritone.settings().autoTool.value && pathingCalculation) {
-            return player.getPlayer().getInventory().selected;
+            return 0;//player.getPlayer().getInventory().selected;
         }
 
         int best = 0;
@@ -128,7 +127,7 @@ public class ToolSet {
         boolean bestSilkTouch = false;
         BlockState blockState = b.defaultBlockState();
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = player.getPlayer().getInventory().getItem(i);
+            ItemStack itemStack = new ItemStack(Items.AIR);//player.getPlayer().getInventory().getItem(i);
             if (!Baritone.settings().useSwordToMine.value && itemStack.getItem() instanceof SwordItem) {
                 continue;
             }
@@ -165,11 +164,11 @@ public class ToolSet {
      */
     private double getBestDestructionTime(Block b) {
         ItemStack stack;
-        if (player.isLocalPlayer()) {
+        /*if (player.isLocalPlayer()) {
             stack = player.getPlayer().getInventory().getItem(getBestSlot(b, false, true));
-        } else {
+        } else {*/
             stack = new ItemStack(Items.AIR);
-        }
+        //}
         return calculateSpeedVsBlock(stack, b.defaultBlockState()) * avoidanceMultiplier(b);
     }
 

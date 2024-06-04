@@ -22,14 +22,10 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
-import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.*;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -45,7 +41,7 @@ public enum WorldScanner implements IWorldScanner {
         if (filter.blocks().isEmpty()) {
             return res;
         }
-        ClientChunkCache chunkProvider = (ClientChunkCache) ctx.world().getChunkSource();
+        ChunkSource chunkProvider = ctx.world().getChunkSource();
 
         int maxSearchRadiusSq = maxSearchRadius * maxSearchRadius;
         int playerChunkX = ctx.playerFeet().getX() >> 4;
@@ -69,7 +65,7 @@ public enum WorldScanner implements IWorldScanner {
                     foundChunks = true;
                     int chunkX = xoff + playerChunkX;
                     int chunkZ = zoff + playerChunkZ;
-                    LevelChunk chunk = chunkProvider.getChunk(chunkX, chunkZ, null, false);
+                    ChunkAccess chunk = chunkProvider.getChunk(chunkX, chunkZ, null, false);
                     if (chunk == null) {
                         continue;
                     }
@@ -95,11 +91,11 @@ public enum WorldScanner implements IWorldScanner {
             return Collections.emptyList();
         }
 
-        ClientChunkCache chunkProvider = (ClientChunkCache) ctx.world().getChunkSource();
-        LevelChunk chunk = chunkProvider.getChunk(pos.x, pos.z, null, false);
+        ChunkSource chunkProvider = ctx.world().getChunkSource();
+        ChunkAccess chunk = chunkProvider.getChunk(pos.x, pos.z, null, false);
         int playerY = ctx.playerFeet().getY();
 
-        if (chunk == null || chunk.isEmpty()) {
+        if (chunk == null) {
             return Collections.emptyList();
         }
 
@@ -143,7 +139,7 @@ public enum WorldScanner implements IWorldScanner {
         return queued;
     }
 
-    private boolean scanChunkInto(int chunkX, int chunkZ, int minY, LevelChunk chunk, BlockOptionalMetaLookup filter, Collection<BlockPos> result, int max, int yLevelThreshold, int playerY, int[] coordinateIterationOrder) {
+    private boolean scanChunkInto(int chunkX, int chunkZ, int minY, ChunkAccess chunk, BlockOptionalMetaLookup filter, Collection<BlockPos> result, int max, int yLevelThreshold, int playerY, int[] coordinateIterationOrder) {
         LevelChunkSection[] chunkInternalStorageArray = chunk.getSections();
         boolean foundWithinY = false;
         for (int y0 : coordinateIterationOrder) {

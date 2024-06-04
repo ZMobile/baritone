@@ -15,11 +15,18 @@
  * along with Baritone.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package baritone.utils.accessor;
+package baritone.api.utils;
 
+import net.minecraft.server.MinecraftServer;
 
-public interface IClientChunkProvider {
-    //ClientChunkCache createThreadSafeCopy();
+public class MinecraftServerUtil {
+    private static MinecraftServer minecraftServer;
 
-    //IChunkArray extractReferenceArray();
+    public static void setMinecraftServer(MinecraftServer server) {
+        minecraftServer = server;
+    }
+
+    public static MinecraftServer getMinecraftServer() {
+        return minecraftServer;
+    }
 }

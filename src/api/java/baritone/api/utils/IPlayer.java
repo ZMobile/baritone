@@ -17,16 +17,15 @@
 
 package baritone.api.utils;
 
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public interface IPlayer {
-    LocalPlayer getPlayer();
-
     boolean isLocalPlayer();
 
     LivingEntity getEntity();
 
     double getBlockReachDistance();
 }
+ 

@@ -26,7 +26,6 @@ import baritone.cache.FasterWorldScanner;
 import baritone.command.CommandSystem;
 import baritone.command.ExampleBaritoneControl;
 import baritone.utils.schematic.SchematicSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -48,8 +47,8 @@ public final class BaritoneProvider implements IBaritoneProvider {
         this.allView = Collections.unmodifiableList(this.all);
 
         // Setup chat control, just for the primary instance
-        final Baritone primary = (Baritone) this.createBaritone(Minecraft.getInstance());
-        primary.registerBehavior(ExampleBaritoneControl::new);
+        //final Baritone primary = (Baritone) this.createBaritone(Minecraft.getInstance());
+        //primary.registerBehavior(ExampleBaritoneControl::new);
     }
 
     @Override
@@ -62,7 +61,7 @@ public final class BaritoneProvider implements IBaritoneProvider {
         return this.allView;
     }
 
-    @Override
+    /*@Override
     public synchronized IBaritone createBaritone(Minecraft minecraft) {
         IBaritone baritone = this.getBaritoneForMinecraft(minecraft);
         if (baritone == null) {
@@ -78,9 +77,9 @@ public final class BaritoneProvider implements IBaritoneProvider {
             this.all.add(baritone = new Baritone(minecraft, livingEntity));
         }
         return baritone;
-    }
+    }*/
 
-    //@Override
+    @Override
     public synchronized IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity) {
         IBaritone baritone = this.getBaritoneForEntity(livingEntity);
         if (baritone == null) {

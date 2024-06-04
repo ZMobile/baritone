@@ -21,7 +21,6 @@ import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.api.utils.Helper;
 import baritone.utils.ToolSet;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
@@ -43,9 +42,9 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.function.Predicate;
 
-public final class InventoryBehavior extends Behavior implements Helper {
+public final class InventoryBehavior {
 
-    int ticksSinceLastInventoryMove;
+    /*int ticksSinceLastInventoryMove;
     int[] lastTickRequestedMove; // not everything asks every tick, so remember the request while coming to a halt
 
     public InventoryBehavior(Baritone baritone) {
@@ -119,7 +118,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
             logDebug("Inventory move requested but delaying until stationary");
             return false;
         }
-        ctx.playerController().windowClick(ctx.baritonePlayer().getPlayer().inventoryMenu.containerId, inInventory < 9 ? inInventory + 36 : inInventory, inHotbar, ClickType.SWAP, ctx.baritonePlayer().getPlayer());
+        //ctx.playerController().windowClick(ctx.baritonePlayer().getPlayer().inventoryMenu.containerId, inInventory < 9 ? inInventory + 36 : inInventory, inHotbar, ClickType.SWAP, ctx.baritonePlayer().getPlayer());
         ticksSinceLastInventoryMove = 0;
         lastTickRequestedMove = null;
         return true;
@@ -234,5 +233,5 @@ public final class InventoryBehavior extends Behavior implements Helper {
         }
 
         return false;
-    }
+    }*/
 }

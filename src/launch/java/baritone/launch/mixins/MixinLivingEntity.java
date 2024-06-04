@@ -20,7 +20,6 @@ package baritone.launch.mixins;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.event.events.RotationMoveEvent;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,12 +38,12 @@ import java.util.Optional;
  * @author Brady
  * @since 9/10/2018
  */
-@Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity extends Entity {
+//@Mixin(LivingEntity.class)
+public abstract class MixinLivingEntity /*extends Entity*/ {
 
     /**
      * Event called to override the movement direction when jumping
-     */
+     *
     @Unique
     private RotationMoveEvent jumpRotationEvent;
 
@@ -120,5 +119,5 @@ public abstract class MixinLivingEntity extends Entity {
         } else {
             return Optional.empty();
         }
-    }
+    }*/
 }

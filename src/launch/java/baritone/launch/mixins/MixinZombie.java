@@ -20,8 +20,7 @@ package baritone.launch.mixins;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.pathing.goals.GoalBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import baritone.api.utils.MinecraftServerUtil;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,7 +44,7 @@ public abstract class MixinZombie extends PathfinderMob {
     //@Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
         //GoalBlock goal = new GoalBlock(0, 60, 200);
-        BaritoneAPI.getProvider().createBaritone(Minecraft.getInstance(), this);
+        BaritoneAPI.getProvider().createBaritone(MinecraftServerUtil.getMinecraftServer(), this);
         //BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
         //this.goalSelector.add(6, new BreakBlockAndChaseGoal(this, this.goalSelector));
         // Debug log to verify goal addition
@@ -54,7 +53,7 @@ public abstract class MixinZombie extends PathfinderMob {
 
     //@Inject(method = "tick", at = @At("HEAD"))
     private void checkZombieState(CallbackInfo info) {
-        LocalPlayer player = Minecraft.getInstance().player;
+        /*LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             Vec3 playerPosition = Minecraft.getInstance().player.position();
             GoalBlock goal = new GoalBlock((int) playerPosition.x, (int) playerPosition.y, (int) playerPosition.z);
@@ -62,7 +61,7 @@ public abstract class MixinZombie extends PathfinderMob {
             if (goalBaritone != null) {
                 goalBaritone.getCustomGoalProcess().setGoalAndPath(goal);
             }
-        }
+        }*/
     }
 
     //@Inject(method = "tick", at = @At("TAIL"))

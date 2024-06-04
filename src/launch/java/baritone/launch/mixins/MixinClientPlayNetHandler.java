@@ -26,11 +26,6 @@ import baritone.api.event.events.ChunkEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.api.utils.Pair;
 import baritone.cache.CachedChunk;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.CommonListenerCookie;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.*;
@@ -48,8 +43,8 @@ import java.util.List;
  * @author Brady
  * @since 8/3/2018
  */
-@Mixin(ClientPacketListener.class)
-public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListenerImpl {
+//@Mixin(ClientPacketListener.class)
+public abstract class MixinClientPlayNetHandler /*extends ClientCommonPacketListenerImpl*/ {
 
     // unused lol
     /*@Inject(
@@ -73,7 +68,7 @@ public abstract class MixinClientPlayNetHandler extends ClientCommonPacketListen
                 );
             }
         }
-    }*/
+    }*
 
     protected MixinClientPlayNetHandler(final Minecraft arg, final Connection arg2, final CommonListenerCookie arg3) {
         super(arg, arg2, arg3);

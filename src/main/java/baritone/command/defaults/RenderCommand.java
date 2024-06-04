@@ -27,9 +27,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class RenderCommand extends Command {
+public class RenderCommand /*extends Command*/ {
 
-    public RenderCommand(IBaritone baritone) {
+    /*public RenderCommand(IBaritone baritone) {
         super(baritone, "render");
     }
 
@@ -67,5 +67,5 @@ public class RenderCommand extends Command {
                 "Usage:",
                 "> render"
         );
-    }
+    }*/
 }

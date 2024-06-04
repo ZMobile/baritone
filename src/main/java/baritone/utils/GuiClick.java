@@ -24,10 +24,6 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Helper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -47,9 +43,9 @@ import java.util.Collections;
 
 import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 
-public class GuiClick extends Screen implements Helper {
+public class GuiClick /*extends Screen implements Helper*/ {
 
-    private Matrix4f projectionViewMatrix;
+    /*private Matrix4f projectionViewMatrix;
 
     private BlockPos clickStart;
     private BlockPos currentMouseOver;
@@ -157,5 +153,5 @@ public class GuiClick extends Screen implements Helper {
 
         pos.mul(1/pos.w());
         return new Vec3(pos.x(), pos.y(), pos.z());
-    }
+    }*/
 }

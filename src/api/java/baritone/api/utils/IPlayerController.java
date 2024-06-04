@@ -18,7 +18,6 @@
 package baritone.api.utils;
 
 import baritone.api.BaritoneAPI;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -35,7 +34,7 @@ import net.minecraft.world.phys.BlockHitResult;
  */
 public interface IPlayerController {
 
-    void syncHeldItem();
+    /*void syncHeldItem();
 
     boolean hasBrokenBlock();
 
@@ -57,5 +56,5 @@ public interface IPlayerController {
 
     default double getBlockReachDistance() {
         return this.getGameType().isCreative() ? 5.0F : BaritoneAPI.getSettings().blockReachDistance.value;
-    }
+    }*/
 }

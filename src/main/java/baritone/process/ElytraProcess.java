@@ -65,8 +65,8 @@ import java.util.*;
 
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
-public class ElytraProcess extends BaritoneProcessHelper implements IBaritoneProcess, IElytraProcess, AbstractGameEventListener {
-    public State state;
+public class ElytraProcess /*extends BaritoneProcessHelper implements IBaritoneProcess, IElytraProcess, AbstractGameEventListener*/ {
+    /*public State state;
     private boolean goingToLandingSpot;
     private BetterBlockPos landingSpot;
     private boolean reachedGoal; // this basically just prevents potential notification spam
@@ -364,13 +364,13 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
     }
 
     private boolean shouldLandForSafety() {
-        ItemStack chest = ctx.baritonePlayer().getPlayer().getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack chest = new ItemStack(Items.AIR); //ctx.baritonePlayer().getPlayer().getItemBySlot(EquipmentSlot.CHEST);
         if (chest.getItem() != Items.ELYTRA || chest.getItem().getMaxDamage() - chest.getDamageValue() < Baritone.settings().elytraMinimumDurability.value) {
             // elytrabehavior replaces when durability <= minimumDurability, so if durability < minimumDurability then we can reasonably assume that the elytra will soon be broken without replacement
             return true;
         }
 
-        NonNullList<ItemStack> inv = ctx.baritonePlayer().getPlayer().getInventory().items;
+        /*NonNullList<ItemStack> inv = new NonNullList<>();//ctx.baritonePlayer().getPlayer().getInventory().items;
         int qty = 0;
         for (int i = 0; i < 36; i++) {
             if (ElytraBehavior.isFireworks(inv.get(i))) {
@@ -379,7 +379,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
         }
         if (qty <= Baritone.settings().elytraMinFireworksBeforeLanding.value) {
             return true;
-        }
+        }*
         return false;
     }
 
@@ -444,7 +444,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
     /**
      * Custom calculation context which makes the player fall into lava
-     */
+
     public static final class WalkOffCalculationContext extends CalculationContext {
 
         public WalkOffCalculationContext(IBaritone baritone) {
@@ -570,5 +570,5 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
             }
         }
         return null;
-    }
+    }*/
 }

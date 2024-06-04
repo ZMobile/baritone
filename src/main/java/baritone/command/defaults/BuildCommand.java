@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class BuildCommand extends Command {
+public class BuildCommand /*extends Command*/ {
 
-    private final File schematicsDir;
+    /*private final File schematicsDir;
 
     public BuildCommand(IBaritone baritone) {
         super(baritone, "build");
@@ -93,5 +93,5 @@ public class BuildCommand extends Command {
                 "> build <filename> - Loads and builds '<filename>.schematic'",
                 "> build <filename> <x> <y> <z> - Custom position"
         );
-    }
+    }*/
 }

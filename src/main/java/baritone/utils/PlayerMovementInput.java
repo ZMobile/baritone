@@ -19,9 +19,9 @@ package baritone.utils;
 
 import baritone.api.utils.input.Input;
 
-public class PlayerMovementInput extends net.minecraft.client.player.Input {
+public class PlayerMovementInput /*extends net.minecraft.client.player.Input*/ {
 
-    private final InputOverrideHandler handler;
+    /*private final InputOverrideHandler handler;
 
     PlayerMovementInput(InputOverrideHandler handler) {
         this.handler = handler;
@@ -54,5 +54,5 @@ public class PlayerMovementInput extends net.minecraft.client.player.Input {
             this.leftImpulse *= 0.3D;
             this.forwardImpulse *= 0.3D;
         }
-    }
+    }*/
 }

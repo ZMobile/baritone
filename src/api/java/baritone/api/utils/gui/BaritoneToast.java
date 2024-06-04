@@ -19,15 +19,11 @@ package baritone.api.utils.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-public class BaritoneToast implements Toast {
-    private String title;
+public class BaritoneToast /*implements Toast*/ {
+    /*private String title;
     private String subtitle;
     private long firstDrawTime;
     private boolean newDisplay;
@@ -77,5 +73,5 @@ public class BaritoneToast implements Toast {
 
     public static void addOrUpdate(Component title, Component subtitle) {
         addOrUpdate(Minecraft.getInstance().getToasts(), title, subtitle, baritone.api.BaritoneAPI.getSettings().toastTimer.value);
-    }
+    }*/
 }

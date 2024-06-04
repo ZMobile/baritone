@@ -21,10 +21,6 @@ import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.event.events.RenderEvent;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,10 +32,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  * @author Brady
  * @since 2/13/2020
  */
-@Mixin(LevelRenderer.class)
+//@Mixin(LevelRenderer.class)
 public class MixinWorldRenderer {
 
-    @Inject(
+    /*@Inject(
             method = "renderLevel",
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILSOFT
@@ -48,5 +44,5 @@ public class MixinWorldRenderer {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             ibaritone.getGameEventHandler().onRenderPass(new RenderEvent(partialTicks, matrixStackIn, projectionIn));
         }
-    }
+    }*/
 }

@@ -30,7 +30,6 @@ import baritone.api.command.helpers.Paginator;
 import baritone.api.command.helpers.TabCompleteHelper;
 import baritone.api.utils.SettingsUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
@@ -45,9 +44,9 @@ import java.util.stream.Stream;
 import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 import static baritone.api.utils.SettingsUtil.*;
 
-public class SetCommand extends Command {
+public class SetCommand /*extends Command*/ {
 
-    public SetCommand(IBaritone baritone) {
+    /*public SetCommand(IBaritone baritone) {
         super(baritone, "set", "setting", "settings");
     }
 
@@ -276,5 +275,5 @@ public class SetCommand extends Command {
                 "> set load - Load settings from settings.txt",
                 "> set load [filename] - Load settings from another file in your minecraft/baritone"
         );
-    }
+    }*/
 }

@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-@Mixin(targets = "net.minecraft.client.multiplayer.ClientChunkCache$Storage")
+//@Mixin(targets = "//net.minecraft.client.multiplayer.ClientChunkCache$Storage")
 public abstract class MixinChunkArray implements IChunkArray {
-    @Final
+    /*@Final
     @Shadow
     AtomicReferenceArray<LevelChunk> chunks;
     @Final
@@ -93,5 +93,5 @@ public abstract class MixinChunkArray implements IChunkArray {
                 }
             }
         }
-    }
+    }*/
 }

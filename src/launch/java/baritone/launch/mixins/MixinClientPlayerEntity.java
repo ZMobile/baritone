@@ -23,8 +23,6 @@ import baritone.api.event.events.PlayerUpdateEvent;
 import baritone.api.event.events.SprintStateEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.behavior.LookBehavior;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Abilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,10 +34,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author Brady
  * @since 8/1/2018
  */
-@Mixin(LocalPlayer.class)
+//@Mixin(LocalPlayer.class)
 public class MixinClientPlayerEntity {
 
-    @Inject(
+    /*@Inject(
             method = "tick",
             at = @At(
                     value = "INVOKE",
@@ -119,5 +117,5 @@ public class MixinClientPlayerEntity {
             return false;
         }
         return instance.tryToStartFallFlying();
-    }
+    }*/
 }

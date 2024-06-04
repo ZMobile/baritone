@@ -21,11 +21,9 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.command.ICommand;
 import baritone.api.command.ICommandSystem;
 import baritone.api.schematic.ISchematicSystem;
-import baritone.api.utils.IPlayer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Objects;
@@ -61,14 +59,14 @@ public interface IBaritoneProvider {
      * @param player The player
      * @return The {@link IBaritone} instance.
      */
-    default IBaritone getBaritoneForPlayer(LocalPlayer player) {
+    /*default IBaritone getBaritoneForPlayer(Player player) {
         for (IBaritone baritone : this.getAllBaritones()) {
             if (Objects.equals(player, baritone.getPlayerContext().baritonePlayer().getPlayer())) {
                 return baritone;
             }
         }
         return null;
-    }
+    }*/
 
     /**
      * Provides the {@link IBaritone} instance for a given {@link LivingEntity}.
@@ -92,14 +90,14 @@ public interface IBaritoneProvider {
      * @param minecraft The minecraft
      * @return The {@link IBaritone} instance.
      */
-    default IBaritone getBaritoneForMinecraft(Minecraft minecraft) {
+    /*default IBaritone getBaritoneForMinecraft(Minecraft minecraft) {
         for (IBaritone baritone : this.getAllBaritones()) {
             if (Objects.equals(minecraft, baritone.getPlayerContext().minecraft())) {
                 return baritone;
             }
         }
         return null;
-    }
+    }*/
 
     /**
      * Provides the {@link IBaritone} instance for the player with the specified connection.
@@ -107,7 +105,7 @@ public interface IBaritoneProvider {
      * @param connection The connection
      * @return The {@link IBaritone} instance.
      */
-    default IBaritone getBaritoneForConnection(ClientPacketListener connection) {
+    /*default IBaritone getBaritoneForConnection(ClientPacketListener connection) {
         for (IBaritone baritone : this.getAllBaritones()) {
             final IPlayer player = baritone.getPlayerContext().baritonePlayer();
             if (player.getPlayer() != null && player.isLocalPlayer()) {
@@ -117,7 +115,7 @@ public interface IBaritoneProvider {
             }
         }
         return null;
-    }
+    }*/
 
     /**
      * Creates and registers a new {@link IBaritone} instance using the specified {@link Minecraft}. The existing
@@ -126,7 +124,7 @@ public interface IBaritoneProvider {
      * @param minecraft The minecraft
      * @return The {@link IBaritone} instance
      */
-    IBaritone createBaritone(Minecraft minecraft);
+    //IBaritone createBaritone(Minecraft minecraft);
 
     /**
      * Creates and registers a new {@link IBaritone} instance using the specified {@link LivingEntity}. The existing
@@ -137,7 +135,9 @@ public interface IBaritoneProvider {
      */
 
 
-    IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
+    // IBaritone createBaritone(Minecraft minecraft, LivingEntity livingEntity);
+
+    IBaritone createBaritone(MinecraftServer minecraftServer, LivingEntity livingEntity);
 
     /**
      * Destroys and removes the specified {@link IBaritone} instance. If the specified instance is the

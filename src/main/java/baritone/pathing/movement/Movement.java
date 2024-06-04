@@ -122,9 +122,6 @@ public abstract class Movement implements IMovement, MovementHelper {
      */
     @Override
     public MovementStatus update() {
-        if (ctx.baritonePlayer().isLocalPlayer()) {
-            ctx.baritonePlayer().getPlayer().getAbilities().flying = false;
-        }
         currentState = updateState(currentState);
         if (MovementHelper.isLiquid(ctx, ctx.playerFeet()) && ctx.baritonePlayer().getEntity().position().y < dest.y + 0.6) {
             currentState.setInput(Input.JUMP, true);

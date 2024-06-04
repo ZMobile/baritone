@@ -20,8 +20,6 @@ package baritone.utils.player;
 import baritone.Baritone;
 import baritone.api.cache.IWorldData;
 import baritone.api.utils.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,42 +42,17 @@ import java.util.List;
  */
 public final class BaritonePlayerContext implements IPlayerContext {
     private final Baritone baritone;
-    private final Minecraft mc;
     private final MinecraftServer mcs;
     private final IPlayerController playerController;
     private final IPlayer baritonePlayer;
 
-    public BaritonePlayerContext(Baritone baritone, Minecraft mc) {
-        this.baritone = baritone;
-        this.mc = mc;
-        //this.mc = null;
-        this.mcs = null;
-        this.playerController = new BaritonePlayerController(mc);
-        this.baritonePlayer = new BaritonePlayer(mc);
-    }
-
-    public BaritonePlayerContext(Baritone baritone, Minecraft mc, LivingEntity livingEntity) {
-        this.baritone = baritone;
-        this.mc = mc;
-        this.mcs = null;
-        //this.playerController = new BaritonePlayerController(mc);
-        this.playerController = null;
-        this.baritonePlayer = new BaritonePlayer(livingEntity);
-    }
-
     public BaritonePlayerContext(Baritone baritone, MinecraftServer minecraftServer, LivingEntity livingEntity) {
         this.baritone = baritone;
-        this.mc = null;
+        //this.mc = null;
         this.mcs = minecraftServer;
         //this.playerController = new BaritonePlayerController(mc);
         this.playerController = null;
         this.baritonePlayer = new BaritonePlayer(livingEntity);
-    }
-
-
-    @Override
-    public Minecraft minecraft() {
-        return this.mc;
     }
 
     @Override
@@ -93,26 +66,23 @@ public final class BaritonePlayerContext implements IPlayerContext {
     }
 
     //For backwards compatibility
-    @Override
+    /*@Override
     public LocalPlayer player() {
        return baritonePlayer.getPlayer();
-    }
+    }*/
 
     @Override
     public LivingEntity entity() {
         return this.baritonePlayer.getEntity();
     }
 
-    @Override
+    /*@Override
     public IPlayerController playerController() {
         return this.playerController;
-    }
+    }*/
 
     @Override
     public Level world() {
-        if (this.mc != null) {
-            return this.mc.level;
-        }
         return this.entity().level();
     }
 
@@ -123,7 +93,7 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public BetterBlockPos viewerPos() {
-        final Entity entity = this.mc.getCameraEntity();
+        final Entity entity = entity();
         return entity == null ? this.playerFeet() : BetterBlockPos.from(entity.blockPosition());
     }
 

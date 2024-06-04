@@ -18,10 +18,6 @@
 package baritone.api.event.listener;
 
 import baritone.api.event.events.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.DeathScreen;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -96,7 +92,7 @@ public interface IGameEventListener {
      * Runs before and after whenever a new world is loaded
      *
      * @param event The event
-     * @see Minecraft#setLevel(ClientLevel)
+     * @see Minecraft#setLevel(Level)
      */
     void onWorldEvent(WorldEvent event);
 

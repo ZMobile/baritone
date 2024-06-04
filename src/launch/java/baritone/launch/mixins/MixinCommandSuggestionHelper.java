@@ -23,8 +23,6 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import net.minecraft.client.gui.components.CommandSuggestions;
-import net.minecraft.client.gui.components.EditBox;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,10 +39,10 @@ import java.util.stream.Stream;
  * @author Brady
  * @since 10/9/2019
  */
-@Mixin(CommandSuggestions.class)
+//@Mixin(CommandSuggestions.class)
 public class MixinCommandSuggestionHelper {
 
-    @Shadow
+    /*@Shadow
     @Final
     EditBox input;
 
@@ -111,5 +109,5 @@ public class MixinCommandSuggestionHelper {
             }
             ((CommandSuggestions) (Object) this).showSuggestions(true); // actually populate the suggestions list from the suggestions future
         }
-    }
+    }*/
 }

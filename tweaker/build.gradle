@@ -17,7 +17,6 @@
 
 import baritone.gradle.task.CreateDistTask
 import baritone.gradle.task.ProguardTask
-//import baritone.gradle.task.TweakerJsonAssembler
 
 plugins {
     id "com.github.johnrengelman.shadow" version "8.0.0"

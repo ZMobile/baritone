@@ -26,7 +26,6 @@ import baritone.pathing.precompute.PrecomputedData;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.ToolSet;
 import baritone.utils.pathing.BetterWorldBorder;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -100,11 +99,11 @@ public class CalculationContext {
         int depth;
         if (player.isLocalPlayer()) {
             this.toolSet = new ToolSet(player);
-            this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
-            this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) && world.dimension() != Level.NETHER;
-            this.canSprint = Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
-            this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
-            depth = EnchantmentHelper.getDepthStrider(player.getPlayer());
+            this.hasThrowaway = false;//Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
+            this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value /*Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER))*/ && world.dimension() != Level.NETHER;
+            this.canSprint = false;//Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
+            this.frostWalker = 0;//EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
+            depth = 0;//EnchantmentHelper.getDepthStrider(player.getPlayer());
             if (depth > 3) {
                 depth = 3;
             }

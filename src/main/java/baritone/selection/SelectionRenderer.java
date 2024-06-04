@@ -20,7 +20,7 @@ public class SelectionRenderer implements IRenderer, AbstractGameEventListener {
     }
 
     public static void renderSelections(PoseStack stack, ISelection[] selections) {
-        float opacity = settings.selectionOpacity.value;
+        /*float opacity = settings.selectionOpacity.value;
         boolean ignoreDepth = settings.renderSelectionIgnoreDepth.value;
         float lineWidth = settings.selectionLineWidth.value;
 
@@ -48,7 +48,7 @@ public class SelectionRenderer implements IRenderer, AbstractGameEventListener {
             }
         }
 
-        IRenderer.endLines(ignoreDepth);
+        IRenderer.endLines(ignoreDepth);*/
     }
 
     @Override

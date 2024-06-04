@@ -36,7 +36,6 @@ import baritone.utils.GuiClick;
 import baritone.utils.InputOverrideHandler;
 import baritone.utils.PathingControlManager;
 import baritone.utils.player.BaritonePlayerContext;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -63,7 +62,7 @@ public class Baritone implements IBaritone {
         threadPool = new ThreadPoolExecutor(4, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
     }
 
-    private final Minecraft mc;
+    //private final Minecraft mc;
     private final Path directory;
 
     private final GameEventHandler gameEventHandler;
@@ -92,7 +91,7 @@ public class Baritone implements IBaritone {
 
     public BlockStateInterface bsi;
 
-    Baritone(Minecraft mc) {
+    /*Baritone(Minecraft mc) {
         this.mc = mc;
         this.gameEventHandler = new GameEventHandler(this);
 
@@ -173,10 +172,10 @@ public class Baritone implements IBaritone {
         this.worldProvider = new WorldProvider(this);
         this.selectionManager = new SelectionManager(this);
         this.commandManager = new CommandManager(this);
-    }
+    }*/
 
     Baritone(MinecraftServer minecraftServer, LivingEntity entity) {
-        this.mc = null;
+        //this.mc = null;
         this.gameEventHandler = new GameEventHandler(this);
 
         this.directory = minecraftServer.getServerDirectory().toPath().resolve("baritone");
@@ -287,11 +286,6 @@ public class Baritone implements IBaritone {
         return this.mineProcess;
     }
 
-    @Override
-    public FarmProcess getFarmProcess() {
-        return this.farmProcess;
-    }
-
     public InventoryPauserProcess getInventoryPauserProcess() {
         return this.inventoryPauserProcess;
     }
@@ -331,7 +325,7 @@ public class Baritone implements IBaritone {
         new Thread(() -> {
             try {
                 Thread.sleep(100);
-                mc.execute(() -> mc.setScreen(new GuiClick()));
+                //mc.execute(() -> mc.setScreen(new GuiClick()));
             } catch (Exception ignored) {}
         }).start();
     }

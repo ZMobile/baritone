@@ -19,11 +19,11 @@ package baritone.api.utils;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -265,13 +265,13 @@ public final class RotationUtils {
     }
 
     @Deprecated
-    public static Optional<Rotation> reachable(LocalPlayer entity, BlockPos pos, double blockReachDistance) {
+    public static Optional<Rotation> reachable(LivingEntity entity, BlockPos pos, double blockReachDistance) {
         return reachable(entity, pos, blockReachDistance, false);
     }
 
     @Deprecated
-    public static Optional<Rotation> reachable(LocalPlayer entity, BlockPos pos, double blockReachDistance, boolean wouldSneak) {
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer(entity);
+    public static Optional<Rotation> reachable(LivingEntity entity, BlockPos pos, double blockReachDistance, boolean wouldSneak) {
+        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForEntity(entity);
         IPlayerContext ctx = baritone.getPlayerContext();
         return reachable(ctx, pos, blockReachDistance, wouldSneak);
     }

@@ -27,15 +27,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.net.URI;
-import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Screen.class)
+//@Mixin(Screen.class)
 public abstract class MixinScreen implements IGuiScreen {
 
-    @Override
+    /*@Override
     @Invoker("openLink")
     public abstract void openLinkInvoker(URI url);
 
@@ -55,5 +54,5 @@ public abstract class MixinScreen implements IGuiScreen {
         baritone.getGameEventHandler().onSendChatMessage(new ChatEvent(clickEvent.getValue()));
         cir.setReturnValue(true);
         cir.cancel();
-    }
+    }*/
 }

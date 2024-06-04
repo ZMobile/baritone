@@ -23,7 +23,6 @@ import baritone.api.event.events.TickEvent;
 import baritone.api.utils.IInputOverrideHandler;
 import baritone.api.utils.input.Input;
 import baritone.behavior.Behavior;
-import net.minecraft.client.player.KeyboardInput;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,12 +43,12 @@ public final class InputOverrideHandler extends Behavior implements IInputOverri
     private final Map<Input, Boolean> inputForceStateMap = new HashMap<>();
 
     private final BlockBreakHelper blockBreakHelper;
-    private final BlockPlaceHelper blockPlaceHelper;
+    //private final BlockPlaceHelper blockPlaceHelper;
 
     public InputOverrideHandler(Baritone baritone) {
         super(baritone);
         this.blockBreakHelper = new BlockBreakHelper(baritone.getPlayerContext());
-        this.blockPlaceHelper = new BlockPlaceHelper(baritone.getPlayerContext());
+        //this.blockPlaceHelper = new BlockPlaceHelper(baritone.getPlayerContext());
     }
 
     /**

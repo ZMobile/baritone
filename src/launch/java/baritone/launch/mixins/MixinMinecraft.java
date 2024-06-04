@@ -23,10 +23,7 @@ import baritone.api.event.events.PlayerUpdateEvent;
 import baritone.api.event.events.TickEvent;
 import baritone.api.event.events.WorldEvent;
 import baritone.api.event.events.type.EventState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.level.Level;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,13 +40,13 @@ import java.util.function.BiFunction;
  * @author Brady
  * @since 7/31/2018
  */
-@Mixin(Minecraft.class)
+//@Mixin(Minecraft.class)
 public class MixinMinecraft {
 
-    @Shadow
+    /*@Shadow
     public LocalPlayer player;
     @Shadow
-    public ClientLevel level;
+    public Level level;
 
     @Unique
     private BiFunction<EventState, TickEvent.Type, TickEvent> tickProvider;
@@ -113,7 +110,7 @@ public class MixinMinecraft {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "net/minecraft/client/multiplayer/ClientLevel.tickEntities()V",
+                    target = "net/minecraft/client/multiplayer/Level.tickEntities()V",
                     shift = At.Shift.AFTER
             )
     )
@@ -130,7 +127,7 @@ public class MixinMinecraft {
             method = "setLevel",
             at = @At("HEAD")
     )
-    private void preLoadWorld(ClientLevel world, CallbackInfo ci) {
+    private void preLoadWorld(Level world, CallbackInfo ci) {
         // If we're unloading the world but one doesn't exist, ignore it
         if (this.level == null && world == null) {
             return;
@@ -150,7 +147,7 @@ public class MixinMinecraft {
             method = "setLevel",
             at = @At("RETURN")
     )
-    private void postLoadWorld(ClientLevel world, CallbackInfo ci) {
+    private void postLoadWorld(Level world, CallbackInfo ci) {
         // still fire event for both null, as that means we've just finished exiting a world
 
         // mc.world changing is only the primary baritone
@@ -162,7 +159,7 @@ public class MixinMinecraft {
         );
     }
 
-    @Redirect(
+    /*@Redirect(
             method = "tick",
             at = @At(
                     value = "FIELD",
@@ -180,13 +177,13 @@ public class MixinMinecraft {
                     )
             )
     )
-    private Screen passEvents(Minecraft instance) {
+    /*private Screen passEvents(Minecraft instance) {
         // allow user input is only the primary baritone
         if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && player != null) {
             return null;
         }
         return instance.screen;
-    }
+    }*/
 
     // TODO
     // FIXME

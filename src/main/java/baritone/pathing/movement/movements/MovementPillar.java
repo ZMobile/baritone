@@ -222,9 +222,9 @@ public class MovementPillar extends Movement {
             return state;
         } else {
             // Get ready to place a throwaway block
-            if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, src.x, src.y, src.z)) {
-                return state.setStatus(MovementStatus.UNREACHABLE);
-            }
+            //if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, src.x, src.y, src.z)) {
+                //return state.setStatus(MovementStatus.UNREACHABLE);
+            //}
 
 
             state.setInput(Input.SNEAK, ctx.baritonePlayer().getEntity().position().y > dest.getY() || ctx.baritonePlayer().getEntity().position().y < src.getY() + 0.2D); // delay placement by 1 tick for ncp compatibility

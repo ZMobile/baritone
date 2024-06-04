@@ -25,15 +25,13 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import net.minecraft.client.multiplayer.ClientChunkCache;
-import net.minecraft.client.multiplayer.ClientLevel;
 
-@Mixin(ClientChunkCache.class)
-public class MixinClientChunkProvider implements IClientChunkProvider {
+//@Mixin(ClientChunkCache.class)
+public class MixinClientChunkProvider /*implements IClientChunkProvider*/ {
 
-    @Final
+    /*@Final
     @Shadow
-    ClientLevel level;
+    Level level;
 
     @Override
     public ClientChunkCache createThreadSafeCopy() {
@@ -59,5 +57,5 @@ public class MixinClientChunkProvider implements IClientChunkProvider {
             }
         }
         throw new RuntimeException(Arrays.toString(ClientChunkCache.class.getDeclaredFields()));
-    }
+    }*/
 }

@@ -18,7 +18,6 @@
 package baritone.api.event.events;
 
 import baritone.api.event.events.type.EventState;
-import net.minecraft.client.Minecraft;
 
 import java.util.function.BiFunction;
 

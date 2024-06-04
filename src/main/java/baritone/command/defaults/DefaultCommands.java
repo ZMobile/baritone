@@ -31,7 +31,7 @@ public final class DefaultCommands {
         Objects.requireNonNull(baritone);
         List<ICommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand(baritone),
-                new SetCommand(baritone),
+                //new SetCommand(baritone),
                 new CommandAlias(baritone, Arrays.asList("modified", "mod", "baritone", "modifiedsettings"), "List modified settings", "set modified"),
                 new CommandAlias(baritone, "reset", "Reset all settings or just one", "set reset"),
                 new GoalCommand(baritone),
@@ -41,7 +41,7 @@ public final class DefaultCommands {
                 new ETACommand(baritone),
                 new VersionCommand(baritone),
                 new RepackCommand(baritone),
-                new BuildCommand(baritone),
+                //new BuildCommand(baritone),
                 //new SchematicaCommand(baritone),
                 new LitematicaCommand(baritone),
                 new ComeCommand(baritone),
@@ -50,7 +50,7 @@ public final class DefaultCommands {
                 new GcCommand(baritone),
                 new InvertCommand(baritone),
                 new TunnelCommand(baritone),
-                new RenderCommand(baritone),
+                //new RenderCommand(baritone),
                 new FarmCommand(baritone),
                 new FollowCommand(baritone),
                 new ExploreFilterCommand(baritone),
@@ -66,8 +66,8 @@ public final class DefaultCommands {
                 new WaypointsCommand(baritone),
                 new CommandAlias(baritone, "sethome", "Sets your home waypoint", "waypoints save home"),
                 new CommandAlias(baritone, "home", "Path to your home waypoint", "waypoints goto home"),
-                new SelCommand(baritone),
-                new ElytraCommand(baritone)
+                new SelCommand(baritone)
+                //new ElytraCommand(baritone)
         ));
         ExecutionControlCommands prc = new ExecutionControlCommands(baritone);
         commands.add(prc.pauseCommand);

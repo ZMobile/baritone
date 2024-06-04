@@ -23,9 +23,6 @@ import baritone.utils.accessor.IEntityRenderManager;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
@@ -35,7 +32,7 @@ import java.awt.*;
 
 public interface IRenderer {
 
-    Tesselator tessellator = Tesselator.getInstance();
+    /*Tesselator tessellator = Tesselator.getInstance();
     BufferBuilder buffer = tessellator.getBuilder();
     IEntityRenderManager renderManager = (IEntityRenderManager) Minecraft.getInstance().getEntityRenderDispatcher();
     TextureManager textureManager = Minecraft.getInstance().getTextureManager();
@@ -151,6 +148,5 @@ public interface IRenderer {
         double vpY = renderManager.renderPosY();
         double vpZ = renderManager.renderPosZ();
         emitLine(stack, start.x - vpX, start.y - vpY, start.z - vpZ, end.x - vpX, end.y - vpY, end.z - vpZ);
-    }
-
+    }*/
 }

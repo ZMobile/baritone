@@ -124,51 +124,22 @@ public class WorldProvider implements IWorldProvider {
         Path worldDir;
         Path readmeDir;
 
-        // If there is an integrated server running (Aka Singleplayer) then do magic to find the world save file
-        if (ctx.minecraft() == null) {
-            worldDir = ctx.server().getWorldPath(LevelResource.ROOT);
+        // Otherwise, the server must be remote...
 
-            // Gets the "depth" of this directory relative to the game's run directory, 2 is the location of the world
-            if (worldDir.relativize(ctx.server().getServerDirectory().toPath()).getNameCount() != 2) {
-                // subdirectory of the main save directory for this world
-                worldDir = worldDir.getParent();
-            }
-
-            worldDir = worldDir.resolve("baritone");
-            readmeDir = worldDir;
-        } else if (ctx.minecraft() != null && ctx.minecraft().hasSingleplayerServer()) {
-            worldDir = ctx.minecraft().getSingleplayerServer().getWorldPath(LevelResource.ROOT);
-
-            // Gets the "depth" of this directory relative to the game's run directory, 2 is the location of the world
-            if (worldDir.relativize(ctx.minecraft().gameDirectory.toPath()).getNameCount() != 2) {
-                // subdirectory of the main save directory for this world
-                worldDir = worldDir.getParent();
-            }
-
-            worldDir = worldDir.resolve("baritone");
-            readmeDir = worldDir;
-        } else { // Otherwise, the server must be remote...
-            String folderName;
-            final ServerData serverData = ctx.minecraft().getCurrentServer();
-            if (serverData != null) {
-                folderName = serverData.isRealm() ? "realms" : serverData.ip;
-            } else {
                 //replaymod causes null currentServer and false singleplayer.
                 System.out.println("World seems to be a replay. Not loading Baritone cache.");
-                currentWorld = null;
-                mcWorld = ctx.world();
-                return Optional.empty();
-            }
-            if (SystemUtils.IS_OS_WINDOWS) {
+            currentWorld = null;
+            mcWorld = ctx.world();
+            return Optional.empty();
+            /*if (SystemUtils.IS_OS_WINDOWS) {
                 folderName = folderName.replace(":", "_");
             }
             // TODO: This should probably be in "baritone/servers"
             worldDir = baritone.getDirectory().resolve(folderName);
             // Just write the readme to the baritone directory instead of each server save in it
-            readmeDir = baritone.getDirectory();
-        }
+            readmeDir = baritone.getDirectory();*
 
-        return Optional.of(new Tuple<>(worldDir, readmeDir));
+        return Optional.of(new Tuple<>(worldDir, readmeDir));*/
     }
 
     /**
@@ -184,7 +155,7 @@ public class WorldProvider implements IWorldProvider {
                 System.out.println("mc.world loaded unnoticed! Loading Baritone cache now.");
                 initWorld(ctx.world());
             }
-        } else if (this.currentWorld == null && ctx.world() != null && (ctx.minecraft().hasSingleplayerServer() || ctx.minecraft().getCurrentServer() != null)) {
+        } else if (this.currentWorld == null && ctx.world() != null) {
             System.out.println("Retrying to load Baritone cache");
             initWorld(ctx.world());
         }

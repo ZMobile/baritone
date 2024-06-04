@@ -57,6 +57,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.AirBlock;
@@ -394,7 +395,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     private OptionalInt hasAnyItemThatWouldPlace(BlockState desired, HitResult result, Rotation rot) {
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
+            ItemStack stack = new ItemStack(Items.AIR);//ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
             if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
                 continue;
             }
@@ -403,25 +404,18 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // the state depends on the facing of the player sometimes
             ctx.baritonePlayer().getEntity().setYRot(rot.getYaw());
             ctx.baritonePlayer().getEntity().setXRot(rot.getPitch());
-            BlockPlaceContext meme = new BlockPlaceContext(new UseOnContext(
+            /*BlockPlaceContext meme = new BlockPlaceContext(new UseOnContext(
                     ctx.world(),
-                    ctx.baritonePlayer().getPlayer(),
+                    ctx.baritonePlayer().getEntity(),
                     InteractionHand.MAIN_HAND,
                     stack,
                     (BlockHitResult) result
-            ) {}); // that {} gives us access to a protected constructor lmfao
-            BlockState wouldBePlaced = ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(meme);
+            ) {}); // that {} gives us access to a protected constructor lmfao*/
+            //BlockState wouldBePlaced = ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(meme);
             ctx.baritonePlayer().getEntity().setYRot(originalYaw);
             ctx.baritonePlayer().getEntity().setXRot(originalPitch);
-            if (wouldBePlaced == null) {
+            //if (wouldBePlaced == null) {
                 continue;
-            }
-            if (!meme.canPlace()) {
-                continue;
-            }
-            if (valid(wouldBePlaced, desired, true)) {
-                return OptionalInt.of(i);
-            }
         }
         return OptionalInt.empty();
     }
@@ -568,7 +562,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         if (toPlace.isPresent() && isSafeToCancel && ctx.baritonePlayer().getEntity().onGround() && ticks <= 0) {
             Rotation rot = toPlace.get().rot;
             baritone.getLookBehavior().updateTarget(rot, true);
-            ctx.baritonePlayer().getPlayer().getInventory().selected = toPlace.get().hotbarSelection;
+            //ctx.baritonePlayer().getPlayer().getInventory().selected = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
             if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ((BlockHitResult) ctx.objectMouseOver()).getDirection().equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
@@ -594,10 +588,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             for (int i = 9; i < 36; i++) {
                 for (BlockState desired : noValidHotbarOption) {
                     if (valid(approxPlaceable.get(i), desired, true)) {
-                        if (!baritone.getInventoryBehavior().attemptToPutOnHotbar(i, usefulSlots::contains)) {
+                        /*if (!baritone.getInventoryBehavior().attemptToPutOnHotbar(i, usefulSlots::contains)) {
                             // awaiting inventory move, so pause
                             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
-                        }
+                        }*/
                         break outer;
                     }
                 }
@@ -998,24 +992,14 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     private List<BlockState> approxPlaceable(int size) {
         List<BlockState> result = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
+            ItemStack stack = new ItemStack(Items.AIR);//ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
             if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
                 result.add(Blocks.AIR.defaultBlockState());
                 continue;
             }
             // <toxic cloud>
-            BlockState itemState = ((BlockItem) stack.getItem())
-                .getBlock()
-                .getStateForPlacement(
-                    new BlockPlaceContext(
-                        new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}
-                    )
-                );
-            if (itemState != null) {
-                result.add(itemState);
-            } else {
+
                 result.add(Blocks.AIR.defaultBlockState());
-            }
             // </toxic cloud>
         }
         return result;

@@ -30,11 +30,11 @@ import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.MovementHelper;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.BlockStateInterface;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -74,9 +74,10 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (desiredQuantity > 0) {
-            int curr = ctx.baritonePlayer().getPlayer().getInventory().items.stream()
+            int curr = /*ctx.baritonePlayer().getPlayer().getInventory().items.stream()
                     .filter(stack -> filter.has(stack))
-                    .mapToInt(ItemStack::getCount).sum();
+                    .mapToInt(ItemStack::getCount).sum();*/
+                    0;
             System.out.println("Currently have " + curr + " valid items");
             if (curr >= desiredQuantity) {
                 logDirect("Have " + curr + " valid items");
@@ -345,14 +346,14 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
             return Collections.emptyList();
         }
         List<BlockPos> ret = new ArrayList<>();
-        for (Entity entity : ((ClientLevel) ctx.world()).entitiesForRendering()) {
+        /*for (Entity entity : ((Level) ctx.world())) {
             if (entity instanceof ItemEntity) {
                 ItemEntity ei = (ItemEntity) entity;
                 if (filter.has(ei.getItem())) {
                     ret.add(entity.blockPosition());
                 }
             }
-        }
+        }*/
         ret.addAll(anticipatedDrops.keySet());
         return ret;
     }

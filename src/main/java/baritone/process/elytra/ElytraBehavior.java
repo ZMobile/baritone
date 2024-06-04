@@ -64,8 +64,8 @@ import java.util.function.UnaryOperator;
 import static baritone.utils.BaritoneMath.fastCeil;
 import static baritone.utils.BaritoneMath.fastFloor;
 
-public final class ElytraBehavior implements Helper {
-    private final Baritone baritone;
+public final class ElytraBehavior /*implements Helper*/ {
+    /*private final Baritone baritone;
     private final IPlayerContext ctx;
 
     // Render stuff
@@ -87,7 +87,7 @@ public final class ElytraBehavior implements Helper {
 
     /**
      * Remaining cool-down ticks after the player's position and rotation are reset by the server
-     */
+     *
     private int remainingSetBackTicks;
 
     public boolean landingMode;
@@ -96,7 +96,7 @@ public final class ElytraBehavior implements Helper {
      * The most recent minimum number of firework boost ticks, equivalent to {@code 10 * (1 + Flight)}
      * <p>
      * Updated every time a firework is automatically used
-     */
+     *
     private int minimumBoostTicks;
 
     private boolean deployedFireworkLastTick;
@@ -293,10 +293,10 @@ public final class ElytraBehavior implements Helper {
 
         // mickey resigned
         private CompletableFuture<Void> path0(BlockPos src, BlockPos dst, UnaryOperator<UnpackedSegment> operator) {
-            return ElytraBehavior.this.context.pathFindAsync(src, dst)
+            return null;/*ElytraBehavior.this.context.pathFindAsync(src, dst)
                     .thenApply(UnpackedSegment::from)
                     .thenApply(operator)
-                    .thenAcceptAsync(this::setPath, ctx.minecraft()::execute);
+                    .thenAcceptAsync(this::setPath, ctx.minecraft()::execute);*
         }
 
         private void pathfindAroundObstacles() {
@@ -414,7 +414,7 @@ public final class ElytraBehavior implements Helper {
 
     public void onRenderPass(RenderEvent event) {
 
-        final Settings settings = Baritone.settings();
+        /*final Settings settings = Baritone.settings();
         if (this.visiblePath != null) {
             PathRenderer.drawPath(event.getModelViewStack(), this.visiblePath, 0, Color.RED, false, 0, 0, 0.0D);
         }
@@ -444,7 +444,7 @@ public final class ElytraBehavior implements Helper {
                 IRenderer.emitLine(event.getModelViewStack(), src, dst);
             }
             IRenderer.endLines(settings.renderPathIgnoreDepth.value);
-        }
+        }*
     }
 
     public void onChunkEvent(ChunkEvent event) {
@@ -460,9 +460,9 @@ public final class ElytraBehavior implements Helper {
 
     public void onReceivePacket(PacketEvent event) {
         if (event.getPacket() instanceof ClientboundPlayerPositionPacket) {
-            ctx.minecraft().execute(() -> {
+            /*ctx.minecraft().execute(() -> {
                 this.remainingSetBackTicks = Baritone.settings().elytraFireworkSetbackUseDelay.value;
-            });
+            });*
         }
     }
 
@@ -574,7 +574,7 @@ public final class ElytraBehavior implements Helper {
 
     /**
      * Called by {@link baritone.process.ElytraProcess#onTick(boolean, boolean)} when the process is in control and the player is flying
-     */
+     *
     public void tick() {
         if (this.pathManager.getPath().isEmpty()) {
             return;
@@ -755,13 +755,13 @@ public final class ElytraBehavior implements Helper {
         ) {
             // Prioritize boosting fireworks over regular ones
             // TODO: Take the minimum boost time into account?
-            if (!baritone.getInventoryBehavior().throwaway(true, ElytraBehavior::isBoostingFireworks) &&
+            /*if (!baritone.getInventoryBehavior().throwaway(true, ElytraBehavior::isBoostingFireworks) &&
                     !baritone.getInventoryBehavior().throwaway(true, ElytraBehavior::isFireworks)) {
                 logDirect("no fireworks");
                 return;
             }
             logVerbose("attempting to use firework" + (forceUseFirework ? " (forced)" : ""));
-            ctx.playerController().processRightClick(ctx.baritonePlayer().getPlayer(), ctx.world(), InteractionHand.MAIN_HAND);
+            ctx.playerController().processRightClick(ctx.baritonePlayer().getPlayer(), ctx.world(), InteractionHand.MAIN_HAND);*
             this.minimumBoostTicks = 10 * (1 + getFireworkBoost(ctx.baritonePlayer().getEntity().getItemInHand(InteractionHand.MAIN_HAND)).orElse(0));
             this.remainingFireworkTicks = 10;
             this.deployedFireworkLastTick = true;
@@ -784,7 +784,7 @@ public final class ElytraBehavior implements Helper {
          * construction.
          *
          * @param async Whether the computation is being done asynchronously at the end of a game tick.
-         */
+         *
         public SolverContext(boolean async) {
             this.path = ElytraBehavior.this.pathManager.getPath();
             this.playerNear = ElytraBehavior.this.pathManager.getNear();
@@ -840,8 +840,8 @@ public final class ElytraBehavior implements Helper {
         /**
          * @param fireworkTicksExisted The ticksExisted of the attached firework entity, or {@code null} if no entity.
          * @param minimumBoostTicks    The minimum number of boost ticks that the attached firework entity, if any, will
-         *                             provide.
-         */
+         *                            provide.
+         *
         public FireworkBoost(final Integer fireworkTicksExisted, final int minimumBoostTicks) {
             this.fireworkTicksExisted = fireworkTicksExisted;
 
@@ -856,14 +856,14 @@ public final class ElytraBehavior implements Helper {
 
         /**
          * @return The guaranteed number of remaining ticks with boost
-         */
+         *
         public int getGuaranteedBoostTicks() {
             return this.isBoosted() ? Math.max(0, this.minimumBoostTicks - this.fireworkTicksExisted) : 0;
         }
 
         /**
          * @return The maximum number of remaining ticks with boost
-         */
+         *
         public int getMaximumBoostTicks() {
             return this.isBoosted() ? Math.max(0, this.maximumBoostTicks - this.fireworkTicksExisted) : 0;
         }
@@ -1285,7 +1285,7 @@ public final class ElytraBehavior implements Helper {
     }
 
     private void queueWindowClick(int windowId, int slotId, int button, ClickType type) {
-        invTransactionQueue.add(() -> ctx.playerController().windowClick(windowId, slotId, button, type, ctx.baritonePlayer().getPlayer()));
+        //invTransactionQueue.add(() -> ctx.playerController().windowClick(windowId, slotId, button, type, ctx.baritonePlayer().getPlayer()));
     }
 
     private int findGoodElytra() {
@@ -1324,5 +1324,5 @@ public final class ElytraBehavior implements Helper {
         if (Baritone.settings().elytraChatSpam.value) {
             logDebug(message);
         }
-    }
+    }*/
 }

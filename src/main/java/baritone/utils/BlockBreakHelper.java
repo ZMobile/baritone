@@ -42,22 +42,22 @@ public final class BlockBreakHelper {
 
     public void stopBreakingBlock() {
         // The player controller will never be null, but the player can be
-        if (ctx.baritonePlayer() != null && wasHitting) {
-            ctx.playerController().setHittingBlock(false);
-            ctx.playerController().resetBlockRemoving();
-            wasHitting = false;
-        }
+        //if (ctx.baritonePlayer() != null && wasHitting) {
+            //ctx.playerController().setHittingBlock(false);
+            //ctx.playerController().resetBlockRemoving();
+           //wasHitting = false;
+        //}
     }
 
     public void tick(boolean isLeftClick) {
-        if (breakDelayTimer > 0) {
+        /*if (breakDelayTimer > 0) {
             breakDelayTimer--;
             return;
         }
         HitResult trace = ctx.objectMouseOver();
         boolean isBlockTrace = trace != null && trace.getType() == HitResult.Type.BLOCK;
 
-        if (isLeftClick && isBlockTrace) {
+        /*if (isLeftClick && isBlockTrace) {
             ctx.playerController().setHittingBlock(wasHitting);
             if (ctx.playerController().hasBrokenBlock()) {
                 ctx.playerController().syncHeldItem();
@@ -82,6 +82,6 @@ public final class BlockBreakHelper {
             ctx.playerController().setHittingBlock(false);
         } else {
             wasHitting = false;
-        }
+        }*/
     }
 }

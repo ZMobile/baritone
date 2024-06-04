@@ -38,10 +38,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author Brady
  * @since 8/6/2018
  */
-@Mixin(Connection.class)
+//@Mixin(Connection.class)
 public class MixinNetworkManager {
 
-    @Shadow
+    /*@Shadow
     private Channel channel;
 
     @Shadow
@@ -123,5 +123,5 @@ public class MixinNetworkManager {
                 ibaritone.getGameEventHandler().onReceivePacket(new PacketEvent((Connection) (Object) this, EventState.POST, packet));
             }
         }
-    }
+    }*/
 }

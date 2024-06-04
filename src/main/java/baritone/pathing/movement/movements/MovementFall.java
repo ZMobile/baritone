@@ -100,19 +100,11 @@ public class MovementFall extends Movement {
         Block destBlock = destState.getBlock();
         boolean isWater = destState.getFluidState().getType() instanceof WaterFluid;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            if (!Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) || ctx.world().dimension() == Level.NETHER) {
+            //if (!Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) || ctx.world().dimension() == Level.NETHER) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
-            }
+            //}
 
-            if (ctx.baritonePlayer().getEntity().position().y - dest.getY() < ctx.baritonePlayer().getBlockReachDistance() && !ctx.baritonePlayer().getEntity().onGround()) {
-                ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER);
-
-                targetRotation = new Rotation(toDest.getYaw(), 90.0F);
-
-                if (ctx.isLookingAt(dest) || ctx.isLookingAt(dest.below())) {
-                    state.setInput(Input.CLICK_RIGHT, true);
-                }
-            }
+            //ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER);
         }
         if (targetRotation != null) {
             state.setTarget(new MovementTarget(targetRotation, true));
@@ -121,18 +113,18 @@ public class MovementFall extends Movement {
         }
         if (playerFeet.equals(dest) && (ctx.baritonePlayer().getEntity().position().y - playerFeet.getY() < 0.094 || isWater)) { // 0.094 because lilypads
             if (isWater) { // only match water, not flowing water (which we cannot pick up with a bucket)
-                if (ctx.baritonePlayer().isLocalPlayer() && Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY))) {
-                    ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY);
-                    if (ctx.baritonePlayer().getPlayer().getDeltaMovement().y >= 0) {
-                        return state.setInput(Input.CLICK_RIGHT, true);
-                    } else {
-                        return state;
-                    }
-                } else {
+                //if (ctx.baritonePlayer().isLocalPlayer() && Inventory.isHotbarSlot(ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY))) {
+                    //ctx.baritonePlayer().getPlayer().getInventory().selected = ctx.baritonePlayer().getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_EMPTY);
+                    //if (ctx.baritonePlayer().getPlayer().getDeltaMovement().y >= 0) {
+                        //return state.setInput(Input.CLICK_RIGHT, true);
+                    //} else {
+                        //return state;
+                    //}
+                //} else {
                     if (ctx.baritonePlayer().getEntity().getDeltaMovement().y >= 0) {
                         return state.setStatus(MovementStatus.SUCCESS);
                     } // don't else return state; we need to stay centered because this water might be flowing under the surface
-                }
+                //}
             } else {
                 return state.setStatus(MovementStatus.SUCCESS);
             }

@@ -28,7 +28,6 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.process.ICustomGoalProcess;
 import baritone.api.process.IElytraProcess;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -41,9 +40,9 @@ import java.util.stream.Stream;
 
 import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 
-public class ElytraCommand extends Command {
+public class ElytraCommand /*extends Command*/ {
 
-    public ElytraCommand(IBaritone baritone) {
+    /*public ElytraCommand(IBaritone baritone) {
         super(baritone, "elytra");
     }
 
@@ -221,5 +220,5 @@ public class ElytraCommand extends Command {
                         "Linux, and Mac",
                 osArch, osName
         );
-    }
+    }*/
 }

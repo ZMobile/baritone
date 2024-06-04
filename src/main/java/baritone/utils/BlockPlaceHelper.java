@@ -26,7 +26,7 @@ import net.minecraft.world.phys.HitResult;
 
 public class BlockPlaceHelper {
     // base ticks between places caused by tick logic
-    private static final int BASE_PLACE_DELAY = 1;
+    /*private static final int BASE_PLACE_DELAY = 1;
 
     private final IPlayerContext ctx;
     private int rightClickTimer;
@@ -54,5 +54,5 @@ public class BlockPlaceHelper {
                 return;
             }
         }
-    }
+    }*/
 }

@@ -240,7 +240,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
 
     @Override
     public void onPlayerUpdate(PlayerUpdateEvent event) {
-        if (current != null) {
+        /*if (current != null) {
             switch (event.getState()) {
                 case PRE:
                     lastAutoJump = ctx.minecraft().options.autoJump().get();
@@ -252,7 +252,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
                 default:
                     break;
             }
-        }
+        }*/
     }
 
     public void secretInternalSetGoal(Goal goal) {
@@ -578,6 +578,6 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
 
     @Override
     public void onRenderPass(RenderEvent event) {
-        PathRenderer.render(event, this);
+        //PathRenderer.render(event, this);
     }
 }
