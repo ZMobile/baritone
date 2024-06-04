@@ -28,7 +28,7 @@ import java.util.List;
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class MixinServerPlayNetHandler {
 
-    @Inject(
+    /*@Inject(
             method = "handleLevelChunkWithLight",
             at = @At("RETURN")
     )
@@ -45,7 +45,7 @@ public abstract class MixinServerPlayNetHandler {
                 );
             }
         }
-    }
+    }*/
 
     @Inject(
             method = "handleForgetLevelChunk",
