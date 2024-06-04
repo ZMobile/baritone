@@ -27,26 +27,6 @@ import java.util.List;
  */
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class MixinServerPlayNetHandler {
-
-    /*@Inject(
-            method = "handleLevelChunkWithLight",
-            at = @At("RETURN")
-    )
-    private void postHandleChunkData(ClientboundLevelChunkWithLightPacket packet, CallbackInfo ci) {
-        for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            if (ibaritone != null) {
-                ibaritone.getGameEventHandler().onChunkEvent(
-                        new ChunkEvent(
-                                EventState.POST,
-                                !packet.isSkippable() ? ChunkEvent.Type.POPULATE_FULL : ChunkEvent.Type.POPULATE_PARTIAL,
-                                packet.getX(),
-                                packet.getZ()
-                        )
-                );
-            }
-        }
-    }*/
-
     @Inject(
             method = "handleForgetLevelChunk",
             at = @At("HEAD")
