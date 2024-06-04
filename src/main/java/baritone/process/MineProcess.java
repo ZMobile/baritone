@@ -198,13 +198,13 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
         // only when we should explore for blocks or are in legit mode we do this
         int y = Baritone.settings().legitMineYLevel.value;
         if (branchPoint == null) {
-            /*if (!baritone.getPathingBehavior().isPathing() && playerFeet().y == y) {
+            if (!baritone.getPathingBehavior().isPathing() && baritone.getPlayerContext().playerFeet().y == y) {
                 // cool, path is over and we are at desired y
-                branchPoint = playerFeet();
+                branchPoint = baritone.getPlayerContext().playerFeet();
                 branchPointRunaway = null;
             } else {
-                return new GoalYLevel(y);
-            }*/
+                //return new GoalYLevel(y);
+            }
             branchPoint = ctx.playerFeet();
         }
         // TODO shaft mode, mine 1x1 shafts to either side

@@ -7,12 +7,12 @@
     "maxShiftBy": 2,
     "defaultRequire": 1
   },
-  "client": [
-    "MixinChunkArray",
+  "mixins": [
+    "MixinMinecraftServer",
+    "MixinServerPlayNetHandler",
     "MixinFireworkRocketEntity",
     "MixinItemStack",
     "MixinLootContext",
-    "MixinNetworkManager",
     "MixinPalettedContainer",
     "MixinPalettedContainer$Data"
   ]
