@@ -9,7 +9,6 @@
   },
   "mixins": [
     "MixinMinecraftServer",
-    "MixinServerPlayNetHandler",
     "MixinFireworkRocketEntity",
     "MixinItemStack",
     "MixinLootContext",

@@ -25,9 +25,9 @@ import java.util.List;
 /**
  * Mixin class to handle server-side events for Baritone.
  */
-@Mixin(ServerGamePacketListenerImpl.class)
+//@Mixin(ServerGamePacketListenerImpl.class)
 public abstract class MixinServerPlayNetHandler {
-    @Inject(
+    /*@Inject(
             method = "handleForgetLevelChunk",
             at = @At("HEAD")
     )
@@ -115,5 +115,5 @@ public abstract class MixinServerPlayNetHandler {
                 ibaritone.getGameEventHandler().onPlayerDeath();
             }
         }
-    }
+    }*/
 }
