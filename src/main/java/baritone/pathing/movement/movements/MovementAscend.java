@@ -81,7 +81,7 @@ public class MovementAscend extends Movement {
         if (!MovementHelper.canWalkOn(context, destX, y, destZ, toPlace)) {
             additionalPlacementCost = context.costOfPlacingAt(destX, y, destZ, toPlace);
             if (additionalPlacementCost >= COST_INF) {
-                System.out.println("infinite cost of placing a block beneath the destination block");
+                //System.out.println("infinite cost of placing a block beneath the destination block");
                 return COST_INF;
             }
             if (!MovementHelper.isReplaceable(destX, y, destZ, toPlace, context.bsi)) {

@@ -35,17 +35,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //Example usage of Baritone with mobs
 //@Mixin(Zombie.class)
-public abstract class MixinZombie extends PathfinderMob {
+public abstract class MixinZombie /*extends PathfinderMob*/ {
 
-    protected MixinZombie(EntityType<? extends PathfinderMob> entityType, Level world) {
+    /*protected MixinZombie(EntityType<? extends PathfinderMob> entityType, Level world) {
         super(entityType, world);
     }
 
-    //@Inject(method = "registerGoals", at = @At("TAIL"))
+    @Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
-        //GoalBlock goal = new GoalBlock(0, 60, 200);
+        GoalBlock goal = new GoalBlock(6, 70, 113);
         BaritoneAPI.getProvider().createBaritone(MinecraftServerUtil.getMinecraftServer(), this);
-        //BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
+        BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
         //this.goalSelector.add(6, new BreakBlockAndChaseGoal(this, this.goalSelector));
         // Debug log to verify goal addition
         System.out.println("Baritone goal successfully added to ZombieEntity");
@@ -61,7 +61,7 @@ public abstract class MixinZombie extends PathfinderMob {
             if (goalBaritone != null) {
                 goalBaritone.getCustomGoalProcess().setGoalAndPath(goal);
             }
-        }*/
+        }*
     }
 
     //@Inject(method = "tick", at = @At("TAIL"))
@@ -75,5 +75,5 @@ public abstract class MixinZombie extends PathfinderMob {
                 System.out.println("Baritone instance successfully removed for ZombieEntity on despawn");
             }
         }
-    }
+    }*/
 }
