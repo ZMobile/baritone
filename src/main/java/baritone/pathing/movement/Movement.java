@@ -53,7 +53,7 @@ public abstract class Movement implements IMovement, MovementHelper {
     /**
      * The position where we need to place a block before this movement can ensue
      */
-    protected final BetterBlockPos positionToPlace;
+    protected final BetterBlockPos[] positionsToPlace;
 
     private Double cost;
 
@@ -65,13 +65,13 @@ public abstract class Movement implements IMovement, MovementHelper {
 
     private Boolean calculatedWhileLoaded;
 
-    protected Movement(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest, BetterBlockPos[] toBreak, BetterBlockPos toPlace) {
+    protected Movement(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest, BetterBlockPos[] toBreak, BetterBlockPos[] toPlace) {
         this.baritone = baritone;
         this.ctx = baritone.getPlayerContext();
         this.src = src;
         this.dest = dest;
         this.positionsToBreak = toBreak;
-        this.positionToPlace = toPlace;
+        this.positionsToPlace = toPlace;
     }
 
     protected Movement(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest, BetterBlockPos[] toBreak) {
@@ -287,8 +287,12 @@ public abstract class Movement implements IMovement, MovementHelper {
             return toPlaceCached;
         }
         List<BlockPos> result = new ArrayList<>();
-        if (positionToPlace != null && !MovementHelper.canWalkOn(bsi, positionToPlace.x, positionToPlace.y, positionToPlace.z)) {
-            result.add(positionToPlace);
+        if (positionsToPlace!= null) {
+            for (BetterBlockPos positionToPlace : positionsToPlace) {
+                if (positionToPlace != null && !MovementHelper.canWalkThrough(bsi, positionToPlace.x, positionToPlace.y, positionToPlace.z)) {
+                    result.add(positionToPlace);
+                }
+            }
         }
         toPlaceCached = result;
         return result;

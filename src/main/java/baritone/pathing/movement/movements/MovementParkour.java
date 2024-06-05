@@ -47,7 +47,7 @@ public class MovementParkour extends Movement {
     private final boolean ascend;
 
     private MovementParkour(IBaritone baritone, BetterBlockPos src, int dist, Direction dir, boolean ascend) {
-        super(baritone, src, src.relative(dir, dist).above(ascend ? 1 : 0), EMPTY, src.relative(dir, dist).below(ascend ? 0 : 1));
+        super(baritone, src, src.relative(dir, dist).above(ascend ? 1 : 0), EMPTY, new BetterBlockPos[]{src.relative(dir, dist).below(ascend ? 0 : 1)});
         this.direction = dir;
         this.dist = dist;
         this.ascend = ascend;

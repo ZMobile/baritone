@@ -42,7 +42,7 @@ import java.util.Set;
 public class MovementPillar extends Movement {
 
     public MovementPillar(IBaritone baritone, BetterBlockPos start, BetterBlockPos end) {
-        super(baritone, start, end, new BetterBlockPos[]{start.above(2)}, start);
+        super(baritone, start, end, new BetterBlockPos[]{start.above(2)}, new BetterBlockPos[]{start});
     }
 
     @Override
@@ -191,6 +191,7 @@ public class MovementPillar extends Movement {
         //boolean ladder = fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE;
         boolean ladder = false;
         boolean vine = fromDown.getBlock() == Blocks.VINE;
+        BetterBlockPos positionToPlace = positionsToPlace[0];
         Rotation rotation = RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
                 VecUtils.getBlockPosCenter(positionToPlace),
                 ctx.playerRotations());

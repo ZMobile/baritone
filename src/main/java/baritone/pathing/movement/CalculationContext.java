@@ -168,15 +168,12 @@ public class CalculationContext {
 
     public double costOfPlacingAt(int x, int y, int z, BlockState current) {
         if (!hasThrowaway) { // only true if allowPlace is true, see constructor
-            System.out.println("hasThrowaway is false");
             return COST_INF;
         }
         if (isPossiblyProtected(x, y, z)) {
-            System.out.println("isPossiblyProtected is true");
             return COST_INF;
         }
         if (!worldBorder.canPlaceAt(x, z)) {
-            System.out.println("worldBorder.canPlaceAt is false");
             return COST_INF;
         }
         return placeBlockCost;

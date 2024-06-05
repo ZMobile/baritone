@@ -38,10 +38,11 @@ public abstract class MixinZombie /*extends PathfinderMob*/ {
         super(entityType, world);
     }
 
-    //@Inject(method = "registerGoals", at = @At("TAIL"))
+    @Inject(method = "registerGoals", at = @At("TAIL"))
     private void addCustomGoals(CallbackInfo info) {
-        GoalBlock goal = new GoalBlock(-9, 102, 45);
+        GoalBlock goal = new GoalBlock(-9, 104, 45);
         BaritoneAPI.getProvider().createBaritone(Minecraft.getInstance(), this);
+        //this.goalSelector.addGoal(6, new BreakPlaceAndChaseGoal(this ));
         BaritoneAPI.getProvider().getBaritoneForEntity(this).getCustomGoalProcess().setGoalAndPath(goal);
         //this.goalSelector.add(6, new BreakBlockAndChaseGoal(this, this.goalSelector));
         // Debug log to verify goal addition
