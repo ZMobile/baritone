@@ -177,13 +177,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean hasGenericThrowaway() {
-        System.out.println("Checking for generic throwaway");
         if (!ctx.baritonePlayer().isLocalPlayer()) {
-            System.out.println("Not local player confirmed");
-            LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
+             LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
             ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
-            System.out.println("Item in hand?: " + !itemStack.isEmpty());
-            System.out.println("Item in hand is block item?: " + (itemStack.getItem() instanceof BlockItem));
             // Check if the item stack is not empty and if the item is an instance of BlockItem
             return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem;
         }

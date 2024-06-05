@@ -99,7 +99,7 @@ public class CalculationContext {
         int depth;
         if (player.isLocalPlayer()) {
             this.toolSet = new ToolSet(player);
-            this.hasThrowaway = false;//Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
+            this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
             this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value /*Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER))*/ && world.dimension() != Level.NETHER;
             this.canSprint = false;//Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
             this.frostWalker = 0;//EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
