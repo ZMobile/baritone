@@ -7,6 +7,8 @@
     "maxShiftBy": 2,
     "defaultRequire": 1
   },
+  "mixins": [
+  ],
   "client": [
     "MixinChunkArray",
     "MixinClientChunkProvider",

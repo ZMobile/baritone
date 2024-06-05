@@ -151,7 +151,7 @@ public class Baritone implements IBaritone {
         {
             this.lookBehavior         = this.registerBehavior(LookBehavior::new);
             this.pathingBehavior      = this.registerBehavior(PathingBehavior::new);
-            this.inventoryBehavior    = null;
+            this.inventoryBehavior    = this.registerBehavior(InventoryBehavior::new);
             this.inputOverrideHandler = null;
             this.registerBehavior(WaypointBehavior::new);
         }
@@ -192,7 +192,7 @@ public class Baritone implements IBaritone {
         {
             this.lookBehavior         = this.registerBehavior(LookBehavior::new);
             this.pathingBehavior      = this.registerBehavior(PathingBehavior::new);
-            this.inventoryBehavior    = null;
+            this.inventoryBehavior    = this.registerBehavior(InventoryBehavior::new);
             this.inputOverrideHandler = null;
             this.registerBehavior(WaypointBehavior::new);
         }

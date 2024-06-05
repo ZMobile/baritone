@@ -25,6 +25,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DiggerItem;
@@ -43,6 +44,8 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import static net.minecraft.world.InteractionHand.MAIN_HAND;
+
 public final class InventoryBehavior extends Behavior implements Helper {
 
     int ticksSinceLastInventoryMove;
@@ -58,6 +61,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
             return;
         }
         if (event.getType() == TickEvent.Type.OUT) {
+            return;
+        }
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
             return;
         }
         if (ctx.baritonePlayer().getPlayer().containerMenu != ctx.baritonePlayer().getPlayer().inventoryMenu) {
@@ -79,6 +85,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean attemptToPutOnHotbar(int inMainInvy, Predicate<Integer> disallowedHotbar) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return false;
+        }
         OptionalInt destination = getTempHotbarSlot(disallowedHotbar);
         if (destination.isPresent()) {
             if (!requestSwapWithHotBar(inMainInvy, destination.getAsInt())) {
@@ -89,6 +98,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public OptionalInt getTempHotbarSlot(Predicate<Integer> disallowedHotbar) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return OptionalInt.of(0);
+        }
         // we're using 0 and 8 for pickaxe and throwaway
         ArrayList<Integer> candidates = new ArrayList<>();
         for (int i = 1; i < 8; i++) {
@@ -110,6 +122,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     private boolean requestSwapWithHotBar(int inInventory, int inHotbar) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return false;
+        }
         lastTickRequestedMove = new int[]{inInventory, inHotbar};
         if (ticksSinceLastInventoryMove < Baritone.settings().ticksBetweenInventoryMoves.value) {
             logDebug("Inventory move requested but delaying " + ticksSinceLastInventoryMove + " " + Baritone.settings().ticksBetweenInventoryMoves.value);
@@ -136,6 +151,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     private int bestToolAgainst(Block against, Class<? extends DiggerItem> cla$$) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return -1;
+        }
         NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
         int bestInd = -1;
         double bestSpeed = -1;
@@ -159,6 +177,13 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean hasGenericThrowaway() {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
+            ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
+
+            // Check if the item stack is not empty and if the item is an instance of BlockItem
+            return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem;
+        }
         for (Item item : Baritone.settings().acceptableThrowawayItems.value) {
             if (throwaway(false, stack -> item.equals(stack.getItem()))) {
                 return true;
@@ -169,7 +194,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
 
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
         BlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
+        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
             return true; // gotem
         }
         if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock().equals(maybe.getBlock()))) {
