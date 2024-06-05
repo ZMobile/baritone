@@ -25,6 +25,7 @@ import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.*;
 import baritone.api.utils.input.Input;
 import baritone.behavior.PathingBehavior;
+import baritone.pathing.calc.PathNode;
 import baritone.utils.BlockStateInterface;
 import java.util.*;
 import net.minecraft.core.BlockPos;
@@ -82,18 +83,20 @@ public abstract class Movement implements IMovement, MovementHelper {
         return cost;
     }
 
-    public double getCost(CalculationContext context) {
+    public double getCost(CalculationContext context, List<BlockPos> previousPositions) {
         if (cost == null) {
-            cost = calculateCost(context);
+            cost = calculateCost(context, previousPositions);
         }
         return cost;
     }
 
-    public abstract double calculateCost(CalculationContext context);
+    //public abstract double calculateCost(CalculationContext context);
 
-    public double recalculateCost(CalculationContext context) {
+    public abstract double calculateCost(CalculationContext context, List<BlockPos> previousPositions);
+
+    public double recalculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         cost = null;
-        return getCost(context);
+        return getCost(context, previousPositions);
     }
 
     public void override(double cost) {

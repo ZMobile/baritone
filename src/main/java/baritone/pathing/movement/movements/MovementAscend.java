@@ -22,12 +22,15 @@ import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.input.Input;
+import baritone.pathing.calc.PathNode;
 import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import com.google.common.collect.ImmutableSet;
+
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
@@ -51,8 +54,8 @@ public class MovementAscend extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
-        return cost(context, src.x, src.y, src.z, dest.x, dest.z);
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
+        return cost(context, src.x, src.y, src.z, dest.x, dest.z, previousPositions);
     }
 
     @Override
@@ -66,7 +69,13 @@ public class MovementAscend extends Movement {
         );
     }
 
-    public static double cost(CalculationContext context, int x, int y, int z, int destX, int destZ) {
+    public static double cost(CalculationContext context, int x, int y, int z, int destX, int destZ, List<BlockPos> previousPositions) {
+        //Check previous positions to make sure none are within 4 blocks or less beneath the destination position:
+        for (BlockPos pos : previousPositions) {
+            if (Math.abs(pos.getX() - destX) <= 4 && pos.getZ() == destZ && pos.getX() == destX) {
+                return COST_INF;
+            }
+        }
         BlockState toPlace = context.get(destX, y, destZ);
         double additionalPlacementCost = 0;
         if (!MovementHelper.canWalkOn(context, destX, y, destZ, toPlace)) {

@@ -70,6 +70,7 @@ public class PathExecutor implements IPathExecutor, Helper {
     private HashSet<BlockPos> toBreak = new HashSet<>();
     private HashSet<BlockPos> toPlace = new HashSet<>();
     private HashSet<BlockPos> toWalkInto = new HashSet<>();
+    private List<BlockPos> previousPositions;
 
     private final PathingBehavior behavior;
     private final IPlayerContext ctx;
@@ -81,6 +82,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         this.ctx = behavior.ctx;
         this.path = path;
         this.pathPosition = 0;
+        this.previousPositions = new ArrayList<>();
     }
 
     /**
@@ -183,6 +185,10 @@ public class PathExecutor implements IPathExecutor, Helper {
             System.out.println("Recalculating break and place took " + (end - start) + "ms");
         }*/
         if (pathPosition < path.movements().size() - 1) {
+            previousPositions.add(path.positions().get(pathPosition));
+            if (previousPositions.size() > 10) { // Limit the size of the list
+                previousPositions.remove(0);
+            }
             IMovement next = path.movements().get(pathPosition + 1);
             if (!behavior.baritone.bsi.worldContainsLoadedChunk(next.getDest().x, next.getDest().z)) {
                 logDebug("Pausing since destination is at edge of loaded chunks");
@@ -196,14 +202,14 @@ public class PathExecutor implements IPathExecutor, Helper {
             // do this only once, when the movement starts, and deliberately get the cost as cached when this path was calculated, not the cost as it is right now
             currentMovementOriginalCostEstimate = movement.getCost();
             for (int i = 1; i < Baritone.settings().costVerificationLookahead.value && pathPosition + i < path.length() - 1; i++) {
-                if (((Movement) path.movements().get(pathPosition + i)).calculateCost(behavior.secretInternalGetCalculationContext()) >= ActionCosts.COST_INF && canCancel) {
+                if (((Movement) path.movements().get(pathPosition + i)).calculateCost(behavior.secretInternalGetCalculationContext(), previousPositions) >= ActionCosts.COST_INF && canCancel) {
                     logDebug("Something has changed in the world and a future movement has become impossible. Cancelling.");
                     cancel();
                     return true;
                 }
             }
         }
-        double currentCost = movement.recalculateCost(behavior.secretInternalGetCalculationContext());
+        double currentCost = movement.recalculateCost(behavior.secretInternalGetCalculationContext(), previousPositions);
         if (currentCost >= ActionCosts.COST_INF && canCancel) {
             logDebug("Something has changed in the world and this movement has become impossible. Cancelling.");
             cancel();

@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Set;
 
 public class MovementPillar extends Movement {
@@ -46,7 +47,7 @@ public class MovementPillar extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         return cost(context, src.x, src.y, src.z);
     }
 

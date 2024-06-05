@@ -87,7 +87,7 @@ public class MovementDiagonal extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         MutableMoveResult result = new MutableMoveResult();
         cost(context, src.x, src.y, src.z, dest.x, dest.z, result);
         if (result.y != dest.y) {
