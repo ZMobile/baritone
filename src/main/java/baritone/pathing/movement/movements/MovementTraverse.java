@@ -130,6 +130,7 @@ public class MovementTraverse extends Movement {
                     return COST_INF;
                 }
                 double placeCost = context.costOfPlacingAt(destX, y - 1, destZ, destOn);
+                System.out.println("placeCost: " + placeCost);
                 if (placeCost >= COST_INF) {
                     return COST_INF;
                 }

@@ -98,9 +98,12 @@ public class CalculationContext {
         this.worldData = (WorldData) baritone.getPlayerContext().worldData();
         this.bsi = new BlockStateInterface(baritone.getPlayerContext(), forUseOnAnotherThread);
         int depth;
+        this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
         if (player.isLocalPlayer()) {
             this.toolSet = new ToolSet(player);
-            this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
+            System.out.println("Baritone.settings().allowPlace.value: " + Baritone.settings().allowPlace.value);
+            System.out.println(((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway());
+            //this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
             this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) && world.dimension() != Level.NETHER;
             this.canSprint = Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
             this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
@@ -110,7 +113,7 @@ public class CalculationContext {
             }
         } else {
             this.toolSet = null;
-            this.hasThrowaway = false;
+            //this.hasThrowaway = false;
             this.hasWaterBucket = false;
             this.canSprint = false;
             this.frostWalker = 0;
@@ -165,12 +168,15 @@ public class CalculationContext {
 
     public double costOfPlacingAt(int x, int y, int z, BlockState current) {
         if (!hasThrowaway) { // only true if allowPlace is true, see constructor
+            System.out.println("hasThrowaway is false");
             return COST_INF;
         }
         if (isPossiblyProtected(x, y, z)) {
+            System.out.println("isPossiblyProtected is true");
             return COST_INF;
         }
         if (!worldBorder.canPlaceAt(x, z)) {
+            System.out.println("worldBorder.canPlaceAt is false");
             return COST_INF;
         }
         return placeBlockCost;

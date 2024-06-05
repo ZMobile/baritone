@@ -177,10 +177,13 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean hasGenericThrowaway() {
+        System.out.println("Checking for generic throwaway");
         if (!ctx.baritonePlayer().isLocalPlayer()) {
+            System.out.println("Not local player confirmed");
             LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
             ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
-
+            System.out.println("Item in hand?: " + !itemStack.isEmpty());
+            System.out.println("Item in hand is block item?: " + (itemStack.getItem() instanceof BlockItem));
             // Check if the item stack is not empty and if the item is an instance of BlockItem
             return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem;
         }
@@ -213,8 +216,12 @@ public final class InventoryBehavior extends Behavior implements Helper {
     }
 
     public boolean throwaway(boolean select, Predicate<? super ItemStack> desired, boolean allowInventory) {
+        NonNullList<ItemStack> inv;
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return true;
+        }
         LocalPlayer p = ctx.baritonePlayer().getPlayer();
-        NonNullList<ItemStack> inv = p.getInventory().items;
+        inv = p.getInventory().items;
         for (int i = 0; i < 9; i++) {
             ItemStack item = inv.get(i);
             // this usage of settings() is okay because it's only called once during pathing
