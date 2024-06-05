@@ -44,6 +44,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,7 +56,7 @@ public class MovementTraverse extends Movement {
     private boolean wasTheBridgeBlockAlwaysThere = true;
 
     public MovementTraverse(IBaritone baritone, BetterBlockPos from, BetterBlockPos to) {
-        super(baritone, from, to, new BetterBlockPos[]{to.above(), to}, to.below());
+        super(baritone, from, to, new BetterBlockPos[]{to.above(), to}, new BetterBlockPos[]{to.below()});
     }
 
     @Override
@@ -65,7 +66,7 @@ public class MovementTraverse extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         return cost(context, src.x, src.y, src.z, dest.x, dest.z);
     }
 
@@ -246,7 +247,7 @@ public class MovementTraverse extends Movement {
             }
         }
 
-        boolean isTheBridgeBlockThere = MovementHelper.canWalkOn(ctx, positionToPlace) || ladder || MovementHelper.canUseFrostWalker(ctx, positionToPlace);
+        boolean isTheBridgeBlockThere = MovementHelper.canWalkOn(ctx, positionsToPlace[0]) || ladder || MovementHelper.canUseFrostWalker(ctx, positionsToPlace[0]);
         BlockPos feet = ctx.playerFeet();
         if (feet.getY() != dest.getY() && !ladder) {
             logDebug("Wrong Y coordinate");

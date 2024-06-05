@@ -28,6 +28,7 @@ import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import baritone.utils.pathing.MutableMoveResult;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.WaterFluid;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MovementParkour extends Movement {
@@ -47,7 +49,7 @@ public class MovementParkour extends Movement {
     private final boolean ascend;
 
     private MovementParkour(IBaritone baritone, BetterBlockPos src, int dist, Direction dir, boolean ascend) {
-        super(baritone, src, src.relative(dir, dist).above(ascend ? 1 : 0), EMPTY, src.relative(dir, dist).below(ascend ? 0 : 1));
+        super(baritone, src, src.relative(dir, dist).above(ascend ? 1 : 0), EMPTY,  new BetterBlockPos[]{src.relative(dir, dist).below(ascend ? 0 : 1)});
         this.direction = dir;
         this.dist = dist;
         this.ascend = ascend;
@@ -221,7 +223,7 @@ public class MovementParkour extends Movement {
 
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         MutableMoveResult res = new MutableMoveResult();
         cost(context, src.x, src.y, src.z, direction, res);
         if (res.x != dest.x || res.y != dest.y || res.z != dest.z) {

@@ -31,6 +31,7 @@ import baritone.pathing.movement.MovementState;
 import baritone.pathing.movement.MovementState.MovementTarget;
 import baritone.utils.pathing.MutableMoveResult;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
@@ -56,8 +57,7 @@ public class MovementFall extends Movement {
         super(baritone, src, dest, MovementFall.buildPositionsToBreak(src, dest));
     }
 
-    @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         MutableMoveResult result = new MutableMoveResult();
         MovementDescend.cost(context, src.x, src.y, src.z, dest.x, dest.z, result);
         if (result.y != dest.y) {

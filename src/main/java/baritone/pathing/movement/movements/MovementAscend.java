@@ -22,13 +22,18 @@ import baritone.api.IBaritone;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.input.Input;
+import baritone.pathing.calc.PathNode;
 import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.movement.MovementState;
 import baritone.utils.BlockStateInterface;
 import com.google.common.collect.ImmutableSet;
+
+import java.util.List;
 import java.util.Set;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FallingBlock;
@@ -39,7 +44,7 @@ public class MovementAscend extends Movement {
     private int ticksWithoutPlacement = 0;
 
     public MovementAscend(IBaritone baritone, BetterBlockPos src, BetterBlockPos dest) {
-        super(baritone, src, dest, new BetterBlockPos[]{dest, src.above(2), dest.above()}, dest.below());
+        super(baritone, src, dest, new BetterBlockPos[]{dest, src.above(2), dest.above()}, new BetterBlockPos[]{dest.below(2), dest.below()});
     }
 
     @Override
@@ -49,8 +54,8 @@ public class MovementAscend extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
-        return cost(context, src.x, src.y, src.z, dest.x, dest.z);
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
+        return cost(context, src.x, src.y, src.z, dest.x, dest.z, previousPositions);
     }
 
     @Override
@@ -64,15 +69,23 @@ public class MovementAscend extends Movement {
         );
     }
 
-    public static double cost(CalculationContext context, int x, int y, int z, int destX, int destZ) {
+    public static double cost(CalculationContext context, int x, int y, int z, int destX, int destZ, List<BlockPos> previousPositions) {
+        //Check previous positions to make sure none are within 4 blocks or less beneath the destination position:
+        for (BlockPos pos : previousPositions) {
+            if (Math.abs(pos.getX() - destX) <= 4 && pos.getZ() == destZ && pos.getX() == destX) {
+                return COST_INF;
+            }
+        }
         BlockState toPlace = context.get(destX, y, destZ);
         double additionalPlacementCost = 0;
         if (!MovementHelper.canWalkOn(context, destX, y, destZ, toPlace)) {
             additionalPlacementCost = context.costOfPlacingAt(destX, y, destZ, toPlace);
             if (additionalPlacementCost >= COST_INF) {
+                System.out.println("infinite cost of placing a block beneath the destination block");
                 return COST_INF;
             }
             if (!MovementHelper.isReplaceable(destX, y, destZ, toPlace, context.bsi)) {
+                System.out.println("destination with original y is not replaceable");
                 return COST_INF;
             }
             boolean foundPlaceOption = false;
@@ -89,7 +102,38 @@ public class MovementAscend extends Movement {
                 }
             }
             if (!foundPlaceOption) { // didn't find a valid place =(
-                return COST_INF;
+                BlockState toPlace2 = context.get(destX, y - 1, destZ);
+                if (!MovementHelper.canWalkOn(context, destX, y - 1, destZ, toPlace2)) {
+                    additionalPlacementCost += context.costOfPlacingAt(destX, y - 1, destZ, toPlace2);
+                    if (additionalPlacementCost >= COST_INF) {
+                        return COST_INF;
+                    }
+                    if (!MovementHelper.isReplaceable(destX, y - 1, destZ, toPlace2, context.bsi)) {
+                        System.out.println("destination with original y is not replaceable");
+                        return COST_INF;
+                    }
+                    //Checking one pos lower than previously
+                    boolean foundPlaceOption2 = false;
+                    for (int i = 0; i < 5; i++) {
+                        int againstX = destX + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepX();
+                        int againstY = y + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepY() - 1;
+                        int againstZ = destZ + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepZ();
+                        if (againstX == x && againstZ == z) { // we might be able to backplace now, but it doesn't matter because it will have been broken by the time we'd need to use it
+                            continue;
+                        }
+                        if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) {
+                            foundPlaceOption2 = true;
+                            break;
+                        }
+                    }
+                    if (!foundPlaceOption2) {
+                        System.out.println("No valid place option");
+                        return COST_INF;
+                    }
+                    foundPlaceOption = true;
+                }
+                //System.out.println("No valid place option");
+                //return COST_INF;
             }
         }
         BlockState srcUp2 = context.get(x, y + 2, z); // used lower down anyway
@@ -171,8 +215,8 @@ public class MovementAscend extends Movement {
             return state.setStatus(MovementStatus.SUCCESS);
         }
 
-        BlockState jumpingOnto = BlockStateInterface.get(ctx, positionToPlace);
-        if (!MovementHelper.canWalkOn(ctx, positionToPlace, jumpingOnto)) {
+        BlockState jumpingOnto = BlockStateInterface.get(ctx, positionsToPlace[0]);
+        if (!MovementHelper.canWalkOn(ctx, positionsToPlace[0], jumpingOnto)) {
             ticksWithoutPlacement++;
             if (MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), false, true) == PlaceResult.READY_TO_PLACE) {
                 state.setInput(Input.SNEAK, true);

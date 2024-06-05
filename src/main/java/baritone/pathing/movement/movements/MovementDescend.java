@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Set;
 
 public class MovementDescend extends Movement {
@@ -44,7 +45,7 @@ public class MovementDescend extends Movement {
     public boolean forceSafeMode = false;
 
     public MovementDescend(IBaritone baritone, BetterBlockPos start, BetterBlockPos end) {
-        super(baritone, start, end, new BetterBlockPos[]{end.above(2), end.above(), end}, end.below());
+        super(baritone, start, end, new BetterBlockPos[]{end.above(2), end.above(), end}, new BetterBlockPos[]{end.below()});
     }
 
     @Override
@@ -62,7 +63,7 @@ public class MovementDescend extends Movement {
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         MutableMoveResult result = new MutableMoveResult();
         cost(context, src.x, src.y, src.z, dest.x, dest.z, result);
         if (result.y != dest.y) {

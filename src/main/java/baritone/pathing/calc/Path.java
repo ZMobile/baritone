@@ -27,6 +27,7 @@ import baritone.pathing.movement.Movement;
 import baritone.pathing.movement.Moves;
 import baritone.pathing.path.CutoffPath;
 import baritone.utils.pathing.PathBase;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,7 +104,7 @@ class Path extends PathBase {
         }
         for (int i = 0; i < path.size() - 1; i++) {
             double cost = nodes.get(i + 1).cost - nodes.get(i).cost;
-            Movement move = runBackwards(path.get(i), path.get(i + 1), cost);
+            Movement move = runBackwards(path.get(i), path.get(i + 1), nodes.get(i).previous, cost);
             if (move == null) {
                 return true;
             } else {
@@ -113,14 +114,22 @@ class Path extends PathBase {
         return false;
     }
 
-    private Movement runBackwards(BetterBlockPos src, BetterBlockPos dest, double cost) {
+    private Movement runBackwards(BetterBlockPos src, BetterBlockPos dest, PathNode previousNode, double cost) {
         for (Moves moves : Moves.values()) {
-            Movement move = moves.apply0(context, src);
+            Movement move = moves.apply0(context, src, previousNode);
             if (move.getDest().equals(dest)) {
                 // have to calculate the cost at calculation time so we can accurately judge whether a cost increase happened between cached calculation and real execution
                 // however, taking into account possible favoring that could skew the node cost, we really want the stricter limit of the two
                 // so we take the minimum of the path node cost difference, and the calculated cost
-                move.override(Math.min(move.calculateCost(context), cost));
+                List<BlockPos> previousPositions = new ArrayList<>();
+                int i = 0;
+                PathNode iteratingNode = previousNode;
+                while (iteratingNode != null && i < 10) {
+                    previousPositions.add(new BlockPos(iteratingNode.x, iteratingNode.y, iteratingNode.z));
+                    iteratingNode = iteratingNode.previous;
+                    i++;
+                }
+                move.override(Math.min(move.calculateCost(context, previousPositions), cost));
                 return move;
             }
         }

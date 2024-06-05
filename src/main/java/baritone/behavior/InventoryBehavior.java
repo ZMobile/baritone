@@ -24,6 +24,7 @@ import baritone.utils.ToolSet;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DiggerItem;
@@ -42,9 +43,11 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.function.Predicate;
 
-public final class InventoryBehavior {
+import static net.minecraft.world.InteractionHand.MAIN_HAND;
 
-    /*int ticksSinceLastInventoryMove;
+public final class InventoryBehavior extends Behavior implements Helper {
+
+    int ticksSinceLastInventoryMove;
     int[] lastTickRequestedMove; // not everything asks every tick, so remember the request while coming to a halt
 
     public InventoryBehavior(Baritone baritone) {
@@ -59,10 +62,13 @@ public final class InventoryBehavior {
         if (event.getType() == TickEvent.Type.OUT) {
             return;
         }
-        if (ctx.baritonePlayer().getPlayer().containerMenu != ctx.baritonePlayer().getPlayer().inventoryMenu) {
-            // we have a crafting table or a chest or something open
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
             return;
         }
+        /*if (ctx.baritonePlayer().getPlayer().containerMenu != ctx.baritonePlayer().getPlayer().inventoryMenu) {
+            // we have a crafting table or a chest or something open
+            return;
+        }*/
         ticksSinceLastInventoryMove++;
         if (firstValidThrowaway() >= 9) { // aka there are none on the hotbar, but there are some in main inventory
             requestSwapWithHotBar(firstValidThrowaway(), 8);
@@ -78,6 +84,9 @@ public final class InventoryBehavior {
     }
 
     public boolean attemptToPutOnHotbar(int inMainInvy, Predicate<Integer> disallowedHotbar) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return false;
+        }
         OptionalInt destination = getTempHotbarSlot(disallowedHotbar);
         if (destination.isPresent()) {
             if (!requestSwapWithHotBar(inMainInvy, destination.getAsInt())) {
@@ -88,7 +97,11 @@ public final class InventoryBehavior {
     }
 
     public OptionalInt getTempHotbarSlot(Predicate<Integer> disallowedHotbar) {
-        // we're using 0 and 8 for pickaxe and throwaway
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return OptionalInt.of(0);
+        }
+        return OptionalInt.empty();
+        /* we're using 0 and 8 for pickaxe and throwaway
         ArrayList<Integer> candidates = new ArrayList<>();
         for (int i = 1; i < 8; i++) {
             if (ctx.baritonePlayer().getPlayer().getInventory().items.get(i).isEmpty() && !disallowedHotbar.test(i)) {
@@ -105,10 +118,13 @@ public final class InventoryBehavior {
         if (candidates.isEmpty()) {
             return OptionalInt.empty();
         }
-        return OptionalInt.of(candidates.get(new Random().nextInt(candidates.size())));
+        return OptionalInt.of(candidates.get(new Random().nextInt(candidates.size())));*/
     }
 
     private boolean requestSwapWithHotBar(int inInventory, int inHotbar) {
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return false;
+        }
         lastTickRequestedMove = new int[]{inInventory, inHotbar};
         if (ticksSinceLastInventoryMove < Baritone.settings().ticksBetweenInventoryMoves.value) {
             logDebug("Inventory move requested but delaying " + ticksSinceLastInventoryMove + " " + Baritone.settings().ticksBetweenInventoryMoves.value);
@@ -125,19 +141,22 @@ public final class InventoryBehavior {
     }
 
     private int firstValidThrowaway() { // TODO offhand idk
-        NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
+        /*NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
         for (int i = 0; i < invy.size(); i++) {
             if (Baritone.settings().acceptableThrowawayItems.value.contains(invy.get(i).getItem())) {
                 return i;
             }
-        }
+        }*/
         return -1;
     }
 
     private int bestToolAgainst(Block against, Class<? extends DiggerItem> cla$$) {
-        NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return -1;
+        }
+        //NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
         int bestInd = -1;
-        double bestSpeed = -1;
+        /*double bestSpeed = -1;
         for (int i = 0; i < invy.size(); i++) {
             ItemStack stack = invy.get(i);
             if (stack.isEmpty()) {
@@ -153,11 +172,21 @@ public final class InventoryBehavior {
                     bestInd = i;
                 }
             }
-        }
+        }*/
         return bestInd;
     }
 
     public boolean hasGenericThrowaway() {
+        System.out.println("Checking for generic throwaway");
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            System.out.println("Not local player confirmed");
+            LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
+            ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
+            System.out.println("Item in hand?: " + !itemStack.isEmpty());
+            System.out.println("Item in hand is block item?: " + (itemStack.getItem() instanceof BlockItem));
+            // Check if the item stack is not empty and if the item is an instance of BlockItem
+            return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem;
+        }
         for (Item item : Baritone.settings().acceptableThrowawayItems.value) {
             if (throwaway(false, stack -> item.equals(stack.getItem()))) {
                 return true;
@@ -167,8 +196,8 @@ public final class InventoryBehavior {
     }
 
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
-        BlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
-        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
+        /*BlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
+        if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}))))) {
             return true; // gotem
         }
         if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock().equals(maybe.getBlock()))) {
@@ -178,7 +207,7 @@ public final class InventoryBehavior {
             if (throwaway(select, stack -> item.equals(stack.getItem()))) {
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
@@ -187,8 +216,12 @@ public final class InventoryBehavior {
     }
 
     public boolean throwaway(boolean select, Predicate<? super ItemStack> desired, boolean allowInventory) {
-        LocalPlayer p = ctx.baritonePlayer().getPlayer();
-        NonNullList<ItemStack> inv = p.getInventory().items;
+        NonNullList<ItemStack> inv;
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            return true;
+        }
+        /*LocalPlayer p = ctx.baritonePlayer().getPlayer();
+        inv = p.getInventory().items;
         for (int i = 0; i < 9; i++) {
             ItemStack item = inv.get(i);
             // this usage of settings() is okay because it's only called once during pathing
@@ -230,8 +263,8 @@ public final class InventoryBehavior {
                     return true;
                 }
             }
-        }
+        }*/
 
         return false;
-    }*/
+    }
 }

@@ -37,16 +37,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Set;
 
 public class MovementPillar extends Movement {
 
     public MovementPillar(IBaritone baritone, BetterBlockPos start, BetterBlockPos end) {
-        super(baritone, start, end, new BetterBlockPos[]{start.above(2)}, start);
+        super(baritone, start, end, new BetterBlockPos[]{start.above(2)}, new BetterBlockPos[]{start});
     }
 
     @Override
-    public double calculateCost(CalculationContext context) {
+    public double calculateCost(CalculationContext context, List<BlockPos> previousPositions) {
         return cost(context, src.x, src.y, src.z);
     }
 
@@ -191,6 +192,7 @@ public class MovementPillar extends Movement {
         //boolean ladder = fromDown.getBlock() == Blocks.LADDER || fromDown.getBlock() == Blocks.VINE;
         boolean ladder = false;
         boolean vine = fromDown.getBlock() == Blocks.VINE;
+        BetterBlockPos positionToPlace = positionsToPlace[0];
         Rotation rotation = RotationUtils.calcRotationFromVec3d(ctx.playerHead(),
                 VecUtils.getBlockPosCenter(positionToPlace),
                 ctx.playerRotations());
@@ -222,9 +224,9 @@ public class MovementPillar extends Movement {
             return state;
         } else {
             // Get ready to place a throwaway block
-            //if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, src.x, src.y, src.z)) {
-                //return state.setStatus(MovementStatus.UNREACHABLE);
-            //}
+            /*if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, src.x, src.y, src.z)) {
+                return state.setStatus(MovementStatus.UNREACHABLE);
+            }*/
 
 
             state.setInput(Input.SNEAK, ctx.baritonePlayer().getEntity().position().y > dest.getY() || ctx.baritonePlayer().getEntity().position().y < src.getY() + 0.2D); // delay placement by 1 tick for ncp compatibility
