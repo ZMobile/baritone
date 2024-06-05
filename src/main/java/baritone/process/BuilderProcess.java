@@ -55,10 +55,12 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -83,6 +85,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
+import static net.minecraft.world.InteractionHand.MAIN_HAND;
 
 public final class BuilderProcess extends BaritoneProcessHelper implements IBuilderProcess {
 
@@ -393,38 +396,68 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
     }
 
     private OptionalInt hasAnyItemThatWouldPlace(BlockState desired, HitResult result, Rotation rot) {
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
-                continue;
+        if (!ctx.baritonePlayer().isLocalPlayer()) {
+            LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
+            ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
+
+            if (itemStack.isEmpty() || !(itemStack.getItem() instanceof BlockItem)) {
+                return OptionalInt.empty();
+            } else {
+                boolean hasAdjacentBlock = hasSolidAdjacentBlock(((BlockHitResult) result).getBlockPos(), ctx.world());
+                if (!hasAdjacentBlock) {
+                    return OptionalInt.empty();
+                }
+                return OptionalInt.of(0);
             }
-            float originalYaw = ctx.baritonePlayer().getEntity().getYRot();
-            float originalPitch = ctx.baritonePlayer().getEntity().getXRot();
-            // the state depends on the facing of the player sometimes
-            ctx.baritonePlayer().getEntity().setYRot(rot.getYaw());
-            ctx.baritonePlayer().getEntity().setXRot(rot.getPitch());
-            BlockPlaceContext meme = new BlockPlaceContext(new UseOnContext(
-                    ctx.world(),
-                    ctx.baritonePlayer().getPlayer(),
-                    InteractionHand.MAIN_HAND,
-                    stack,
-                    (BlockHitResult) result
-            ) {}); // that {} gives us access to a protected constructor lmfao
-            BlockState wouldBePlaced = ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(meme);
-            ctx.baritonePlayer().getEntity().setYRot(originalYaw);
-            ctx.baritonePlayer().getEntity().setXRot(originalPitch);
-            if (wouldBePlaced == null) {
-                continue;
-            }
-            if (!meme.canPlace()) {
-                continue;
-            }
-            if (valid(wouldBePlaced, desired, true)) {
-                return OptionalInt.of(i);
+        } else {
+            for (int i = 0; i < 9; i++) {
+                ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
+                if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
+                    continue;
+                }
+                float originalYaw = ctx.baritonePlayer().getEntity().getYRot();
+                float originalPitch = ctx.baritonePlayer().getEntity().getXRot();
+                // the state depends on the facing of the player sometimes
+                ctx.baritonePlayer().getEntity().setYRot(rot.getYaw());
+                ctx.baritonePlayer().getEntity().setXRot(rot.getPitch());
+                BlockPlaceContext meme = new BlockPlaceContext(new UseOnContext(
+                        ctx.world(),
+                        ctx.baritonePlayer().getPlayer(),
+                        InteractionHand.MAIN_HAND,
+                        stack,
+                        (BlockHitResult) result
+                ) {
+                }); // that {} gives us access to a protected constructor lmfao
+                BlockState wouldBePlaced = ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(meme);
+                ctx.baritonePlayer().getEntity().setYRot(originalYaw);
+                ctx.baritonePlayer().getEntity().setXRot(originalPitch);
+                if (wouldBePlaced == null) {
+                    continue;
+                }
+                if (!meme.canPlace()) {
+                    continue;
+                }
+                if (valid(wouldBePlaced, desired, true)) {
+                    return OptionalInt.of(i);
+                }
             }
         }
         return OptionalInt.empty();
     }
+
+    private boolean hasSolidAdjacentBlock(BlockPos pos, Level world) {
+        BlockPos[] adjacentPositions = new BlockPos[]{
+                pos.below(), pos.above(), pos.north(), pos.south(), pos.east(), pos.west()
+        };
+
+        for (BlockPos adjacentPos : adjacentPositions) {
+            if (world.getBlockState(adjacentPos).isSolidRender(world, adjacentPos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private static Vec3[] aabbSideMultipliers(Direction side) {
         switch (side) {
@@ -568,7 +601,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         if (toPlace.isPresent() && isSafeToCancel && ctx.baritonePlayer().getEntity().onGround() && ticks <= 0) {
             Rotation rot = toPlace.get().rot;
             baritone.getLookBehavior().updateTarget(rot, true);
-            ctx.baritonePlayer().getPlayer().getInventory().selected = toPlace.get().hotbarSelection;
+            if (ctx.baritonePlayer().isLocalPlayer()) {
+                ctx.baritonePlayer().getPlayer().getInventory().selected = toPlace.get().hotbarSelection;
+            }
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
             if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ((BlockHitResult) ctx.objectMouseOver()).getDirection().equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
@@ -997,26 +1032,45 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     private List<BlockState> approxPlaceable(int size) {
         List<BlockState> result = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
-                result.add(Blocks.AIR.defaultBlockState());
-                continue;
+        if (ctx.baritonePlayer().isLocalPlayer()) {
+            for (int i = 0; i < size; i++) {
+                ItemStack stack = ctx.baritonePlayer().getPlayer().getInventory().items.get(i);
+                if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
+                    result.add(Blocks.AIR.defaultBlockState());
+                    continue;
+                }
+                // <toxic cloud>
+                BlockState itemState = ((BlockItem) stack.getItem())
+                        .getBlock()
+                        .getStateForPlacement(
+                                new BlockPlaceContext(
+                                        new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {
+                                        }
+                                )
+                        );
+                if (itemState != null) {
+                    result.add(itemState);
+                } else {
+                    result.add(Blocks.AIR.defaultBlockState());
+                }
+                // </toxic cloud>
             }
-            // <toxic cloud>
-            BlockState itemState = ((BlockItem) stack.getItem())
-                .getBlock()
-                .getStateForPlacement(
-                    new BlockPlaceContext(
-                        new UseOnContext(ctx.world(), ctx.baritonePlayer().getPlayer(), InteractionHand.MAIN_HAND, stack, new BlockHitResult(new Vec3(ctx.baritonePlayer().getEntity().position().x, ctx.baritonePlayer().getEntity().position().y, ctx.baritonePlayer().getEntity().position().z), Direction.UP, ctx.playerFeet(), false)) {}
-                    )
-                );
-            if (itemState != null) {
-                result.add(itemState);
+        } else {
+            LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
+            ItemStack stack = livingEntity.getItemInHand(MAIN_HAND);
+            if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem blockItem)) {
+                result.add(Blocks.AIR.defaultBlockState());
             } else {
-                result.add(Blocks.AIR.defaultBlockState());
+                BlockState itemState = blockItem.getBlock().defaultBlockState();
+
+                // Check if the block is solid
+                Vec3 pos = ctx.baritonePlayer().getEntity().position();
+                if (itemState.isSolidRender(ctx.world(), new BlockPos((int)pos.x, (int)pos.y, (int)pos.z))) {
+                    result.add(itemState);
+                } else {
+                    result.add(Blocks.AIR.defaultBlockState());
+                }
             }
-            // </toxic cloud>
         }
         return result;
     }
@@ -1089,7 +1143,11 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
         public BuilderCalculationContext() {
             super(BuilderProcess.this.baritone, true); // wew lad
-            this.placeable = approxPlaceable(9);
+            if (ctx.baritonePlayer().isLocalPlayer()) {
+                this.placeable = approxPlaceable(9);
+            } else {
+                this.placeable = approxPlaceable(1);
+            }
             this.schematic = BuilderProcess.this.schematic;
             this.originX = origin.getX();
             this.originY = origin.getY();
