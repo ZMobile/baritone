@@ -81,13 +81,6 @@ public class MovementAscend extends Movement {
         if (!MovementHelper.canWalkOn(context, destX, y, destZ, toPlace)) {
             additionalPlacementCost = context.costOfPlacingAt(destX, y, destZ, toPlace);
             if (additionalPlacementCost >= COST_INF) {
-                /*additionalPlacementCost = context.costOfPlacingAt(destX, y - 1, destZ, toPlace);
-                System.out.println("Can place at the block below though");
-                if (additionalPlacementCost >= COST_INF) {
-                    return COST_INF;
-                } else {
-
-                }*/
                 System.out.println("infinite cost of placing a block beneath the destination block");
                 return COST_INF;
             }
@@ -119,7 +112,7 @@ public class MovementAscend extends Movement {
                         System.out.println("destination with original y is not replaceable");
                         return COST_INF;
                     }
-                    //Checking one pos lower than previously
+                    /*//Checking one pos lower than previously
                     boolean foundPlaceOption2 = false;
                     for (int i = 0; i < 5; i++) {
                         int againstX = destX + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepX();
@@ -138,6 +131,7 @@ public class MovementAscend extends Movement {
                         return COST_INF;
                     }
                     foundPlaceOption = true;
+                     */
                 }
                 //System.out.println("No valid place option");
                 //return COST_INF;
