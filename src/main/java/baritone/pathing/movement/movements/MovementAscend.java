@@ -108,10 +108,6 @@ public class MovementAscend extends Movement {
                     if (additionalPlacementCost >= COST_INF) {
                         return COST_INF;
                     }
-                    if (!MovementHelper.isReplaceable(destX, y - 1, destZ, toPlace2, context.bsi)) {
-                        System.out.println("destination with original y is not replaceable");
-                        return COST_INF;
-                    }
                     /*//Checking one pos lower than previously
                     boolean foundPlaceOption2 = false;
                     for (int i = 0; i < 5; i++) {
