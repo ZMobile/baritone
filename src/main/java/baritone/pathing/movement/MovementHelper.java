@@ -313,6 +313,9 @@ public interface MovementHelper extends ActionCosts, Helper {
          *     }
          */
         Block block = state.getBlock();
+        System.out.println("isReplaceable: " + block);
+        System.out.println("isReplaceable: " + state);
+        System.out.println("isReplaceable: " + state.canBeReplaced());
         if (block instanceof AirBlock) {
             // early return for common cases hehe
             return true;
@@ -327,6 +330,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         if (block == Blocks.LARGE_FERN || block == Blocks.TALL_GRASS) {
             return true;
         }
+
         return state.canBeReplaced();
     }
 
