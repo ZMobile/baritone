@@ -112,25 +112,6 @@ public class MovementAscend extends Movement {
                         System.out.println("destination with original y is not replaceable");
                         return COST_INF;
                     }
-                    //Checking one pos lower than previously
-                    boolean foundPlaceOption2 = false;
-                    for (int i = 0; i < 5; i++) {
-                        int againstX = destX + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepX();
-                        int againstY = y + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepY() - 1;
-                        int againstZ = destZ + HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i].getStepZ();
-                        if (againstX == x && againstZ == z) { // we might be able to backplace now, but it doesn't matter because it will have been broken by the time we'd need to use it
-                            continue;
-                        }
-                        if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) {
-                            foundPlaceOption2 = true;
-                            break;
-                        }
-                    }
-                    if (!foundPlaceOption2) {
-                        System.out.println("No valid place option");
-                        return COST_INF;
-                    }
-                    foundPlaceOption = true;
                 }
                 //System.out.println("No valid place option");
                 //return COST_INF;
