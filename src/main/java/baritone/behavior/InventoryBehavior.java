@@ -181,7 +181,40 @@ public final class InventoryBehavior extends Behavior implements Helper {
              LivingEntity livingEntity = ctx.baritonePlayer().getEntity();
             ItemStack itemStack = livingEntity.getItemInHand(MAIN_HAND);
             // Check if the item stack is not empty and if the item is an instance of BlockItem
-            return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem;
+            //Need to make sure its not a ladder or vine or door or trapdoor or bed
+            return !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem
+                    && !itemStack.getItem().equals(Blocks.LADDER)
+                    && !itemStack.getItem().equals(Blocks.VINE)
+                    && !itemStack.getItem().equals(Blocks.IRON_DOOR)
+                    && !itemStack.getItem().equals(Blocks.OAK_DOOR)
+                    && !itemStack.getItem().equals(Blocks.SPRUCE_DOOR)
+                    && !itemStack.getItem().equals(Blocks.BIRCH_DOOR)
+                    && !itemStack.getItem().equals(Blocks.JUNGLE_DOOR)
+                    && !itemStack.getItem().equals(Blocks.ACACIA_DOOR)
+                    && !itemStack.getItem().equals(Blocks.DARK_OAK_DOOR)
+                    && !itemStack.getItem().equals(Blocks.IRON_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.OAK_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.SPRUCE_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.BIRCH_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.JUNGLE_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.ACACIA_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.DARK_OAK_TRAPDOOR)
+                    && !itemStack.getItem().equals(Blocks.WHITE_BED)
+                    && !itemStack.getItem().equals(Blocks.ORANGE_BED)
+                    && !itemStack.getItem().equals(Blocks.MAGENTA_BED)
+                    && !itemStack.getItem().equals(Blocks.LIGHT_BLUE_BED)
+                    && !itemStack.getItem().equals(Blocks.YELLOW_BED)
+                    && !itemStack.getItem().equals(Blocks.LIME_BED)
+                    && !itemStack.getItem().equals(Blocks.PINK_BED)
+                    && !itemStack.getItem().equals(Blocks.GRAY_BED)
+                    && !itemStack.getItem().equals(Blocks.LIGHT_GRAY_BED)
+                    && !itemStack.getItem().equals(Blocks.CYAN_BED)
+                    && !itemStack.getItem().equals(Blocks.PURPLE_BED)
+                    && !itemStack.getItem().equals(Blocks.BLUE_BED)
+                    && !itemStack.getItem().equals(Blocks.BROWN_BED)
+                    && !itemStack.getItem().equals(Blocks.GREEN_BED)
+                    && !itemStack.getItem().equals(Blocks.RED_BED)
+                    && !itemStack.getItem().equals(Blocks.BLACK_BED);
         }
         for (Item item : Baritone.settings().acceptableThrowawayItems.value) {
             if (throwaway(false, stack -> item.equals(stack.getItem()))) {
