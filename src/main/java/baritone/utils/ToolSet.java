@@ -87,14 +87,15 @@ public class ToolSet {
     private int getMaterialCost(ItemStack itemStack) {
         if (itemStack.getItem() instanceof TieredItem) {
             TieredItem tool = (TieredItem) itemStack.getItem();
-            return tool.getTier().getLevel();
+            //return tool.getTier().getLevel();
         } else {
-            return -1;
+            //return -1;
         }
+        return -1;
     }
 
     public boolean hasSilkTouch(ItemStack stack) {
-        return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
+        return false;//EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
     }
 
     /**
@@ -198,7 +199,7 @@ public class ToolSet {
 
         float speed = item.getDestroySpeed(state);
         if (speed > 1) {
-            int effLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, item);
+            int effLevel = 0;//EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, item);
             if (effLevel > 0 && !item.isEmpty()) {
                 speed += effLevel * effLevel + 1;
             }

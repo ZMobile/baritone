@@ -41,7 +41,7 @@ public class ExploreFilterCommand extends Command {
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(2);
-        File file = args.getDatatypePost(RelativeFile.INSTANCE, ctx.server().getServerDirectory().getAbsoluteFile().getParentFile());
+        File file = args.getDatatypePost(RelativeFile.INSTANCE, new File(ctx.server().getServerDirectory().toString()).getParentFile());
         boolean invert = false;
         if (args.hasAny()) {
             if (args.getString().equalsIgnoreCase("invert")) {

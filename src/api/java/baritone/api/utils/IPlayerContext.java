@@ -39,7 +39,7 @@ import java.util.stream.StreamSupport;
  */
 public interface IPlayerContext {
     MinecraftServer server();
-    
+
     IPlayer baritonePlayer();
 
     LivingEntity entity();

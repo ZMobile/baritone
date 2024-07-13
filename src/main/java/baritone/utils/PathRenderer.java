@@ -49,7 +49,7 @@ import java.util.List;
  */
 public final class PathRenderer implements IRenderer {
 
-    /*private static final ResourceLocation TEXTURE_BEACON_BEAM = new ResourceLocation("textures/entity/beacon_beam.png");
+    /*private static final ResourceLocation TEXTURE_BEACON_BEAM = ResourceLocation.tryParse("textures/entity/beacon_beam.png");
 
 
     private PathRenderer() {}

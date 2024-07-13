@@ -178,7 +178,7 @@ public class Baritone implements IBaritone {
         //this.mc = null;
         this.gameEventHandler = new GameEventHandler(this);
 
-        this.directory = minecraftServer.getServerDirectory().toPath().resolve("baritone");
+        this.directory = Path.of(minecraftServer.getServerDirectory().toString()).resolve("baritone");
         if (!Files.exists(this.directory)) {
             try {
                 Files.createDirectories(this.directory);

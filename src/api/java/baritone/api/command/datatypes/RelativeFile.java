@@ -100,7 +100,7 @@ public enum RelativeFile implements IDatatypePost<File, File> {
     }
 
     public static File gameDir(MinecraftServer mc) {
-        File gameDir = mc.getServerDirectory().getAbsoluteFile();
+        File gameDir = new File(mc.getServerDirectory().toString());
         if (gameDir.getName().equals(".")) {
             return gameDir.getParentFile();
         }

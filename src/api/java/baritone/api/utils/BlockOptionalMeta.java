@@ -48,7 +48,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootDataManager;
+//import net.minecraft.world.level.storage.loot.LootDataManager;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -75,7 +75,7 @@ public final class BlockOptionalMeta {
     private final Set<BlockState> blockstates;
     private final ImmutableSet<Integer> stateHashes;
     private final ImmutableSet<Integer> stackHashes;
-    private static LootDataManager lootTables;
+    //private static LootDataManager lootTables;
     private static Map<Block, List<Item>> drops = new HashMap<>();
 
     public BlockOptionalMeta(@Nonnull Block block) {
@@ -218,8 +218,8 @@ public final class BlockOptionalMeta {
         return null;
     }
 
-    public static LootDataManager getManager() {
-        if (lootTables == null) {
+    public static Object getManager() {
+        /*if (lootTables == null) {
             MultiPackResourceManager resources = new MultiPackResourceManager(PackType.SERVER_DATA, List.of(getVanillaServerPack()));
             ReloadableResourceManager resourceManager = new ReloadableResourceManager(PackType.SERVER_DATA);
             lootTables = new LootDataManager();
@@ -230,12 +230,13 @@ public final class BlockOptionalMeta {
                 throw new RuntimeException(exception);
             }
 
-        }
-        return lootTables;
+        }*/
+        //return lootTables;
+        return null;
     }
 
     private static synchronized List<Item> drops(Block b) {
-        return drops.computeIfAbsent(b, block -> {
+        /*return drops.computeIfAbsent(b, block -> {
             ResourceLocation lootTableLocation = block.getLootTable();
             if (lootTableLocation == BuiltInLootTables.EMPTY) {
                 return Collections.emptyList();
@@ -260,7 +261,8 @@ public final class BlockOptionalMeta {
                 }
                 return items;
             }
-        });
+        });*/
+        return Collections.emptyList();
     }
 
     private static class ServerLevelStub extends ServerLevel {

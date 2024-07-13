@@ -52,7 +52,7 @@ public interface IBuilderProcess extends IBaritoneProcess {
 
     @Deprecated
     default boolean build(String schematicFile, BlockPos origin) {
-        File file = new File(new File(MinecraftServerUtil.getMinecraftServer().getServerDirectory(), "schematics"), schematicFile);
+         File file = new File(MinecraftServerUtil.getMinecraftServer().getServerDirectory().toString());
         return build(schematicFile, file, origin);
     }
 

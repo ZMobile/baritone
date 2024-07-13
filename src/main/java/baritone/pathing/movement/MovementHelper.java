@@ -179,7 +179,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return NO;
         }
         try { // A dodgy catch-all at the end, for most blocks with default behaviour this will work, however where blocks are special this will error out, and we can handle it when we have this information
-            if (state.isPathfindable(null, null, PathComputationType.LAND)) {
+            if (state.isPathfindable(PathComputationType.LAND)) {
                 return YES;
             } else {
                 return NO;
@@ -232,7 +232,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // every block that overrides isPassable with anything more complicated than a "return true;" or "return false;"
         // has already been accounted for above
         // therefore it's safe to not construct a blockpos from our x, y, z ints and instead just pass null
-        return state.isPathfindable(bsi.access, BlockPos.ZERO, PathComputationType.LAND); // workaround for future compatibility =P
+        return state.isPathfindable(PathComputationType.LAND); // workaround for future compatibility =P
     }
 
     static Ternary fullyPassableBlockState(BlockState state) {
@@ -261,7 +261,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // door, fence gate, liquid, trapdoor have been accounted for, nothing else uses the world or pos parameters
         // at least in 1.12.2 vanilla, that is.....
         try { // A dodgy catch-all at the end, for most blocks with default behaviour this will work, however where blocks are special this will error out, and we can handle it when we have this information
-            if (state.isPathfindable(null, null, PathComputationType.LAND)) {
+            if (state.isPathfindable( PathComputationType.LAND)) {
                 return YES;
             } else {
                 return NO;
@@ -298,7 +298,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean fullyPassablePosition(BlockStateInterface bsi, int x, int y, int z, BlockState state) {
-        return state.isPathfindable(bsi.access, bsi.isPassableBlockPos.set(x, y, z), PathComputationType.LAND);
+        return state.isPathfindable(PathComputationType.LAND);
     }
 
     static boolean isReplaceable(int x, int y, int z, BlockState state, BlockStateInterface bsi) {

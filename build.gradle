@@ -80,6 +80,8 @@ allprojects {
         implementation "dev.babbaj:nether-pathfinder:${project.nether_pathfinder_version}"
 
         implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+        //implementation 'com.guardsquare:proguard-gradle:7.5' // Replace with the latest version if available
     }
 
     unimined.minecraft(sourceSets.main, true) {
@@ -88,7 +90,7 @@ allprojects {
         mappings {
             intermediary()
             mojmap()
-            parchment("1.20.2", "2023.10.22")
+            parchment("1.20.6", "2024.07.07")
         }
     }
 
