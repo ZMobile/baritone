@@ -96,7 +96,7 @@ public class BlockStateInterface {
             if (cached != null && cached.getPos().x == x >> 4 && cached.getPos().z == z >> 4) {
                 return getFromChunk(cached, x, y, z);
             }
-            ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, /*ChunkStatus.FULL*/null, false);
+            ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, false);
             if (chunkAccess != null) {
                 LevelChunk chunk = (LevelChunk) chunkAccess;
                 prev = chunk;
@@ -127,7 +127,7 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.getPos().x == x >> 4 && prevChunk.getPos().z == z >> 4) {
             return true;
         }
-        ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, /*ChunkStatus.FULL*/null, false);
+        ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, false);
         if (chunkAccess != null) {
             prev = (LevelChunk) chunkAccess;
             return true;
