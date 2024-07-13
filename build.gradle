@@ -91,7 +91,7 @@ allprojects {
             intermediary()
             mojmap()
             yarn("1")
-            parchment("1.21", "2024.07.07")
+            //parchment("1.21", "2024.07.07")
         }
     }
 
