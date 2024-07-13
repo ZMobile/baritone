@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
 /**
  * Wraps get for chuck caching capability
@@ -96,7 +97,7 @@ public class BlockStateInterface {
             if (cached != null && cached.getPos().x == x >> 4 && cached.getPos().z == z >> 4) {
                 return getFromChunk(cached, x, y, z);
             }
-            ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, false);
+            ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, false);
             if (chunkAccess != null) {
                 LevelChunk chunk = (LevelChunk) chunkAccess;
                 prev = chunk;
@@ -127,7 +128,7 @@ public class BlockStateInterface {
         if (prevChunk != null && prevChunk.getPos().x == x >> 4 && prevChunk.getPos().z == z >> 4) {
             return true;
         }
-        ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, false);
+        ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, false);
         if (chunkAccess != null) {
             prev = (LevelChunk) chunkAccess;
             return true;
