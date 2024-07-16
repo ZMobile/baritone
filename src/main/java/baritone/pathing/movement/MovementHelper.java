@@ -179,7 +179,7 @@ public interface MovementHelper extends ActionCosts, Helper {
             return NO;
         }
         try { // A dodgy catch-all at the end, for most blocks with default behaviour this will work, however where blocks are special this will error out, and we can handle it when we have this information
-            if (state.isPathfindable(null, null, PathComputationType.LAND)) {
+            if (state.isPathfindable(PathComputationType.LAND)) {
                 return YES;
             } else {
                 return NO;
@@ -232,7 +232,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // every block that overrides isPassable with anything more complicated than a "return true;" or "return false;"
         // has already been accounted for above
         // therefore it's safe to not construct a blockpos from our x, y, z ints and instead just pass null
-        return state.isPathfindable(bsi.access, BlockPos.ZERO, PathComputationType.LAND); // workaround for future compatibility =P
+        return state.isPathfindable(PathComputationType.LAND); // workaround for future compatibility =P
     }
 
     static Ternary fullyPassableBlockState(BlockState state) {
@@ -261,7 +261,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         // door, fence gate, liquid, trapdoor have been accounted for, nothing else uses the world or pos parameters
         // at least in 1.12.2 vanilla, that is.....
         try { // A dodgy catch-all at the end, for most blocks with default behaviour this will work, however where blocks are special this will error out, and we can handle it when we have this information
-            if (state.isPathfindable(null, null, PathComputationType.LAND)) {
+            if (state.isPathfindable( PathComputationType.LAND)) {
                 return YES;
             } else {
                 return NO;
@@ -298,7 +298,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean fullyPassablePosition(BlockStateInterface bsi, int x, int y, int z, BlockState state) {
-        return state.isPathfindable(bsi.access, bsi.isPassableBlockPos.set(x, y, z), PathComputationType.LAND);
+        return state.isPathfindable(PathComputationType.LAND);
     }
 
     static boolean isReplaceable(int x, int y, int z, BlockState state, BlockStateInterface bsi) {
@@ -327,7 +327,6 @@ public interface MovementHelper extends ActionCosts, Helper {
         if (block == Blocks.LARGE_FERN || block == Blocks.TALL_GRASS) {
             return true;
         }
-
         return state.canBeReplaced();
     }
 
@@ -517,10 +516,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static boolean canUseFrostWalker(IPlayerContext ctx, BlockPos pos) {
-        BlockState state = BlockStateInterface.get(ctx, pos);
-        return ctx.baritonePlayer().isLocalPlayer() && EnchantmentHelper.hasFrostWalker(ctx.baritonePlayer().getPlayer())
-                && state == FrostedIceBlock.meltsInto()
-                && ((Integer) state.getValue(LiquidBlock.LEVEL)) == 0;
+        return false;
     }
 
     /**
@@ -650,9 +646,7 @@ public interface MovementHelper extends ActionCosts, Helper {
      * @param ts  previously calculated ToolSet
      */
     static void switchToBestToolFor(IPlayerContext ctx, BlockState b, ToolSet ts, boolean preferSilkTouch) {
-        if (ctx.baritonePlayer().isLocalPlayer() && Baritone.settings().autoTool.value && !Baritone.settings().assumeExternalAutoTool.value) {
-            ctx.baritonePlayer().getPlayer().getInventory().selected = ts.getBestSlot(b.getBlock(), preferSilkTouch);
-        }
+
     }
 
     static void moveTowards(IPlayerContext ctx, MovementState state, BlockPos pos) {
@@ -758,11 +752,11 @@ public interface MovementHelper extends ActionCosts, Helper {
             BlockPos against1 = placeAt.relative(HORIZONTALS_BUT_ALSO_DOWN_____SO_EVERY_DIRECTION_EXCEPT_UP[i]);
             if (MovementHelper.canPlaceAgainst(ctx, against1)) {
                 if (((Baritone) baritone).getInventoryBehavior() != null) {
-                    if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(false, placeAt.getX(), placeAt.getY(), placeAt.getZ())) { // get ready to place a throwaway block
+                    /*if (!((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(false, placeAt.getX(), placeAt.getY(), placeAt.getZ())) { // get ready to place a throwaway block
                         Helper.HELPER.logDebug("bb pls get me some blocks. dirt, netherrack, cobble");
                         state.setStatus(MovementStatus.UNREACHABLE);
                         return PlaceResult.NO_OPTION;
-                    }
+                    }*/
                 }
                 double faceX = (placeAt.getX() + against1.getX() + 1.0D) * 0.5D;
                 double faceY = (placeAt.getY() + against1.getY() + 0.5D) * 0.5D;
@@ -791,7 +785,7 @@ public interface MovementHelper extends ActionCosts, Helper {
                     state.setInput(Input.SNEAK, true);
                 }
                 if (((Baritone) baritone).getInventoryBehavior() != null) {
-                    ((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, placeAt.getX(), placeAt.getY(), placeAt.getZ());
+                    //((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, placeAt.getX(), placeAt.getY(), placeAt.getZ());
                 }
                 return PlaceResult.READY_TO_PLACE;
             }
@@ -801,7 +795,7 @@ public interface MovementHelper extends ActionCosts, Helper {
                 state.setInput(Input.SNEAK, true);
             }
             if (((Baritone) baritone).getInventoryBehavior() != null) {
-                ((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, placeAt.getX(), placeAt.getY(), placeAt.getZ());
+                //((Baritone) baritone).getInventoryBehavior().selectThrowawayForLocation(true, placeAt.getX(), placeAt.getY(), placeAt.getZ());
             }
             return PlaceResult.ATTEMPTING;
         }

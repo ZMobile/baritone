@@ -238,7 +238,7 @@ public class SettingsUtil {
         ),
         ITEM(
                 Item.class,
-                str -> BuiltInRegistries.ITEM.get(new ResourceLocation(str.trim())), // TODO this now returns AIR on failure instead of null, is that an issue?
+                str -> BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(str.trim())), // TODO this now returns AIR on failure instead of null, is that an issue?
                 item -> BuiltInRegistries.ITEM.getKey(item).toString()
         ),
         LIST() {

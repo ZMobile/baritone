@@ -129,7 +129,7 @@ public class WorldProvider implements IWorldProvider {
             worldDir = ctx.server().getWorldPath(LevelResource.ROOT);
 
             // Gets the "depth" of this directory relative to the game's run directory, 2 is the location of the world
-            if (worldDir.relativize(ctx.server().getServerDirectory().toPath()).getNameCount() != 2) {
+            if (worldDir.relativize(ctx.server().getServerDirectory().toAbsolutePath()).getNameCount() != 2) {
                 // subdirectory of the main save directory for this world
                 worldDir = worldDir.getParent();
             }

@@ -32,11 +32,13 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public interface IRenderer {
 
     Tesselator tessellator = Tesselator.getInstance();
-    BufferBuilder buffer = tessellator.getBuilder();
+    Set<BufferBuilder> bufferBuilders = new HashSet<>();
     IEntityRenderManager renderManager = (IEntityRenderManager) Minecraft.getInstance().getEntityRenderDispatcher();
     TextureManager textureManager = Minecraft.getInstance().getTextureManager();
     Settings settings = BaritoneAPI.getSettings();
@@ -69,7 +71,7 @@ public interface IRenderer {
             RenderSystem.disableDepthTest();
         }
         RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
-        buffer.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+        bufferBuilders.add(tessellator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL));
     }
 
     static void startLines(Color color, float lineWidth, boolean ignoreDepth) {
@@ -77,7 +79,8 @@ public interface IRenderer {
     }
 
     static void endLines(boolean ignoredDepth) {
-        tessellator.end();
+        tessellator.clear();
+        bufferBuilders.clear();
         if (ignoredDepth) {
             RenderSystem.enableDepthTest();
         }
@@ -118,8 +121,8 @@ public interface IRenderer {
         final Matrix4f matrix4f = stack.last().pose();
         final Matrix3f normal = stack.last().normal();
 
-        buffer.vertex(matrix4f, x1, y1, z1).color(color[0], color[1], color[2], color[3]).normal(normal, nx, ny, nz).endVertex();
-        buffer.vertex(matrix4f, x2, y2, z2).color(color[0], color[1], color[2], color[3]).normal(normal, nx, ny, nz).endVertex();
+        bufferBuilders.stream().toList().get(0).addVertex(matrix4f, x1, y1, z1).setColor(color[0], color[1], color[2], color[3]).setNormal(stack.last(), nx, ny, nz);
+        bufferBuilders.stream().toList().get(0).addVertex(matrix4f, x2, y2, z2).setColor(color[0], color[1], color[2], color[3]).setNormal(stack.last(), nx, ny, nz);
     }
 
     static void emitAABB(PoseStack stack, AABB aabb) {

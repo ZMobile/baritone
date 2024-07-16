@@ -35,9 +35,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Screen.class)
 public abstract class MixinScreen implements IGuiScreen {
 
-    @Override
+    /*@Override
     @Invoker("openLink")
-    public abstract void openLinkInvoker(URI url);
+    public abstract void openLinkInvoker(URI url);*/
 
 
     //TODO: switch to enum extention with mixin 9.0 or whenever Mumfrey gets around to it

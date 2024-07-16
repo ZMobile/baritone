@@ -21,7 +21,6 @@ import baritone.api.utils.BlockOptionalMeta;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootDataManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -41,19 +40,5 @@ public class MixinLootContext {
             return null;
         }
         return world.getServer();
-    }
-
-    @Redirect(
-            method = "create",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/MinecraftServer;getLootData()Lnet/minecraft/world/level/storage/loot/LootDataManager;"
-            )
-    )
-    private LootDataManager getLootTableManager(MinecraftServer server) {
-        if (server == null) {
-            return BlockOptionalMeta.getManager();
-        }
-        return server.getLootData();
     }
 }

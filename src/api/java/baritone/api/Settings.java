@@ -108,7 +108,7 @@ public final class Settings {
      * <p>
      * Decrease to make Baritone more often consider paths that would require placing blocks
      */
-    public final Setting<Double> blockPlacementPenalty = new Setting<>(20D);
+    public final Setting<Double> blockPlacementPenalty = new Setting<>(10D);
 
     /**
      * This is just a tiebreaker to make it less likely to break blocks if it can avoid it.

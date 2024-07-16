@@ -106,8 +106,10 @@ public class CalculationContext {
             //this.hasThrowaway = Baritone.settings().allowPlace.value && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
             this.hasWaterBucket = Baritone.settings().allowWaterBucketFall.value && Inventory.isHotbarSlot(player.getPlayer().getInventory().findSlotMatchingItem(STACK_BUCKET_WATER)) && world.dimension() != Level.NETHER;
             this.canSprint = Baritone.settings().allowSprint.value && player.getPlayer().getFoodData().getFoodLevel() > 6;
-            this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
-            depth = EnchantmentHelper.getDepthStrider(player.getPlayer());
+            //this.frostWalker = EnchantmentHelper.getEnchantmentLevel(Enchantments.FROST_WALKER, player.getPlayer());
+            this.frostWalker = 0;
+            //depth = EnchantmentHelper.getDepthStrider(player.getPlayer());
+            depth = 0;
             if (depth > 3) {
                 depth = 3;
             }

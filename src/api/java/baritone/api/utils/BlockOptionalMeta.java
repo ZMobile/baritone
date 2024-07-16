@@ -21,7 +21,6 @@ import baritone.api.utils.accessor.IItemStack;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +32,7 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
 import net.minecraft.world.RandomSequences;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -48,7 +48,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootDataManager;
+//import net.minecraft.world.level.storage.loot.LootDataManager;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -75,7 +75,7 @@ public final class BlockOptionalMeta {
     private final Set<BlockState> blockstates;
     private final ImmutableSet<Integer> stateHashes;
     private final ImmutableSet<Integer> stackHashes;
-    private static LootDataManager lootTables;
+    //private static LootDataManager lootTables;
     private static Map<Block, List<Item>> drops = new HashMap<>();
 
     public BlockOptionalMeta(@Nonnull Block block) {
@@ -218,8 +218,8 @@ public final class BlockOptionalMeta {
         return null;
     }
 
-    public static LootDataManager getManager() {
-        if (lootTables == null) {
+    public static Object getManager() {
+        /*if (lootTables == null) {
             MultiPackResourceManager resources = new MultiPackResourceManager(PackType.SERVER_DATA, List.of(getVanillaServerPack()));
             ReloadableResourceManager resourceManager = new ReloadableResourceManager(PackType.SERVER_DATA);
             lootTables = new LootDataManager();
@@ -230,12 +230,13 @@ public final class BlockOptionalMeta {
                 throw new RuntimeException(exception);
             }
 
-        }
-        return lootTables;
+        }*/
+        //return lootTables;
+        return null;
     }
 
     private static synchronized List<Item> drops(Block b) {
-        return drops.computeIfAbsent(b, block -> {
+        /*return drops.computeIfAbsent(b, block -> {
             ResourceLocation lootTableLocation = block.getLootTable();
             if (lootTableLocation == BuiltInLootTables.EMPTY) {
                 return Collections.emptyList();
@@ -260,21 +261,15 @@ public final class BlockOptionalMeta {
                 }
                 return items;
             }
-        });
+        });*/
+        return Collections.emptyList();
     }
 
     private static class ServerLevelStub extends ServerLevel {
-        private static Minecraft client = Minecraft.getInstance();
         private static Unsafe unsafe = getUnsafe();
 
         public ServerLevelStub(MinecraftServer $$0, Executor $$1, LevelStorageSource.LevelStorageAccess $$2, ServerLevelData $$3, ResourceKey<Level> $$4, LevelStem $$5, ChunkProgressListener $$6, boolean $$7, long $$8, List<CustomSpawner> $$9, boolean $$10, @Nullable RandomSequences $$11) {
             super($$0, $$1, $$2, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11);
-        }
-
-        @Override
-        public FeatureFlagSet enabledFeatures() {
-            assert client.level != null;
-            return client.level.enabledFeatures();
         }
 
         public static ServerLevelStub fastCreate() {
@@ -294,6 +289,5 @@ public final class BlockOptionalMeta {
                 throw new RuntimeException(e);
             }
         }
-
     }
 }

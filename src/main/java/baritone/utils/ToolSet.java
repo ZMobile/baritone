@@ -19,7 +19,6 @@ package baritone.utils;
 
 import baritone.Baritone;
 import baritone.api.utils.IPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -88,14 +87,15 @@ public class ToolSet {
     private int getMaterialCost(ItemStack itemStack) {
         if (itemStack.getItem() instanceof TieredItem) {
             TieredItem tool = (TieredItem) itemStack.getItem();
-            return tool.getTier().getLevel();
+            //return tool.getTier().getLevel();
         } else {
-            return -1;
+            //return -1;
         }
+        return -1;
     }
 
     public boolean hasSilkTouch(ItemStack stack) {
-        return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
+        return false;//EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0;
     }
 
     /**
@@ -119,7 +119,7 @@ public class ToolSet {
         possible, this lets us make pathing depend on the actual tool to be used (if auto tool is disabled)
         */
         if (!Baritone.settings().autoTool.value && pathingCalculation) {
-            return player.getPlayer().getInventory().selected;
+            return 0;//player.getPlayer().getInventory().selected;
         }
 
         int best = 0;
@@ -128,7 +128,7 @@ public class ToolSet {
         boolean bestSilkTouch = false;
         BlockState blockState = b.defaultBlockState();
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = player.getPlayer().getInventory().getItem(i);
+            ItemStack itemStack = new ItemStack(Items.AIR);//player.getPlayer().getInventory().getItem(i);
             if (!Baritone.settings().useSwordToMine.value && itemStack.getItem() instanceof SwordItem) {
                 continue;
             }
@@ -165,11 +165,11 @@ public class ToolSet {
      */
     private double getBestDestructionTime(Block b) {
         ItemStack stack;
-        if (player.isLocalPlayer()) {
+        /*if (player.isLocalPlayer()) {
             stack = player.getPlayer().getInventory().getItem(getBestSlot(b, false, true));
-        } else {
-            stack = new ItemStack(Items.AIR);
-        }
+        } else {*/
+        stack = new ItemStack(Items.AIR);
+        //}
         return calculateSpeedVsBlock(stack, b.defaultBlockState()) * avoidanceMultiplier(b);
     }
 
@@ -199,7 +199,7 @@ public class ToolSet {
 
         float speed = item.getDestroySpeed(state);
         if (speed > 1) {
-            int effLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, item);
+            int effLevel = 0;//EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, item);
             if (effLevel > 0 && !item.isEmpty()) {
                 speed += effLevel * effLevel + 1;
             }

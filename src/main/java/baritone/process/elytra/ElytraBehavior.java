@@ -923,7 +923,7 @@ public final class ElytraBehavior implements Helper {
             return false;
         }
         // If it has NBT data, make sure it won't cause us to explode.
-        final CompoundTag compound = itemStack.getTagElement("Fireworks");
+        final CompoundTag compound = null;//itemStack.getTagElement("Fireworks");
         return compound == null || !compound.getAllKeys().contains("Explosions");
     }
 
@@ -932,12 +932,12 @@ public final class ElytraBehavior implements Helper {
     }
 
     private static OptionalInt getFireworkBoost(final ItemStack itemStack) {
-        if (isFireworks(itemStack)) {
+        /*if (isFireworks(itemStack)) {
             final CompoundTag compound = itemStack.getTagElement("Fireworks");
             if (compound != null && compound.getAllKeys().contains("Flight")) {
                 return OptionalInt.of(compound.getByte("Flight"));
             }
-        }
+        }*/
         return OptionalInt.empty();
     }
 
@@ -1292,7 +1292,7 @@ public final class ElytraBehavior implements Helper {
         NonNullList<ItemStack> invy = ctx.baritonePlayer().getPlayer().getInventory().items;
         for (int i = 0; i < invy.size(); i++) {
             ItemStack slot = invy.get(i);
-            if (slot.getItem() == Items.ELYTRA && (slot.getItem().getMaxDamage() - slot.getDamageValue()) > Baritone.settings().elytraMinimumDurability.value) {
+            if (slot.getItem() == Items.ELYTRA /*&& (slot.getItem() - slot.getDamageValue()) > Baritone.settings().elytraMinimumDurability.value*/) {
                 return i;
             }
         }
@@ -1305,8 +1305,8 @@ public final class ElytraBehavior implements Helper {
         }
 
         ItemStack chest = ctx.baritonePlayer().getEntity().getItemBySlot(EquipmentSlot.CHEST);
-        if (chest.getItem() != Items.ELYTRA
-                || chest.getItem().getMaxDamage() - chest.getDamageValue() > Baritone.settings().elytraMinimumDurability.value) {
+        if (chest.getItem() != Items.ELYTRA) {
+                //|| chest.getItem().getMaxDamage() - chest.getDamageValue() > Baritone.settings().elytraMinimumDurability.value) {
             return;
         }
 

@@ -50,7 +50,7 @@ import java.util.List;
  */
 public final class PathRenderer implements IRenderer {
 
-    private static final ResourceLocation TEXTURE_BEACON_BEAM = new ResourceLocation("textures/entity/beacon_beam.png");
+    private static final ResourceLocation TEXTURE_BEACON_BEAM = ResourceLocation.tryParse("textures/entity/beacon_beam.png");
 
 
     private PathRenderer() {}
@@ -280,7 +280,7 @@ public final class PathRenderer implements IRenderer {
                         settings.renderGoalAnimated.value ? ctx.world().getGameTime() : 0,
                         (int) minY,
                         (int) maxY,
-                        color.getColorComponents(null),
+                        0,
 
                         // Arguments filled by the private method lol
                         0.2F,
