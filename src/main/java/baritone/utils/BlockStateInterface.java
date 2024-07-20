@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -42,7 +43,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
  */
 public class BlockStateInterface {
 
-    private final ServerChunkCache provider;
+    private final ChunkSource provider;
     private final WorldData worldData;
     protected final Level world;
     public final BlockPos.MutableBlockPos isPassableBlockPos;
@@ -64,7 +65,8 @@ public class BlockStateInterface {
         this.world = ctx.world();
         this.worldBorder = new BetterWorldBorder(world.getWorldBorder());
         this.worldData = (WorldData) ctx.worldData();
-        this.provider = (ServerChunkCache) world.getChunkSource();
+
+        this.provider = world.getChunkSource();
         this.useTheRealWorld = !Baritone.settings().pathThroughCachedOnly.value;
         this.isPassableBlockPos = new BlockPos.MutableBlockPos();
         this.access = new BlockStateInterfaceAccessWrapper(this);
