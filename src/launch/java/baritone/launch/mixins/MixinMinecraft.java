@@ -24,6 +24,7 @@ import baritone.api.event.events.TickEvent;
 import baritone.api.event.events.WorldEvent;
 import baritone.api.event.events.type.EventState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -130,8 +131,9 @@ public class MixinMinecraft {
             method = "setLevel",
             at = @At("HEAD")
     )
-    private void preLoadWorld(ClientLevel world, CallbackInfo ci) {
+    private void preLoadWorld(ClientLevel arg, ReceivingLevelScreen.Reason arg2, CallbackInfo ci) {
         // If we're unloading the world but one doesn't exist, ignore it
+        ClientLevel world = Minecraft.getInstance().level;
         if (this.level == null && world == null) {
             return;
         }
@@ -150,9 +152,9 @@ public class MixinMinecraft {
             method = "setLevel",
             at = @At("RETURN")
     )
-    private void postLoadWorld(ClientLevel world, CallbackInfo ci) {
+    private void postLoadWorld(ClientLevel arg, ReceivingLevelScreen.Reason arg2, CallbackInfo ci) {
         // still fire event for both null, as that means we've just finished exiting a world
-
+        ClientLevel world = Minecraft.getInstance().level;
         // mc.world changing is only the primary baritone
         BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onWorldEvent(
                 new WorldEvent(

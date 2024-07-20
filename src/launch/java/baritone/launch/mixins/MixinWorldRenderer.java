@@ -22,6 +22,7 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.RenderEvent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -44,9 +45,11 @@ public class MixinWorldRenderer {
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    private void onStartHand(PoseStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, Camera activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci) {
+    private void onStartHand(DeltaTracker arg, boolean bl, Camera arg2, GameRenderer arg3, LightTexture arg4, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+        //PoseStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, Camera activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
-            ibaritone.getGameEventHandler().onRenderPass(new RenderEvent(partialTicks, matrixStackIn, projectionIn));
+            // Assuming RenderEvent can take partialTicks and matrixStackIn arguments
+            ibaritone.getGameEventHandler().onRenderPass(new RenderEvent(arg.getGameTimeDeltaPartialTick(true), new PoseStack(), matrix4f));
         }
     }
 }
