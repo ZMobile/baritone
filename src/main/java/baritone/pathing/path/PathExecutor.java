@@ -130,7 +130,7 @@ public class PathExecutor implements IPathExecutor, Helper {
         Tuple<Double, BlockPos> status = closestPathPos(path);
         if (possiblyOffPath(status, MAX_DIST_FROM_PATH)) {
             ticksAway++;
-            System.out.println("FAR AWAY FROM PATH FOR " + ticksAway + " TICKS. Current distance: " + status.getA() + ". Threshold: " + MAX_DIST_FROM_PATH);
+            //System.out.println("FAR AWAY FROM PATH FOR " + ticksAway + " TICKS. Current distance: " + status.getA() + ". Threshold: " + MAX_DIST_FROM_PATH);
             if (ticksAway > MAX_TICKS_AWAY) {
                 logDebug("Too far away from path for too long, cancelling path");
                 cancel();
