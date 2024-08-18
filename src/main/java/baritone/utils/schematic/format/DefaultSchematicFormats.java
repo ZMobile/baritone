@@ -45,7 +45,7 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
     MCEDIT("schematic") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            return new MCEditSchematic(NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap()));
+            return new MCEditSchematic(NbtIo.readCompressed(input));
         }
     },
 
@@ -57,7 +57,7 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
     SPONGE("schem") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
+            CompoundTag nbt = NbtIo.readCompressed(input);
             int version = nbt.getInt("Version");
             switch (version) {
                 case 1:
@@ -75,7 +75,7 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
     LITEMATICA("litematic") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
+            CompoundTag nbt = NbtIo.readCompressed(input);
             int version = nbt.getInt("Version");
             switch (version) {
                 case 4: //1.12
