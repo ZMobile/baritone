@@ -83,7 +83,7 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public Level world() {
-        return this.entity().level();
+        return this.entity().getLevel();
     }
 
     @Override

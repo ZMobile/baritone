@@ -327,7 +327,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         if (block == Blocks.LARGE_FERN || block == Blocks.TALL_GRASS) {
             return true;
         }
-        return state.canBeReplaced();
+        return state.getMaterial().isReplaceable();
     }
 
     @Deprecated
@@ -511,8 +511,9 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean canUseFrostWalker(CalculationContext context, BlockState state) {
         return context.frostWalker != 0
-                && state == FrostedIceBlock.meltsInto()
-                && ((Integer) state.getValue(LiquidBlock.LEVEL)) == 0;
+                && state.is(Blocks.FROSTED_ICE)
+                && state.getBlock().equals(Blocks.WATER)
+                && state.getValue(LiquidBlock.LEVEL) == 0;
     }
 
     static boolean canUseFrostWalker(IPlayerContext ctx, BlockPos pos) {
@@ -724,8 +725,7 @@ public interface MovementHelper extends ActionCosts, Helper {
 
     static boolean isBlockNormalCube(BlockState state) {
         Block block = state.getBlock();
-        if (block instanceof BambooStalkBlock
-                || block instanceof MovingPistonBlock
+        if (block instanceof MovingPistonBlock
                 || block instanceof ScaffoldingBlock
                 || block instanceof ShulkerBoxBlock
                 || block instanceof PointedDripstoneBlock

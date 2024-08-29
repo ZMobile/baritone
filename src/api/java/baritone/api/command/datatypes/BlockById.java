@@ -19,7 +19,8 @@ package baritone.api.command.datatypes;
 
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.helpers.TabCompleteHelper;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
@@ -38,7 +39,7 @@ public enum BlockById implements IDatatypeFor<Block> {
     public Block get(IDatatypeContext ctx) throws CommandException {
         //ResourceLocation id = ResourceLocation.of(ctx.getConsumer().getString(), 'c');
         Block block;
-        if ((block = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(ctx.getConsumer().getString())).orElse(null)) == null) {
+        if ((block = Registry.BLOCK.getOptional(ResourceLocation.tryParse(ctx.getConsumer().getString())).orElse(null)) == null) {
             throw new IllegalArgumentException("no block found by that id");
         }
         return block;
@@ -54,7 +55,7 @@ public enum BlockById implements IDatatypeFor<Block> {
 
         return new TabCompleteHelper()
                 .append(
-                        BuiltInRegistries.BLOCK.keySet()
+                        Registry.BLOCK.keySet()
                                 .stream()
                                 .map(Object::toString)
                 )

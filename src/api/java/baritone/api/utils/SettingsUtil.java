@@ -22,7 +22,7 @@ import baritone.api.Settings;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -237,8 +237,8 @@ public class SettingsUtil {
         ),
         ITEM(
                 Item.class,
-                str -> BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(str.trim())), // TODO this now returns AIR on failure instead of null, is that an issue?
-                item -> BuiltInRegistries.ITEM.getKey(item).toString()
+                str -> Registry.ITEM.get(ResourceLocation.tryParse(str.trim())), // TODO this now returns AIR on failure instead of null, is that an issue?
+                item -> Registry.ITEM.getKey(item).toString()
         ),
         LIST() {
             @Override

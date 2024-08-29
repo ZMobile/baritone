@@ -433,7 +433,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         if (ctx.baritonePlayer().getEntity() != null) {
             BetterBlockPos feet = ctx.playerFeet();
             if (!MovementHelper.canWalkOn(ctx, feet.below())) {
-                if (ctx.baritonePlayer().getEntity().onGround()) {
+                if (ctx.baritonePlayer().getEntity().isOnGround()) {
                     double playerX = ctx.baritonePlayer().getEntity().position().x;
                     double playerZ = ctx.baritonePlayer().getEntity().position().z;
                     ArrayList<BetterBlockPos> closest = new ArrayList<>();

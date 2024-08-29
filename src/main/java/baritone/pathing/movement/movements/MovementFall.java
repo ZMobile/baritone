@@ -131,7 +131,7 @@ public class MovementFall extends Movement {
         }
         Vec3 destCenter = VecUtils.getBlockPosCenter(dest); // we are moving to the 0.5 center not the edge (like if we were falling on a ladder)
         if (Math.abs(ctx.baritonePlayer().getEntity().position().x + ctx.baritonePlayer().getEntity().getDeltaMovement().x - destCenter.x) > 0.1 || Math.abs(ctx.baritonePlayer().getEntity().position().z + ctx.baritonePlayer().getEntity().getDeltaMovement().z - destCenter.z) > 0.1) {
-            if (!ctx.baritonePlayer().getEntity().onGround() && Math.abs(ctx.baritonePlayer().getEntity().getDeltaMovement().y) > 0.4) {
+            if (!ctx.baritonePlayer().getEntity().isOnGround() && Math.abs(ctx.baritonePlayer().getEntity().getDeltaMovement().y) > 0.4) {
                 state.setInput(Input.SNEAK, true);
             }
             state.setInput(Input.MOVE_FORWARD, true);
@@ -143,7 +143,7 @@ public class MovementFall extends Movement {
             double dist = Math.abs(avoid.getX() * (destCenter.x - avoid.getX() / 2.0 - ctx.baritonePlayer().getEntity().position().x)) + Math.abs(avoid.getZ() * (destCenter.z - avoid.getZ() / 2.0 - ctx.baritonePlayer().getEntity().position().z));
             if (dist < 0.6) {
                 state.setInput(Input.MOVE_FORWARD, true);
-            } else if (!ctx.baritonePlayer().getEntity().onGround()) {
+            } else if (!ctx.baritonePlayer().getEntity().isOnGround()) {
                 state.setInput(Input.SNEAK, false);
             }
         }
