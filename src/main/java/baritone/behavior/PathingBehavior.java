@@ -37,10 +37,8 @@ import baritone.process.ElytraProcess;
 import baritone.utils.PathRenderer;
 import baritone.utils.PathingCommandContext;
 import baritone.utils.pathing.Favoring;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import net.minecraft.core.BlockPos;
 
@@ -510,10 +508,29 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         }
         inProgress = pathfinder;
         Baritone.getExecutor().execute(() -> {
+            //Added something to stop calculations from far distances:
+            if (current != null) {
+                List<BetterBlockPos> positions = current.getPath().positions();
+                BetterBlockPos lastPosition = positions.get(positions.size() - 1);
+                BetterBlockPos mobPosition = ctx.playerFeet();
+
+                int dx = lastPosition.x - mobPosition.x;
+                int dy = lastPosition.y - mobPosition.y;
+                int dz = lastPosition.z - mobPosition.z;
+                int distanceSq = dx * dx + dy * dy + dz * dz;
+
+                if (distanceSq > 40 * 40) {
+                    // Skip the pathfinding calculation
+                    synchronized (pathCalcLock) {
+                        inProgress = null;
+                    }
+                    return;
+                }
+            }
+
             if (talkAboutIt) {
                 logDebug("Starting to search for path from " + start + " to " + goal);
             }
-
             PathCalculationResult calcResult = pathfinder.calculate(primaryTimeout, failureTimeout);
             synchronized (pathPlanLock) {
                 Optional<PathExecutor> executor = calcResult.getPath().map(p -> new PathExecutor(PathingBehavior.this, p));
