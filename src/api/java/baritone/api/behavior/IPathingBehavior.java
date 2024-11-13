@@ -129,4 +129,6 @@ public interface IPathingBehavior extends IBehavior {
      * @return The next path executor
      */
     IPathExecutor getNext();
+
+    boolean canPath();
 }
