@@ -46,7 +46,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
 
     private PathExecutor current;
     private PathExecutor next;
-
+    private boolean canPath;
     private Goal goal;
     private CalculationContext context;
 
@@ -74,6 +74,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
 
     public PathingBehavior(Baritone baritone) {
         super(baritone);
+        this.canPath = true;
     }
 
     private void queuePathEvent(PathEvent event) {
@@ -509,6 +510,12 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         inProgress = pathfinder;
         Baritone.getExecutor().execute(() -> {
             //Added something to stop calculations from far distances:
+            if (!canPath) {
+                synchronized (pathCalcLock) {
+                    inProgress = null;
+                }
+                return;
+            }
             if (current != null) {
                 List<BetterBlockPos> positions = current.getPath().positions();
                 BetterBlockPos lastPosition = positions.get(positions.size() - 1);
@@ -596,5 +603,15 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
     @Override
     public void onRenderPass(RenderEvent event) {
         //PathRenderer.render(event, this);
+    }
+
+    @Override
+    public boolean canPath() {
+        return canPath;
+    }
+
+    @Override
+    public void setCanPath(boolean canPath) {
+        this.canPath = canPath;
     }
 }
