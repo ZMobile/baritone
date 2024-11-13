@@ -77,8 +77,4 @@ public interface AbstractGameEventListener extends IGameEventListener {
 
     @Override
     default void onPathEvent(PathEvent event) {}
-
-    boolean canPath();
-
-    void setCanPath(boolean canPath);
 }
