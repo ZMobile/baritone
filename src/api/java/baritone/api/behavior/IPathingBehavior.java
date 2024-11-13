@@ -131,4 +131,6 @@ public interface IPathingBehavior extends IBehavior {
     IPathExecutor getNext();
 
     boolean canPath();
+
+    void setCanPath(boolean canPath);
 }
