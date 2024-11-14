@@ -74,7 +74,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
 
     public PathingBehavior(Baritone baritone) {
         super(baritone);
-        canPath = true;
+        this.canPath = true;
     }
 
     private void queuePathEvent(PathEvent event) {
@@ -516,7 +516,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
                 }
                 return;
             }
-            if (current != null) {
+            /*if (current != null) {
                 List<BetterBlockPos> positions = current.getPath().positions();
                 BetterBlockPos lastPosition = positions.get(positions.size() - 1);
                 BetterBlockPos mobPosition = ctx.playerFeet();
@@ -534,6 +534,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
                     return;
                 }
             }
+             */
 
             if (talkAboutIt) {
                 logDebug("Starting to search for path from " + start + " to " + goal);
@@ -606,10 +607,12 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         //PathRenderer.render(event, this);
     }
 
+    @Override
     public boolean canPath() {
         return canPath;
     }
 
+    @Override
     public void setCanPath(boolean canPath) {
         this.canPath = canPath;
     }
