@@ -510,7 +510,7 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
         inProgress = pathfinder;
         Baritone.getExecutor().execute(() -> {
             //Added something to stop calculations from far distances:
-            if (!canPath) {
+            /*if (!canPath) {
                 synchronized (pathCalcLock) {
                     inProgress = null;
                 }
