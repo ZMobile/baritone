@@ -146,6 +146,9 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                 }
                 PathNode neighbor = getNodeAtPosition(res.x, res.y, res.z, hashCode);
                 double tentativeCost = currentNode.cost + actionCost;
+                double goalWeight = 0.1;
+                double distancePenalty = goalWeight * goal.heuristic(currentNode.x, currentNode.y, currentNode.z);
+                tentativeCost += distancePenalty;
                 if (neighbor.cost - tentativeCost > minimumImprovement) {
                     neighbor.previous = currentNode;
                     neighbor.cost = tentativeCost;
