@@ -185,7 +185,7 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
         return bestSoFar(false, 0);
     }
 
-    protected Optional<IPath> bestSoFar(boolean logInfo, int numNodes) {
+    public Optional<IPath> bestSoFar(boolean logInfo, int numNodes) {
         if (startNode == null) {
             return Optional.empty();
         }

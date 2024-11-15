@@ -63,4 +63,8 @@ public interface IPathFinder {
      * @return The temporary path
      */
     Optional<IPath> bestPathSoFar();
+
+    void setSlowPathBypass(boolean bypass);
+
+    boolean isSlowPathBypass();
 }

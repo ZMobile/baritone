@@ -40,11 +40,13 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
 
     private final Favoring favoring;
     private final CalculationContext calcContext;
+    private boolean slowPathBypass;
 
     public AStarPathFinder(int startX, int startY, int startZ, Goal goal, Favoring favoring, CalculationContext context) {
         super(startX, startY, startZ, goal, context);
         this.favoring = favoring;
         this.calcContext = context;
+        this.slowPathBypass = false;
     }
 
     @Override
@@ -65,6 +67,9 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
         BetterWorldBorder worldBorder = new BetterWorldBorder(calcContext.world.getWorldBorder());
         long startTime = System.currentTimeMillis();
         boolean slowPath = Baritone.settings().slowPath.value;
+        if (slowPathBypass) {
+            slowPath = false;
+        }
         if (slowPath) {
             logDebug("slowPath is on, path timeout will be " + Baritone.settings().slowPathTimeoutMS.value + "ms instead of " + primaryTimeout + "ms");
         }
@@ -175,5 +180,13 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
             logDebug("Took " + (System.currentTimeMillis() - startTime) + "ms, " + numMovementsConsidered + " movements considered");
         }
         return result;
+    }
+
+    public void setSlowPathBypass(boolean slowPathBypass) {
+        this.slowPathBypass = slowPathBypass;
+    }
+
+    public boolean isSlowPathBypass() {
+        return slowPathBypass;
     }
 }
