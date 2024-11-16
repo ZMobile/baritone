@@ -67,4 +67,8 @@ public interface IPathFinder {
     void setSlowPathBypass(boolean bypass);
 
     boolean isSlowPathBypass();
+
+    void setSpecificSlowPathDelay(long specificSlowPathDelay);
+
+    long getSpecificSlowPathDelay();
 }
