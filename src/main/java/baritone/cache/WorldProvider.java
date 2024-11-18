@@ -153,6 +153,7 @@ public class WorldProvider implements IWorldProvider {
             if (ctx.world() != null) {
                 System.out.println("mc.world loaded unnoticed! Loading Baritone cache now.");
                 initWorld(ctx.world());
+                System.out.println("Baritone cache loaded.");
             }
         } else if (this.currentWorld == null && ctx.world() != null) {
             //System.out.println("Retrying to load Baritone cache");
