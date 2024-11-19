@@ -25,6 +25,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import java.awt.*;
 import java.io.BufferedReader;
@@ -237,7 +238,13 @@ public class SettingsUtil {
         ),
         ITEM(
                 Item.class,
-                str -> BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(str.trim())), // TODO this now returns AIR on failure instead of null, is that an issue?
+                str -> {
+                    ResourceLocation location = ResourceLocation.tryParse(str.trim());
+                    if (location == null) {
+                        return Items.AIR; // Handle invalid ResourceLocation
+                    }
+                    return BuiltInRegistries.ITEM.getOptional(location).orElse(Items.AIR); // Unwrap Optional and handle failure case
+                },
                 item -> BuiltInRegistries.ITEM.getKey(item).toString()
         ),
         LIST() {

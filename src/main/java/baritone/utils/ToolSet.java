@@ -23,7 +23,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
@@ -85,12 +84,12 @@ public class ToolSet {
      * @return values from 0 up
      */
     private int getMaterialCost(ItemStack itemStack) {
-        if (itemStack.getItem() instanceof TieredItem) {
+        /*if (itemStack.getItem() instanceof TieredItem) {
             TieredItem tool = (TieredItem) itemStack.getItem();
             //return tool.getTier().getLevel();
         } else {
             //return -1;
-        }
+        }*/
         return -1;
     }
 

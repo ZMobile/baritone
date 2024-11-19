@@ -37,14 +37,14 @@ configurations {
 }
 
 dependencies {
-    implementation "org.spongepowered:mixin:0.8.5"
+    implementation "org.spongepowered:mixin:0.8.7"
 
     // for some reason mixin isn't including these...
-    implementation "org.ow2.asm:asm:9.3"
-    implementation "org.ow2.asm:asm-tree:9.3"
-    implementation "org.ow2.asm:asm-commons:9.3"
-    implementation "org.ow2.asm:asm-util:9.3"
-    implementation "org.ow2.asm:asm-analysis:9.3"
+    implementation "org.ow2.asm:asm:9.7.1"
+    implementation "org.ow2.asm:asm-tree:9.7.1"
+    implementation "org.ow2.asm:asm-commons:9.7.1"
+    implementation "org.ow2.asm:asm-util:9.7.1"
+    implementation "org.ow2.asm:asm-analysis:9.7.1"
 
     implementation 'com.github.ImpactDevelopment:SimpleTweaker:1.2'
     implementation('net.minecraft:launchwrapper:of-2.3') {
@@ -99,7 +99,7 @@ task proguard(type: ProguardTask) {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 

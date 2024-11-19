@@ -18,6 +18,7 @@
 package baritone.utils.schematic.format.defaults;
 
 import baritone.utils.schematic.StaticSchematic;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -94,7 +95,11 @@ public final class LitematicaSchematic extends StaticSchematic {
         BlockState[] blockList = new BlockState[blockStatePalette.size()];
 
         for (int i = 0; i < blockStatePalette.size(); i++) {
-            Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse((((CompoundTag) blockStatePalette.get(i)).getString("Name"))));
+            Optional<Holder.Reference<Block>> blockReference = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse((((CompoundTag) blockStatePalette.get(i)).getString("Name"))));
+            if (blockReference.isEmpty()) {
+                throw new IllegalArgumentException("Invalid block name");
+            }
+            Block block = blockReference.get().value();
             CompoundTag properties = ((CompoundTag) blockStatePalette.get(i)).getCompound("Properties");
 
             blockList[i] = getBlockState(block, properties);
