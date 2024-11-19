@@ -77,7 +77,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
         }
         for (BlockPos toPlace : toFillIn()) {
             MovementState fake = new MovementState();
-            switch (MovementHelper.attemptToPlaceABlock(fake, baritone, toPlace, false, false)) {
+            /*switch (MovementHelper.attemptToPlaceABlock(fake, baritone, toPlace, false, false)) {
                 case NO_OPTION:
                     continue;
                 case READY_TO_PLACE:
@@ -85,11 +85,11 @@ public final class BackfillProcess extends BaritoneProcessHelper {
                     return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
                 case ATTEMPTING:
                     // patience
-                    baritone.getLookBehavior().updateTarget(fake.getTarget().getRotation().get(), true);
+                    //baritone.getLookBehavior().updateTarget(fake.getTarget().getRotation().get(), true);
                     return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
                 default:
                     throw new IllegalStateException();
-            }
+            }*/
         }
         return new PathingCommand(null, PathingCommandType.DEFER); // cede to other process
     }
@@ -106,7 +106,7 @@ public final class BackfillProcess extends BaritoneProcessHelper {
                 .keySet()
                 .stream()
                 .filter(pos -> ctx.world().getBlockState(pos).getBlock() == Blocks.AIR)
-                .filter(pos -> baritone.getBuilderProcess().placementPlausible(pos, Blocks.DIRT.defaultBlockState()))
+                //.filter(pos -> baritone.getBuilderProcess().placementPlausible(pos, Blocks.DIRT.defaultBlockState()))
                 .filter(pos -> !partOfCurrentMovement(pos))
                 .sorted(Comparator.<BlockPos>comparingDouble(ctx.playerFeet()::distSqr).reversed())
                 .collect(Collectors.toList());

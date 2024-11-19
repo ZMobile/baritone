@@ -25,30 +25,29 @@ import baritone.api.behavior.look.ITickableAimProcessor;
 import baritone.api.event.events.*;
 import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.Rotation;
-import baritone.behavior.look.ForkableRandom;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
 
-public final class LookBehavior extends Behavior implements ILookBehavior {
+public final class LookBehavior /*extends Behavior implements ILookBehavior*/ {
 
     /**
      * The current look target, may be {@code null}.
-     */
+     *
     private Target target;
 
     /**
      * The rotation known to the server. Returned by {@link #getEffectiveRotation()} for use in {@link IPlayerContext}.
-     */
+     *
     private Rotation serverRotation;
 
     /**
      * The last player rotation. Used to restore the player's angle when using free look.
      *
      * @see Settings#freeLook
-     */
+     *
     private Rotation prevRotation;
 
     private final AimProcessor processor;
@@ -279,7 +278,7 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
 
         /**
          * Nudges the player's pitch to a regular level. (Between {@code -20} and {@code 10}, increments are by {@code 1})
-         */
+         *
         private float nudgeToLevel(float pitch) {
             if (pitch < -20) {
                 return pitch + 1;
@@ -320,17 +319,17 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
         enum Mode {
             /**
              * Rotation will be set client-side and is visual to the player
-             */
+             *
             CLIENT,
 
             /**
              * Rotation will be set server-side and is silent to the player
-             */
+             *
             SERVER,
 
             /**
              * Rotation will remain unaffected on both the client and server
-             */
+             *
             NONE;
 
             static Mode resolve(IPlayerContext ctx, boolean blockInteract) {
@@ -355,5 +354,5 @@ public final class LookBehavior extends Behavior implements ILookBehavior {
                 return CLIENT;
             }
         }
-    }
+    }*/
 }

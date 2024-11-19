@@ -138,10 +138,10 @@ public abstract class Movement implements IMovement, MovementHelper {
 
         // If the movement target has to force the new rotations, or we aren't using silent move, then force the rotations
         if (currentState.getTarget() != null) {
-            currentState.getTarget().getRotation().ifPresent(rotation ->
-                    baritone.getLookBehavior().updateTarget(
+            //currentState.getTarget().getRotation().ifPresent(rotation ->
+                    /*baritone.getLookBehavior().updateTarget(
                             rotation,
-                            currentState.getTarget() != null && currentState.getTarget().hasToForceRotations()));
+                            currentState.getTarget() != null && currentState.getTarget().hasToForceRotations()));*/
         }
         if (baritone.getInputOverrideHandler() != null) {
             baritone.getInputOverrideHandler().clearAllKeys();

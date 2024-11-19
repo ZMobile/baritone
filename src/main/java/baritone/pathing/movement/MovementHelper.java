@@ -741,7 +741,7 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     static PlaceResult attemptToPlaceABlock(MovementState state, IBaritone baritone, BlockPos placeAt, boolean preferDown, boolean wouldSneak) {
-        IPlayerContext ctx = baritone.getPlayerContext();
+        /*IPlayerContext ctx = baritone.getPlayerContext();
         Optional<Rotation> direct = RotationUtils.reachable(ctx, placeAt, wouldSneak); // we assume that if there is a block there, it must be replacable
         boolean found = false;
         if (direct.isPresent()) {
@@ -756,7 +756,7 @@ public interface MovementHelper extends ActionCosts, Helper {
                         Helper.HELPER.logDebug("bb pls get me some blocks. dirt, netherrack, cobble");
                         state.setStatus(MovementStatus.UNREACHABLE);
                         return PlaceResult.NO_OPTION;
-                    }*/
+                    }*
                 }
                 double faceX = (placeAt.getX() + against1.getX() + 1.0D) * 0.5D;
                 double faceY = (placeAt.getY() + against1.getY() + 0.5D) * 0.5D;
@@ -799,6 +799,8 @@ public interface MovementHelper extends ActionCosts, Helper {
             }
             return PlaceResult.ATTEMPTING;
         }
+
+         */
         return PlaceResult.NO_OPTION;
     }
 

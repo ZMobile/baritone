@@ -36,7 +36,7 @@ public interface ILookBehavior extends IBehavior {
      *
      * @param rotation      The target rotations
      * @param blockInteract Whether the target rotations are needed for a block interaction
-     */
+     *
     void updateTarget(Rotation rotation, boolean blockInteract);
 
     /**
@@ -45,6 +45,6 @@ public interface ILookBehavior extends IBehavior {
      *
      * @return The aim processor
      * @see IAimProcessor#fork
-     */
-    IAimProcessor getAimProcessor();
+     *
+    IAimProcessor getAimProcessor();*/
 }

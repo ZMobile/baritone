@@ -21,8 +21,10 @@ import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.Settings;
 import baritone.api.behavior.IBehavior;
+import baritone.api.behavior.ILookBehavior;
 import baritone.api.event.listener.IEventBus;
 import baritone.api.process.IBaritoneProcess;
+import baritone.api.process.IBuilderProcess;
 import baritone.api.process.IElytraProcess;
 import baritone.api.utils.IPlayerContext;
 import baritone.behavior.*;
@@ -32,7 +34,6 @@ import baritone.event.GameEventHandler;
 import baritone.process.*;
 import baritone.selection.SelectionManager;
 import baritone.utils.BlockStateInterface;
-import baritone.utils.GuiClick;
 import baritone.utils.InputOverrideHandler;
 import baritone.utils.PathingControlManager;
 import baritone.utils.player.BaritonePlayerContext;
@@ -42,8 +43,6 @@ import net.minecraft.world.entity.LivingEntity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,7 +67,7 @@ public class Baritone implements IBaritone {
     private final GameEventHandler gameEventHandler;
 
     private final PathingBehavior pathingBehavior;
-    private final LookBehavior lookBehavior;
+    //private final LookBehavior lookBehavior;
     private final InventoryBehavior inventoryBehavior;
     private final InputOverrideHandler inputOverrideHandler;
 
@@ -76,7 +75,7 @@ public class Baritone implements IBaritone {
     private final MineProcess mineProcess;
     private final GetToBlockProcess getToBlockProcess;
     private final CustomGoalProcess customGoalProcess;
-    private final BuilderProcess builderProcess;
+    //private final BuilderProcess builderProcess;
     private final ExploreProcess exploreProcess;
     private final FarmProcess farmProcess;
     private final InventoryPauserProcess inventoryPauserProcess;
@@ -189,7 +188,7 @@ public class Baritone implements IBaritone {
         this.playerContext = new BaritonePlayerContext(this, minecraftServer, entity);
 
         {
-            this.lookBehavior         = this.registerBehavior(LookBehavior::new);
+            //this.lookBehavior         = this.registerBehavior(LookBehavior::new);
             this.pathingBehavior      = this.registerBehavior(PathingBehavior::new);
             this.inventoryBehavior    = this.registerBehavior(InventoryBehavior::new);
             this.inputOverrideHandler = null;
@@ -201,7 +200,7 @@ public class Baritone implements IBaritone {
             this.followProcess           = this.registerProcess(FollowProcess::new);
             this.customGoalProcess       = this.registerProcess(CustomGoalProcess::new); // very high iq
             this.getToBlockProcess       = this.registerProcess(GetToBlockProcess::new);
-            this.builderProcess          = this.registerProcess(BuilderProcess::new);
+            //this.builderProcess          = this.registerProcess(BuilderProcess::new);
             this.exploreProcess          = this.registerProcess(ExploreProcess::new);
             this.mineProcess             = null;
             this.farmProcess             = null;
@@ -263,8 +262,8 @@ public class Baritone implements IBaritone {
     }
 
     @Override
-    public BuilderProcess getBuilderProcess() {
-        return this.builderProcess;
+    public IBuilderProcess getBuilderProcess() {
+        return null;
     }
 
     public InventoryBehavior getInventoryBehavior() {
@@ -272,8 +271,9 @@ public class Baritone implements IBaritone {
     }
 
     @Override
-    public LookBehavior getLookBehavior() {
-        return this.lookBehavior;
+    public ILookBehavior getLookBehavior() {
+        //return this.lookBehavior;
+        return null;
     }
 
     @Override

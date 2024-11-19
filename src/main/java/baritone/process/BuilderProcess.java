@@ -85,9 +85,9 @@ import java.util.stream.Stream;
 
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
-public final class BuilderProcess extends BaritoneProcessHelper implements IBuilderProcess {
+public final class BuilderProcess /*extends BaritoneProcessHelper implements IBuilderProcess*/ {
 
-    private static final Set<Property<?>> ORIENTATION_PROPS =
+    /*private static final Set<Property<?>> ORIENTATION_PROPS =
             ImmutableSet.of(
                     RotatedPillarBlock.AXIS, HorizontalDirectionalBlock.FACING,
                     StairBlock.FACING, StairBlock.HALF, StairBlock.SHAPE,
@@ -410,7 +410,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                     InteractionHand.MAIN_HAND,
                     stack,
                     (BlockHitResult) result
-            ) {}); // that {} gives us access to a protected constructor lmfao*/
+            ) {}); // that {} gives us access to a protected constructor lmfao*
             //BlockState wouldBePlaced = ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(meme);
             ctx.baritonePlayer().getEntity().setYRot(originalYaw);
             ctx.baritonePlayer().getEntity().setXRot(originalPitch);
@@ -544,7 +544,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             // only change look direction if it's safe (don't want to fuck up an in progress parkour for example
             Rotation rot = toBreak.get().getB();
             BetterBlockPos pos = toBreak.get().getA();
-            baritone.getLookBehavior().updateTarget(rot, true);
+            //baritone.getLookBehavior().updateTarget(rot, true);
             MovementHelper.switchToBestToolFor(ctx, bcc.get(pos));
             if (ctx.baritonePlayer().getEntity().isCrouching()) {
                 // really horrible bug where a block is visible for breaking while sneaking but not otherwise
@@ -561,7 +561,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         Optional<Placement> toPlace = searchForPlacables(bcc, desirableOnHotbar);
         if (toPlace.isPresent() && isSafeToCancel && ctx.baritonePlayer().getEntity().onGround() && ticks <= 0) {
             Rotation rot = toPlace.get().rot;
-            baritone.getLookBehavior().updateTarget(rot, true);
+            //baritone.getLookBehavior().updateTarget(rot, true);
             //ctx.baritonePlayer().getPlayer().getInventory().selected = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
             if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ((BlockHitResult) ctx.objectMouseOver()).getDirection().equals(toPlace.get().side)) || ctx.playerRotations().isReallyCloseTo(rot)) {
@@ -591,7 +591,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                         /*if (!baritone.getInventoryBehavior().attemptToPutOnHotbar(i, usefulSlots::contains)) {
                             // awaiting inventory move, so pause
                             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
-                        }*/
+                        }*
                         break outer;
                     }
                 }
@@ -1154,5 +1154,5 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 return 1; // why not lol
             }
         }
-    }
+    }*/
 }

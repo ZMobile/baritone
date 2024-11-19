@@ -97,10 +97,10 @@ public final class BaritonePlayerContext implements IPlayerContext {
         return entity == null ? this.playerFeet() : BetterBlockPos.from(entity.blockPosition());
     }
 
-    @Override
+    /*@Override
     public Rotation playerRotations() {
         return this.baritone.getLookBehavior().getEffectiveRotation().orElseGet(IPlayerContext.super::playerRotations);
-    }
+    }*/
 
     @Override
     public HitResult objectMouseOver() {

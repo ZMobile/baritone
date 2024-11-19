@@ -195,12 +195,12 @@ public class MovementAscend extends Movement {
         BlockState jumpingOnto = BlockStateInterface.get(ctx, positionsToPlace[0]);
         if (!MovementHelper.canWalkOn(ctx, positionsToPlace[0], jumpingOnto)) {
             ticksWithoutPlacement++;
-            if (MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), false, true) == PlaceResult.READY_TO_PLACE) {
+            /*if (MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), false, true) == PlaceResult.READY_TO_PLACE) {
                 state.setInput(Input.SNEAK, true);
                 if (ctx.baritonePlayer().getEntity().isCrouching()) {
                     state.setInput(Input.CLICK_RIGHT, true);
                 }
-            }
+            }*/
             if (ticksWithoutPlacement > 10) {
                 // After 10 ticks without placement, we might be standing in the way, move back
                 state.setInput(Input.MOVE_BACK, true);

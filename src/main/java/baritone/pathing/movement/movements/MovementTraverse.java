@@ -303,9 +303,9 @@ public class MovementTraverse extends Movement {
             }
             double dist1 = Math.max(Math.abs(ctx.baritonePlayer().getEntity().position().x - (dest.getX() + 0.5D)), Math.abs(ctx.baritonePlayer().getEntity().position().z - (dest.getZ() + 0.5D)));
             PlaceResult p = MovementHelper.attemptToPlaceABlock(state, baritone, dest.below(), false, true);
-            if ((p == PlaceResult.READY_TO_PLACE || dist1 < 0.6) && !Baritone.settings().assumeSafeWalk.value) {
+            /*if ((p == PlaceResult.READY_TO_PLACE || dist1 < 0.6) && !Baritone.settings().assumeSafeWalk.value) {
                 state.setInput(Input.SNEAK, true);
-            }
+            }*/
             switch (p) {
                 case READY_TO_PLACE: {
                     if (ctx.baritonePlayer().getEntity().isCrouching() || Baritone.settings().assumeSafeWalk.value) {
