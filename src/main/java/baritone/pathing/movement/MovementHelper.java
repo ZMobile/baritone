@@ -94,7 +94,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         }
         // only pure liquids for now
         // waterlogged blocks can have closed bottom sides and such
-        if (block instanceof LiquidBlock) {
+        /*if (block instanceof LiquidBlock) {
             if (directlyAbove || Baritone.settings().strictLiquidCheck.value) {
                 return true;
             }
@@ -105,7 +105,8 @@ public interface MovementHelper extends ActionCosts, Helper {
             // everything else will prefer flowing down
             return !(bsi.get0(x, y - 1, z).getBlock() instanceof LiquidBlock); // assume everything is in a static state
         }
-        return !state.getFluidState().isEmpty();
+        return !state.getFluidState().isEmpty();*/
+        return false;
     }
 
     static boolean canWalkThrough(IPlayerContext ctx, BetterBlockPos pos) {
@@ -591,7 +592,7 @@ public interface MovementHelper extends ActionCosts, Helper {
         Block block = state.getBlock();
         if (!canWalkThrough(context, x, y, z, state)) {
             if (!state.getFluidState().isEmpty()) {
-                return COST_INF;
+                return 1;
             }
             double mult = context.breakCostMultiplierAt(x, y, z, state);
             if (mult >= COST_INF) {
@@ -620,7 +621,8 @@ public interface MovementHelper extends ActionCosts, Helper {
             }
             return result;
         }
-        return 0; // we won't actually mine it, so don't check fallings above
+        return 1;
+        //eturn 0; // we won't actually mine it, so don't check fallings above
     }
 
     static boolean isBottomSlab(BlockState state) {

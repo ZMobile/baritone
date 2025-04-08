@@ -119,7 +119,8 @@ public final class ChunkPacker {
     private static PathingBlockType getPathingBlockType(BlockState state, LevelChunk chunk, int x, int y, int z) {
         Block block = state.getBlock();
         if (MovementHelper.isWater(state)) {
-            // only water source blocks are plausibly usable, flowing water should be avoid
+            return PathingBlockType.AIR;
+            /* only water source blocks are plausibly usable, flowing water should be avoid
             // FLOWING_WATER is a waterfall, it doesn't really matter and caching it as AVOID just makes it look wrong
             if (MovementHelper.possiblyFlowing(state)) {
                 return PathingBlockType.AVOID;
@@ -140,8 +141,10 @@ public final class ChunkPacker {
                 }
                 return PathingBlockType.AVOID;
             }
-            return PathingBlockType.WATER;
+            return PathingBlockType.WATER;*/
         }
+
+
 
         if (MovementHelper.avoidWalkingInto(state) || MovementHelper.isBottomSlab(state)) {
             return PathingBlockType.AVOID;

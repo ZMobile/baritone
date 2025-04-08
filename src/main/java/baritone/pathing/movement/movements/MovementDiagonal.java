@@ -167,7 +167,7 @@ public class MovementDiagonal extends Movement {
         Block startIn = startState.getBlock();
         if (MovementHelper.isWater(startState) || MovementHelper.isWater(destInto)) {
             if (ascend) {
-                return;
+                //return;
             }
             // Ignore previous multiplier
             // Whatever we were walking on (possibly soul sand) doesn't matter as we're actually floating on water

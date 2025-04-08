@@ -124,10 +124,10 @@ public class MovementDescend extends Movement {
         // we walk half the block plus 0.3 to get to the edge, then we walk the other 0.2 while simultaneously falling (math.max because of how it's in parallel)
         double walk = WALK_OFF_BLOCK_COST;
         if (fromDown == Blocks.SOUL_SAND) {
-            // use this ratio to apply the soul sand speed penalty to our 0.8 block distance
+            // use this ratio to apply
+            //        totalCost += walk +the soul sand speed penalty to our 0.8 block distance
             walk *= WALK_ONE_OVER_SOUL_SAND_COST / WALK_ONE_BLOCK_COST;
-        }
-        totalCost += walk + Math.max(FALL_N_BLOCKS_COST[1], CENTER_AFTER_FALL_COST);
+        } Math.max(FALL_N_BLOCKS_COST[1], CENTER_AFTER_FALL_COST);
         res.x = destX;
         res.y = y - 1;
         res.z = destZ;
@@ -135,7 +135,9 @@ public class MovementDescend extends Movement {
     }
 
     public static boolean dynamicFallCost(CalculationContext context, int x, int y, int z, int destX, int destZ, double frontBreak, BlockState below, MutableMoveResult res) {
-        if (frontBreak != 0 && context.get(destX, y + 2, destZ).getBlock() instanceof FallingBlock) {
+        return false;
+
+        /*if (frontBreak != 0 && context.get(destX, y + 2, destZ).getBlock() instanceof FallingBlock) {
             // if frontBreak is 0 we can actually get through this without updating the falling block and making it actually fall
             // but if frontBreak is nonzero, we're breaking blocks in front, so don't let anything fall through this column,
             // and potentially replace the water we're going to fall into
@@ -221,6 +223,7 @@ public class MovementDescend extends Movement {
                 return false;
             }
         }
+         */
     }
 
     @Override
@@ -267,7 +270,9 @@ public class MovementDescend extends Movement {
     }
 
     public boolean safeMode() {
-        if (forceSafeMode) {
+        return false;
+
+        /*if (forceSafeMode) {
             return true;
         }
         // (dest - src) + dest is offset 1 more in the same direction
@@ -282,7 +287,7 @@ public class MovementDescend extends Movement {
                 return true;
             }
         }
-        return false;
+        return false;*/
     }
 
     public boolean skipToAscend() {

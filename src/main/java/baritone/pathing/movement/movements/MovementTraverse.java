@@ -126,10 +126,10 @@ public class MovementTraverse extends Movement {
             }
             if (MovementHelper.isReplaceable(destX, y - 1, destZ, destOn, context.bsi)) {
                 boolean throughWater = MovementHelper.isWater(pb0) || MovementHelper.isWater(pb1);
-                if (MovementHelper.isWater(destOn) && throughWater) {
+                /*if (MovementHelper.isWater(destOn) && throughWater) {
                     // this happens when assume walk on water is true and this is a traverse in water, which isn't allowed
                     return COST_INF;
-                }
+                }*/
                 double placeCost = context.costOfPlacingAt(destX, y - 1, destZ, destOn);
                 if (placeCost >= COST_INF) {
                     return COST_INF;
@@ -147,7 +147,7 @@ public class MovementTraverse extends Movement {
                     if (againstX == x && againstZ == z) { // this would be a backplace
                         continue;
                     }
-                    if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) { // found a side place option
+                    if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) { // found a side place option\
                         return WC + placeCost + hardness1 + hardness2;
                     }
                 }
@@ -155,9 +155,11 @@ public class MovementTraverse extends Movement {
                 if (srcDownBlock == Blocks.SOUL_SAND || (srcDownBlock instanceof SlabBlock && srcDown.getValue(SlabBlock.TYPE) != SlabType.DOUBLE)) {
                     return COST_INF; // can't sneak and backplace against soul sand or half slabs (regardless of whether it's top half or bottom half) =/
                 }
-                if (!standingOnABlock) { // standing on water / swimming
-                    return COST_INF; // this is obviously impossible
-                }
+                /*if (!standingOnABlock) { // standing on water / swimming
+                    if (!throughWater) {
+                        return COST_INF; // this is obviously impossible
+                    }
+                }*/
                 Block blockSrc = context.getBlock(x, y, z);
                 if ((blockSrc == Blocks.LILY_PAD || blockSrc instanceof CarpetBlock) && !srcDown.getFluidState().isEmpty()) {
                     return COST_INF; // we can stand on these but can't place against them
