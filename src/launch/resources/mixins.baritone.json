@@ -8,10 +8,10 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "MixinMinecraftServer",
     "MixinFireworkRocketEntity",
     "MixinItemStack",
     "MixinLootContext",
+    "MixinMinecraftServer",
     "MixinPalettedContainer",
     "MixinPalettedContainer$Data"
   ]

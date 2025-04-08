@@ -22,14 +22,15 @@ import baritone.api.schematic.format.ISchematicFormat;
 import baritone.utils.schematic.format.defaults.LitematicaSchematic;
 import baritone.utils.schematic.format.defaults.MCEditSchematic;
 import baritone.utils.schematic.format.defaults.SpongeSchematic;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtIo;
+import java.util.Optional;
 
 /**
  * Default implementations of {@link ISchematicFormat}
@@ -58,7 +59,8 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
             CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
-            int version = nbt.getInt("Version");
+            Optional<Integer> versionOptional = nbt.getInt("Version");
+            int version = versionOptional.orElse(1);
             switch (version) {
                 case 1:
                 case 2:
@@ -76,7 +78,8 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
             CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
-            int version = nbt.getInt("Version");
+            Optional<Integer> versionOptional = nbt.getInt("Version");
+            int version = versionOptional.orElse(1);
             switch (version) {
                 case 4: //1.12
                 case 5: //1.13-1.17

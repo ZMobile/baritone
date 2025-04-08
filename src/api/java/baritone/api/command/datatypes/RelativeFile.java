@@ -19,7 +19,6 @@ package baritone.api.command.datatypes;
 
 import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
-import baritone.api.utils.Helper;
 import baritone.api.utils.MinecraftServerUtil;
 import net.minecraft.server.MinecraftServer;
 

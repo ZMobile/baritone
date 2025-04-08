@@ -17,11 +17,6 @@
 
 package baritone.api.utils.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-
 public class BaritoneToast /*implements Toast*/ {
     /*private String title;
     private String subtitle;

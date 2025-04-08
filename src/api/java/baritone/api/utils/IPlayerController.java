@@ -17,17 +17,6 @@
 
 package baritone.api.utils;
 
-import baritone.api.BaritoneAPI;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-
 /**
  * @author Brady
  * @since 12/14/2018

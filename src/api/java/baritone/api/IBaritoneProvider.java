@@ -23,7 +23,6 @@ import baritone.api.command.ICommandSystem;
 import baritone.api.schematic.ISchematicSystem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Objects;

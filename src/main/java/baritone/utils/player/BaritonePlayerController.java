@@ -18,17 +18,6 @@
 package baritone.utils.player;
 
 import baritone.api.utils.IPlayerController;
-import baritone.utils.accessor.IPlayerControllerMP;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.phys.BlockHitResult;
 
 /**
  * Implementation of {@link IPlayerController} that chains to the primary player controller's methods

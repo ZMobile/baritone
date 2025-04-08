@@ -17,32 +17,6 @@
 
 package baritone.utils;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.event.events.RenderEvent;
-import baritone.api.pathing.goals.*;
-import baritone.api.utils.BetterBlockPos;
-import baritone.api.utils.IPlayerContext;
-import baritone.api.utils.interfaces.IGoalRenderPos;
-import baritone.behavior.PathingBehavior;
-import baritone.pathing.path.PathExecutor;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author Brady
  * @since 8/9/2018

@@ -19,7 +19,6 @@ package baritone.api.behavior;
 
 import baritone.api.Settings;
 import baritone.api.behavior.look.IAimProcessor;
-import baritone.api.utils.Rotation;
 
 /**
  * @author Brady

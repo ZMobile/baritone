@@ -17,29 +17,6 @@
 
 package baritone.command.defaults;
 
-import baritone.Baritone;
-import baritone.api.IBaritone;
-import baritone.api.command.Command;
-import baritone.api.command.argument.IArgConsumer;
-import baritone.api.command.exception.CommandException;
-import baritone.api.command.exception.CommandInvalidStateException;
-import baritone.api.command.helpers.TabCompleteHelper;
-import baritone.api.pathing.goals.Goal;
-import baritone.api.process.ICustomGoalProcess;
-import baritone.api.process.IElytraProcess;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.level.Level;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
-
 public class ElytraCommand /*extends Command*/ {
 
     /*public ElytraCommand(IBaritone baritone) {

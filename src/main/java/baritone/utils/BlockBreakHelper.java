@@ -17,12 +17,7 @@
 
 package baritone.utils;
 
-import baritone.api.BaritoneAPI;
 import baritone.api.utils.IPlayerContext;
-import baritone.utils.accessor.IPlayerControllerMP;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 /**
  * @author Brady

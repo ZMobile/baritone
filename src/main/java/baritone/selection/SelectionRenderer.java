@@ -6,7 +6,6 @@ import baritone.api.event.listener.AbstractGameEventListener;
 import baritone.api.selection.ISelection;
 import baritone.utils.IRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.phys.AABB;
 
 public class SelectionRenderer implements IRenderer, AbstractGameEventListener {
 

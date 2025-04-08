@@ -19,12 +19,8 @@ package baritone.utils;
 
 import baritone.Baritone;
 import baritone.api.utils.IPlayer;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -110,13 +106,13 @@ public class ToolSet {
     }
 
     public int getBestSlot(Block b, boolean preferSilkTouch, boolean pathingCalculation) {
-        if (!player.isLocalPlayer()) {
+        /*if (!player.isLocalPlayer()) {
             return 0;
         }
         /*
         If we actually want know what efficiency our held item has instead of the best one
         possible, this lets us make pathing depend on the actual tool to be used (if auto tool is disabled)
-        */
+        *
         if (!Baritone.settings().autoTool.value && pathingCalculation) {
             return 0;//player.getPlayer().getInventory().selected;
         }
@@ -153,7 +149,8 @@ public class ToolSet {
                 }
             }
         }
-        return best;
+        return best;*/
+        return 0;
     }
 
     /**
@@ -219,7 +216,7 @@ public class ToolSet {
      */
     private double potionAmplifier() {
         double speed = 1;
-        if (player.getEntity().hasEffect(MobEffects.DIG_SPEED)) {
+        /*if (player.getEntity().hasEffect(MobEffects.DIG_SPEED)) {
             speed *= 1 + (player.getEntity().getEffect(MobEffects.DIG_SPEED).getAmplifier() + 1) * 0.2;
         }
         if (player.getEntity().hasEffect(MobEffects.DIG_SLOWDOWN)) {
@@ -237,7 +234,7 @@ public class ToolSet {
                     speed *= 0.00081;
                     break;
             }
-        }
+        }*/
         return speed;
     }
 }

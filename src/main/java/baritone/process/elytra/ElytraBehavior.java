@@ -17,53 +17,6 @@
 
 package baritone.process.elytra;
 
-import baritone.Baritone;
-import baritone.api.Settings;
-import baritone.api.behavior.look.IAimProcessor;
-import baritone.api.behavior.look.ITickableAimProcessor;
-import baritone.api.event.events.*;
-import baritone.api.pathing.goals.GoalBlock;
-import baritone.api.utils.*;
-import baritone.api.utils.input.Input;
-import baritone.pathing.movement.MovementHelper;
-import baritone.process.ElytraProcess;
-import baritone.utils.BlockStateInterface;
-import baritone.utils.IRenderer;
-import baritone.utils.PathRenderer;
-import baritone.utils.accessor.IFireworkRocketEntity;
-import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import it.unimi.dsi.fastutil.floats.FloatIterator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Queue;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.UnaryOperator;
-
-import static baritone.utils.BaritoneMath.fastCeil;
-import static baritone.utils.BaritoneMath.fastFloor;
-
 public final class ElytraBehavior /*implements Helper*/ {
     /*private final Baritone baritone;
     private final IPlayerContext ctx;

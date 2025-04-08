@@ -20,27 +20,14 @@ package baritone.behavior;
 import baritone.Baritone;
 import baritone.api.event.events.TickEvent;
 import baritone.api.utils.Helper;
-import baritone.utils.ToolSet;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import java.util.ArrayList;
+
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import static net.minecraft.world.InteractionHand.MAIN_HAND;
@@ -56,7 +43,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
 
     @Override
     public void onTick(TickEvent event) {
-        if (!Baritone.settings().allowInventory.value) {
+        /*if (!Baritone.settings().allowInventory.value) {
             return;
         }
         if (event.getType() == TickEvent.Type.OUT) {
@@ -68,19 +55,19 @@ public final class InventoryBehavior extends Behavior implements Helper {
         /*if (ctx.baritonePlayer().getPlayer().containerMenu != ctx.baritonePlayer().getPlayer().inventoryMenu) {
             // we have a crafting table or a chest or something open
             return;
-        }*/
+        }*
         ticksSinceLastInventoryMove++;
         if (firstValidThrowaway() >= 9) { // aka there are none on the hotbar, but there are some in main inventory
             requestSwapWithHotBar(firstValidThrowaway(), 8);
         }
-        int pick = bestToolAgainst(Blocks.STONE, PickaxeItem.class);
+        //int pick = bestToolAgainst(Blocks.STONE, PickaxeItem.class);
         if (pick >= 9) {
             requestSwapWithHotBar(pick, 0);
         }
         if (lastTickRequestedMove != null) {
             logDebug("Remembering to move " + lastTickRequestedMove[0] + " " + lastTickRequestedMove[1] + " from a previous tick");
             requestSwapWithHotBar(lastTickRequestedMove[0], lastTickRequestedMove[1]);
-        }
+        }*/
     }
 
     public boolean attemptToPutOnHotbar(int inMainInvy, Predicate<Integer> disallowedHotbar) {
@@ -150,7 +137,7 @@ public final class InventoryBehavior extends Behavior implements Helper {
         return -1;
     }
 
-    private int bestToolAgainst(Block against, Class<? extends DiggerItem> cla$$) {
+    /*private int bestToolAgainst(Block against, Class<? extends DiggerItem> cla$$) {
         if (!ctx.baritonePlayer().isLocalPlayer()) {
             return -1;
         }
@@ -172,9 +159,9 @@ public final class InventoryBehavior extends Behavior implements Helper {
                     bestInd = i;
                 }
             }
-        }*/
+        }*
         return bestInd;
-    }
+    }*/
 
     public boolean hasGenericThrowaway() {
         if (!ctx.baritonePlayer().isLocalPlayer()) {

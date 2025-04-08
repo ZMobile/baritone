@@ -23,9 +23,6 @@ import baritone.api.utils.IPlayerContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.storage.LevelResource;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

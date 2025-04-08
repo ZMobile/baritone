@@ -18,20 +18,19 @@
 package baritone.pathing.movement;
 
 import baritone.Baritone;
-import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.pathing.movement.IMovement;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.*;
 import baritone.api.utils.input.Input;
 import baritone.behavior.PathingBehavior;
-import baritone.pathing.calc.PathNode;
 import baritone.utils.BlockStateInterface;
-import java.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.phys.AABB;
+
+import java.util.*;
 
 public abstract class Movement implements IMovement, MovementHelper {
 

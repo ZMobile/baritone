@@ -17,13 +17,6 @@
 
 package baritone.utils;
 
-import baritone.Baritone;
-import baritone.api.utils.IPlayerContext;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-
 public class BlockPlaceHelper {
     // base ticks between places caused by tick logic
     /*private static final int BASE_PLACE_DELAY = 1;

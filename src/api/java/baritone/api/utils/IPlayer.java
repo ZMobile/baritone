@@ -17,9 +17,7 @@
 
 package baritone.api.utils;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 public interface IPlayer {
     boolean isLocalPlayer();

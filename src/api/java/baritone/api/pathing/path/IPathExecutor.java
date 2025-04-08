@@ -20,7 +20,6 @@ package baritone.api.pathing.path;
 import baritone.api.pathing.calc.IPath;
 import net.minecraft.core.BlockPos;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**

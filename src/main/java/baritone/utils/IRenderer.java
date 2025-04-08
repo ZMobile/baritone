@@ -17,19 +17,6 @@
 
 package baritone.utils;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.Settings;
-import baritone.utils.accessor.IEntityRenderManager;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-
-import java.awt.*;
-
 public interface IRenderer {
 
     /*Tesselator tessellator = Tesselator.getInstance();

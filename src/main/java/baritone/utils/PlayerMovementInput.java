@@ -17,8 +17,6 @@
 
 package baritone.utils;
 
-import baritone.api.utils.input.Input;
-
 public class PlayerMovementInput /*extends net.minecraft.client.player.Input*/ {
 
     /*private final InputOverrideHandler handler;

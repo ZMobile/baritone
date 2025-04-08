@@ -24,18 +24,6 @@ import baritone.utils.pathing.MutableMoveResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
-/**
- * An enum of all possible movements attached to all possible directions they could be taken in
- *
- * @author leijurv
- */
-
-import baritone.api.utils.BetterBlockPos;
-import baritone.pathing.movement.movements.*;
-import baritone.utils.pathing.MutableMoveResult;
-import net.minecraft.core.Direction;
-
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 

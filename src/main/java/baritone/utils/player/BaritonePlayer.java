@@ -21,14 +21,6 @@ import baritone.api.BaritoneAPI;
 import baritone.api.utils.IPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-
 public class BaritonePlayer implements IPlayer {
     //private Minecraft minecraft;
     private LivingEntity entity;

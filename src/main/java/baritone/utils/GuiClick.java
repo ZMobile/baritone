@@ -17,32 +17,6 @@
 
 package baritone.utils;
 
-import baritone.Baritone;
-import baritone.api.BaritoneAPI;
-import baritone.api.pathing.goals.GoalBlock;
-import baritone.api.utils.BetterBlockPos;
-import baritone.api.utils.Helper;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
-
-import java.awt.*;
-import java.util.Collections;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
-
 public class GuiClick /*extends Screen implements Helper*/ {
 
     /*private Matrix4f projectionViewMatrix;

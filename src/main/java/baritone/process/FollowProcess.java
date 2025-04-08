@@ -27,11 +27,12 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.BetterBlockPos;
 import baritone.utils.BaritoneProcessHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 
 /**
  * Follow an entity

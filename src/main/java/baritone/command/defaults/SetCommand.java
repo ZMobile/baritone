@@ -17,33 +17,6 @@
 
 package baritone.command.defaults;
 
-import baritone.Baritone;
-import baritone.api.IBaritone;
-import baritone.api.Settings;
-import baritone.api.command.Command;
-import baritone.api.command.argument.IArgConsumer;
-import baritone.api.command.datatypes.RelativeFile;
-import baritone.api.command.exception.CommandException;
-import baritone.api.command.exception.CommandInvalidStateException;
-import baritone.api.command.exception.CommandInvalidTypeException;
-import baritone.api.command.helpers.Paginator;
-import baritone.api.command.helpers.TabCompleteHelper;
-import baritone.api.utils.SettingsUtil;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
-import static baritone.api.utils.SettingsUtil.*;
-
 public class SetCommand /*extends Command*/ {
 
     /*public SetCommand(IBaritone baritone) {
@@ -191,8 +164,7 @@ public class SetCommand /*extends Command*/ {
                             HoverEvent.Action.SHOW_TEXT,
                             Component.literal("Click to set the setting back to this value")
                     ))
-                    .withClickEvent(new ClickEvent(
-                            ClickEvent.Action.RUN_COMMAND,
+                    .withClickEvent(new ClickEvent.RunCommand(
                             FORCE_COMMAND_PREFIX + String.format("set %s %s", setting.getName(), oldValue)
                     )));
             logDirect(oldValueComponent);

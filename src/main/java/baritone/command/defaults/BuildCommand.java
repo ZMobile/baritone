@@ -17,22 +17,6 @@
 
 package baritone.command.defaults;
 
-import baritone.Baritone;
-import baritone.api.IBaritone;
-import baritone.api.command.Command;
-import baritone.api.command.argument.IArgConsumer;
-import baritone.api.command.datatypes.RelativeBlockPos;
-import baritone.api.command.datatypes.RelativeFile;
-import baritone.api.command.exception.CommandException;
-import baritone.api.command.exception.CommandInvalidStateException;
-import baritone.api.utils.BetterBlockPos;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class BuildCommand /*extends Command*/ {
 
     /*private final File schematicsDir;

@@ -17,54 +17,6 @@
 
 package baritone.process;
 
-import baritone.Baritone;
-import baritone.api.IBaritone;
-import baritone.api.event.events.*;
-import baritone.api.event.events.type.EventState;
-import baritone.api.event.listener.AbstractGameEventListener;
-import baritone.api.pathing.goals.Goal;
-import baritone.api.pathing.goals.GoalBlock;
-import baritone.api.pathing.goals.GoalXZ;
-import baritone.api.pathing.goals.GoalYLevel;
-import baritone.api.pathing.movement.IMovement;
-import baritone.api.pathing.path.IPathExecutor;
-import baritone.api.process.IBaritoneProcess;
-import baritone.api.process.IElytraProcess;
-import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
-import baritone.api.utils.BetterBlockPos;
-import baritone.api.utils.Rotation;
-import baritone.api.utils.RotationUtils;
-import baritone.api.utils.input.Input;
-import baritone.pathing.movement.CalculationContext;
-import baritone.pathing.movement.movements.MovementFall;
-import baritone.process.elytra.ElytraBehavior;
-import baritone.process.elytra.NetherPathfinderContext;
-import baritone.process.elytra.NullElytraProcess;
-import baritone.utils.BaritoneProcessHelper;
-import baritone.utils.PathingCommandContext;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.*;
-
-import static baritone.api.pathing.movement.ActionCosts.COST_INF;
-
 public class ElytraProcess /*extends BaritoneProcessHelper implements IBaritoneProcess, IElytraProcess, AbstractGameEventListener*/ {
     /*public State state;
     private boolean goingToLandingSpot;

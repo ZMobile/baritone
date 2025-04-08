@@ -1,27 +1,5 @@
 package baritone.launch.mixins;
 
-import baritone.Baritone;
-import baritone.api.BaritoneAPI;
-import baritone.api.IBaritone;
-import baritone.api.event.events.BlockChangeEvent;
-import baritone.api.event.events.ChatEvent;
-import baritone.api.event.events.ChunkEvent;
-import baritone.api.event.events.type.EventState;
-import baritone.api.utils.Pair;
-import baritone.cache.CachedChunk;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.state.BlockState;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Mixin class to handle server-side events for Baritone.
  */

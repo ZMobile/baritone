@@ -19,7 +19,6 @@ package baritone.utils.schematic.format.defaults;
 
 import baritone.utils.schematic.StaticSchematic;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -51,14 +51,41 @@ public final class LitematicaSchematic extends StaticSchematic {
     public LitematicaSchematic(CompoundTag nbtTagCompound, boolean rotated) {
         this.nbt = nbtTagCompound;
         this.offsetMinCorner = new Vec3i(getMinOfSchematic("x"), getMinOfSchematic("y"), getMinOfSchematic("z"));
-        this.y = Math.abs(nbt.getCompound("Metadata").getCompound("EnclosingSize").getInt("y"));
+        Optional<CompoundTag> yMetadataOptional = nbt.getCompound("Metadata");
+        CompoundTag yMetadata = yMetadataOptional.orElseThrow(() -> new IllegalArgumentException("No metadata found in schematic"));
+        Optional<CompoundTag> yEnclosingSizeOptional = yMetadata.getCompound("EnclosingSize");
+        CompoundTag enclosingSize = yEnclosingSizeOptional.orElseThrow(() -> new IllegalArgumentException("No enclosing size found in schematic"));
+        Optional<Integer> yOptional = enclosingSize.getInt("y");
+        this.y = yOptional.orElseThrow(() -> new IllegalArgumentException("No y size found in schematic"));
 
         if (rotated) {
-            this.x = Math.abs(nbt.getCompound("Metadata").getCompound("EnclosingSize").getInt("z"));
-            this.z = Math.abs(nbt.getCompound("Metadata").getCompound("EnclosingSize").getInt("x"));
+            Optional<CompoundTag> xMetadataOptional = nbt.getCompound("Metadata");
+            CompoundTag xMetadata = xMetadataOptional.orElseThrow(() -> new IllegalArgumentException("No metadata found in schematic"));
+            Optional<CompoundTag> xEnclosingSizeOptional = xMetadata.getCompound("EnclosingSize");
+            CompoundTag xEnclosingSize = xEnclosingSizeOptional.orElseThrow(() -> new IllegalArgumentException("No enclosing size found in schematic"));
+            Optional<Integer> xOptional = xEnclosingSize.getInt("z");
+            this.x = xOptional.orElseThrow(() -> new IllegalArgumentException("No x size found in schematic"));
+
+            Optional<CompoundTag> zMetadataOptional = nbt.getCompound("Metadata");
+            CompoundTag zMetadata = zMetadataOptional.orElseThrow(() -> new IllegalArgumentException("No metadata found in schematic"));
+            Optional<CompoundTag> zEnclosingSizeOptional = zMetadata.getCompound("EnclosingSize");
+            CompoundTag zEnclosingSize = zEnclosingSizeOptional.orElseThrow(() -> new IllegalArgumentException("No enclosing size found in schematic"));
+            Optional<Integer> zOptional = zEnclosingSize.getInt("x");
+            this.z = zOptional.orElseThrow(() -> new IllegalArgumentException("No z size found in schematic"));
         } else {
-            this.x = Math.abs(nbt.getCompound("Metadata").getCompound("EnclosingSize").getInt("x"));
-            this.z = Math.abs(nbt.getCompound("Metadata").getCompound("EnclosingSize").getInt("z"));
+            Optional<CompoundTag> xMetadataOptional = nbt.getCompound("Metadata");
+            CompoundTag xMetadata = xMetadataOptional.orElseThrow(() -> new IllegalArgumentException("No metadata found in schematic"));
+            Optional<CompoundTag> xEnclosingSizeOptional = xMetadata.getCompound("EnclosingSize");
+            CompoundTag xEnclosingSize = xEnclosingSizeOptional.orElseThrow(() -> new IllegalArgumentException("No enclosing size found in schematic"));
+            Optional<Integer> xOptional = xEnclosingSize.getInt("x");
+            this.x = xOptional.orElseThrow(() -> new IllegalArgumentException("No x size found in schematic"));
+
+            Optional<CompoundTag> zMetadataOptional = nbt.getCompound("Metadata");
+            CompoundTag zMetadata = zMetadataOptional.orElseThrow(() -> new IllegalArgumentException("No metadata found in schematic"));
+            Optional<CompoundTag> zEnclosingSizeOptional = zMetadata.getCompound("EnclosingSize");
+            CompoundTag zEnclosingSize = zEnclosingSizeOptional.orElseThrow(() -> new IllegalArgumentException("No enclosing size found in schematic"));
+            Optional<Integer> zOptional = zEnclosingSize.getInt("z");
+            this.z = zOptional.orElseThrow(() -> new IllegalArgumentException("No z size found in schematic"));
         }
         this.states = new BlockState[this.x][this.z][this.y];
         fillInSchematic();
@@ -68,7 +95,9 @@ public final class LitematicaSchematic extends StaticSchematic {
      * @return Array of subregion names.
      */
     private static String[] getRegions(CompoundTag nbt) {
-        return nbt.getCompound("Regions").getAllKeys().toArray(new String[0]);
+        Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+        CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+        return regions.keySet().toArray(new String[0]);
     }
 
     /**
@@ -78,8 +107,18 @@ public final class LitematicaSchematic extends StaticSchematic {
      * @return the lower coord of the requested axis.
      */
     private static int getMinOfSubregion(CompoundTag nbt, String subReg, String s) {
-        int a = nbt.getCompound("Regions").getCompound(subReg).getCompound("Position").getInt(s);
-        int b = nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt(s);
+        Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+        CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+        Optional<CompoundTag> subRegOptional = regions.getCompound(subReg);
+        CompoundTag subRegTag = subRegOptional.orElseThrow(() -> new IllegalArgumentException("No subregion found in schematic"));
+        Optional<CompoundTag> positionOptional = subRegTag.getCompound("Position");
+        CompoundTag position = positionOptional.orElseThrow(() -> new IllegalArgumentException("No position found in schematic"));
+        Optional<Integer> aOptional = position.getInt(s);
+        int a = aOptional.orElseThrow(() -> new IllegalArgumentException("No position found in schematic"));
+        Optional<CompoundTag> sizeOptional = subRegTag.getCompound("Size");
+        CompoundTag size = sizeOptional.orElseThrow(() -> new IllegalArgumentException("No size found in schematic"));
+        Optional<Integer> bOptional = size.getInt(s);
+        int b = bOptional.orElseThrow(() -> new IllegalArgumentException("No size found in schematic"));
         if (b < 0) {
             b++;
         }
@@ -95,12 +134,15 @@ public final class LitematicaSchematic extends StaticSchematic {
         BlockState[] blockList = new BlockState[blockStatePalette.size()];
 
         for (int i = 0; i < blockStatePalette.size(); i++) {
-            Optional<Holder.Reference<Block>> blockReference = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse((((CompoundTag) blockStatePalette.get(i)).getString("Name"))));
+            Optional<String> blockNameOptional = ((CompoundTag) blockStatePalette.get(i)).getString("Name");
+            String blockName = blockNameOptional.orElseThrow(() -> new IllegalArgumentException("No block name found in blockstate palette"));
+            Optional<Holder.Reference<Block>> blockReference = BuiltInRegistries.BLOCK.get(Objects.requireNonNull(ResourceLocation.tryParse(blockName)));
             if (blockReference.isEmpty()) {
                 throw new IllegalArgumentException("Invalid block name");
             }
             Block block = blockReference.get().value();
-            CompoundTag properties = ((CompoundTag) blockStatePalette.get(i)).getCompound("Properties");
+            Optional<CompoundTag> propertiesOptional = ((CompoundTag) blockStatePalette.get(i)).getCompound("Properties");
+            CompoundTag properties = propertiesOptional.orElseThrow(() -> new IllegalArgumentException("No properties found in blockstate palette"));
 
             blockList[i] = getBlockState(block, properties);
         }
@@ -115,9 +157,10 @@ public final class LitematicaSchematic extends StaticSchematic {
     private static BlockState getBlockState(Block block, CompoundTag properties) {
         BlockState blockState = block.defaultBlockState();
 
-        for (Object key : properties.getAllKeys().toArray()) {
+        for (Object key : properties.keySet().toArray()) {
             Property<?> property = block.getStateDefinition().getProperty((String) key);
-            String propertyValue = properties.getString((String) key);
+            Optional<String> propertyOptional = properties.getString((String) key);
+            String propertyValue = propertyOptional.orElseThrow(() -> new IllegalArgumentException("No property value found in blockstate palette"));
             if (property != null) {
                 blockState = setPropertyValue(blockState, property, propertyValue);
             }
@@ -152,17 +195,34 @@ public final class LitematicaSchematic extends StaticSchematic {
      * @return the volume of the subregion.
      */
     private static long getVolume(CompoundTag nbt, String subReg) {
+        Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+        CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+        Optional<CompoundTag> subRegOptional = regions.getCompound(subReg);
+        CompoundTag subRegTag = subRegOptional.orElseThrow(() -> new IllegalArgumentException("No subregion found in schematic"));
+        Optional<CompoundTag> sizeOptional = subRegTag.getCompound("Size");
+        CompoundTag size = sizeOptional.orElseThrow(() -> new IllegalArgumentException("No size found in schematic"));
+        Optional<Integer> xOptional = size.getInt("x");
+        int x = xOptional.orElseThrow(() -> new IllegalArgumentException("No x size found in schematic"));
+        Optional<Integer> yOptional = size.getInt("y");
+        int y = yOptional.orElseThrow(() -> new IllegalArgumentException("No y size found in schematic"));
+        Optional<Integer> zOptional = size.getInt("z");
+        int z = zOptional.orElseThrow(() -> new IllegalArgumentException("No z size found in schematic"));
         return Math.abs(
-                nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("x") *
-                        nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("y") *
-                        nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("z"));
+                x *
+                        y *
+                        z);
     }
 
     /**
      * @return array of Long values.
      */
     private static long[] getBlockStates(CompoundTag nbt, String subReg) {
-        return nbt.getCompound("Regions").getCompound(subReg).getLongArray("BlockStates");
+        Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+        CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+        Optional<CompoundTag> subRegOptional = regions.getCompound(subReg);
+        CompoundTag subRegTag = subRegOptional.orElseThrow(() -> new IllegalArgumentException("No subregion found in schematic"));
+        Optional<long[]> blockStatesOptional = subRegTag.getLongArray("BlockStates");
+        return blockStatesOptional.orElseThrow(() -> new IllegalArgumentException("No block states found in schematic"));
     }
 
     /**
@@ -174,10 +234,22 @@ public final class LitematicaSchematic extends StaticSchematic {
      * @return if the current block is part of the subregion.
      */
     private static boolean inSubregion(CompoundTag nbt, String subReg, int x, int y, int z) {
+        Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+        CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+        Optional<CompoundTag> subRegOptional = regions.getCompound(subReg);
+        CompoundTag subRegTag = subRegOptional.orElseThrow(() -> new IllegalArgumentException("No subregion found in schematic"));
+        Optional<CompoundTag> positionOptional = subRegTag.getCompound("Position");
+        CompoundTag position = positionOptional.orElseThrow(() -> new IllegalArgumentException("No position found in schematic"));
+        Optional<Integer> xOptional = position.getInt("x");
+        int xPos = xOptional.orElseThrow(() -> new IllegalArgumentException("No x position found in schematic"));
+        Optional<Integer> yOptional = position.getInt("y");
+        int yPos = yOptional.orElseThrow(() -> new IllegalArgumentException("No y position found in schematic"));
+        Optional<Integer> zOptional = position.getInt("z");
+        int zPos = zOptional.orElseThrow(() -> new IllegalArgumentException("No z position found in schematic"));
         return x >= 0 && y >= 0 && z >= 0 &&
-                x < Math.abs(nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("x")) &&
-                y < Math.abs(nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("y")) &&
-                z < Math.abs(nbt.getCompound("Regions").getCompound(subReg).getCompound("Size").getInt("z"));
+                x < xPos &&
+                y < yPos &&
+                z < zPos;
     }
 
     /**
@@ -197,7 +269,12 @@ public final class LitematicaSchematic extends StaticSchematic {
      */
     private void fillInSchematic() {
         for (String subReg : getRegions(nbt)) {
-            ListTag usedBlockTypes = nbt.getCompound("Regions").getCompound(subReg).getList("BlockStatePalette", 10);
+            Optional<CompoundTag> regionsOptional = nbt.getCompound("Regions");
+            CompoundTag regions = regionsOptional.orElseThrow(() -> new IllegalArgumentException("No regions found in schematic"));
+            Optional<CompoundTag> subRegOptional = regions.getCompound(subReg);
+            CompoundTag subRegTag = subRegOptional.orElseThrow(() -> new IllegalArgumentException("No subregion found in schematic"));
+            Optional<ListTag> usedBlockTypesOptional = subRegTag.getList("BlockStatePalette");
+           ListTag usedBlockTypes = usedBlockTypesOptional.orElseThrow(() -> new IllegalArgumentException("No block state palette found in schematic"));
             BlockState[] blockList = getBlockList(usedBlockTypes);
 
             int bitsPerBlock = getBitsPerBlock(usedBlockTypes.size());
