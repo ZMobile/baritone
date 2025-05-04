@@ -18,15 +18,13 @@
 package baritone.utils.schematic.format.defaults;
 
 import baritone.utils.schematic.StaticSchematic;
-import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.fixes.ItemIdFix;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.Optional;
 
 /**
  * @author Brady
@@ -35,26 +33,19 @@ import java.util.Optional;
 public final class MCEditSchematic extends StaticSchematic {
 
     public MCEditSchematic(CompoundTag schematic) {
-        Optional<String> typeOptional = schematic.getString("Materials");
-        String type = typeOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
+        String type = schematic.getString("Materials");
         if (!type.equals("Alpha")) {
             throw new IllegalStateException("bad schematic " + type);
         }
-
-        Optional<Integer> xOptional = schematic.getInt("Width");
-        this.x = xOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
-        Optional<Integer> yOptional = schematic.getInt("Height");
-        this.y = yOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
-        Optional<Integer> zOptional = schematic.getInt("Length");
-        this.z = zOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
-        Optional<byte[]> offsetsOptional = schematic.getByteArray("Offset");
-        byte[] blocks = offsetsOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
+        this.x = schematic.getInt("Width");
+        this.y = schematic.getInt("Height");
+        this.z = schematic.getInt("Length");
+        byte[] blocks = schematic.getByteArray("Blocks");
 //        byte[] metadata = schematic.getByteArray("Data");
 
         byte[] additional = null;
         if (schematic.contains("AddBlocks")) {
-            Optional<byte[]> addBlocksOptional = schematic.getByteArray("AddBlocks");
-            byte[] addBlocks = addBlocksOptional.orElseThrow(() -> new IllegalStateException("bad schematic"));
+            byte[] addBlocks = schematic.getByteArray("AddBlocks");
             additional = new byte[addBlocks.length * 2];
             for (int i = 0; i < addBlocks.length; i++) {
                 additional[i * 2 + 0] = (byte) ((addBlocks[i] >> 4) & 0xF); // lower nibble
@@ -72,11 +63,7 @@ public final class MCEditSchematic extends StaticSchematic {
                         // additional is 0 through 15 inclusive since it's & 0xF above
                         blockID |= additional[blockInd] << 8;
                     }
-                    Optional<Holder.Reference<Block>> blockReference = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(ItemIdFix.getItem(blockID)));
-                    if (blockReference.isEmpty()) {
-                        throw new IllegalStateException("bad block " + blockID);
-                    }
-                    Block block = blockReference.get().value();
+                    Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(ItemIdFix.getItem(blockID)));
 //                    int meta = metadata[blockInd] & 0xFF;
 //                    this.states[x][z][y] = block.getStateFromMeta(meta);
                     this.states[x][z][y] = block.defaultBlockState();

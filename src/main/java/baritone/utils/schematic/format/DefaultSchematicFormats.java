@@ -39,14 +39,13 @@ import java.util.Optional;
  * @since 12/13/2019
  */
 public enum DefaultSchematicFormats implements ISchematicFormat {
-
     /**
      * The MCEdit schematic specification. Commonly denoted by the ".schematic" file extension.
      */
     MCEDIT("schematic") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            return new MCEditSchematic(NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap()));
+            return new MCEditSchematic(NbtIo.readCompressed(input));
         }
     },
 
@@ -58,9 +57,8 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
     SPONGE("schem") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
-            Optional<Integer> versionOptional = nbt.getInt("Version");
-            int version = versionOptional.orElse(1);
+            CompoundTag nbt = NbtIo.readCompressed(input);
+            int version = nbt.getInt("Version");
             switch (version) {
                 case 1:
                 case 2:
@@ -77,9 +75,8 @@ public enum DefaultSchematicFormats implements ISchematicFormat {
     LITEMATICA("litematic") {
         @Override
         public IStaticSchematic parse(InputStream input) throws IOException {
-            CompoundTag nbt = NbtIo.readCompressed(input, NbtAccounter.unlimitedHeap());
-            Optional<Integer> versionOptional = nbt.getInt("Version");
-            int version = versionOptional.orElse(1);
+            CompoundTag nbt = NbtIo.readCompressed(input);
+            int version = nbt.getInt("Version");
             switch (version) {
                 case 4: //1.12
                 case 5: //1.13-1.17

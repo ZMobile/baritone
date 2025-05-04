@@ -20,19 +20,18 @@ package baritone.utils.schematic.format.defaults;
 import baritone.utils.schematic.StaticSchematic;
 import baritone.utils.type.VarInt;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import net.minecraft.core.Holder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Brady
@@ -41,20 +40,15 @@ import java.util.regex.Pattern;
 public final class SpongeSchematic extends StaticSchematic {
 
     public SpongeSchematic(CompoundTag nbt) {
-        Optional<Integer> xOptional = nbt.getInt("Width");
-        this.x = xOptional.orElseThrow(() -> new IllegalArgumentException("Width not found in NBT"));
-        Optional<Integer> yOptional = nbt.getInt("Height");
-        this.y = yOptional.orElseThrow(() -> new IllegalArgumentException("Height not found in NBT"));
-        Optional<Integer> zOptional = nbt.getInt("Length");
-        this.z = zOptional.orElseThrow(() -> new IllegalArgumentException("Length not found in NBT"));
+        this.x = nbt.getInt("Width");
+        this.y = nbt.getInt("Height");
+        this.z = nbt.getInt("Length");
         this.states = new BlockState[this.x][this.z][this.y];
 
         Int2ObjectArrayMap<BlockState> palette = new Int2ObjectArrayMap<>();
-        Optional<CompoundTag> paletteTagOptional = nbt.getCompound("Palette");
-        CompoundTag paletteTag = paletteTagOptional.orElseThrow(() -> new IllegalArgumentException("Palette not found in NBT"));
-        for (String tag : paletteTag.keySet()) {
-            Optional<Integer> paletteIndexOptional = paletteTag.getInt(tag);
-            int index = paletteIndexOptional.orElseThrow(() -> new IllegalArgumentException("Palette index not found in NBT"));
+        CompoundTag paletteTag = nbt.getCompound("Palette");
+        for (String tag : paletteTag.getAllKeys()) {
+            int index = paletteTag.getInt(tag);
 
             SerializedBlockState serializedState = SerializedBlockState.getFromString(tag);
             if (serializedState == null) {
@@ -70,8 +64,7 @@ public final class SpongeSchematic extends StaticSchematic {
         }
 
         // BlockData is stored as an NBT byte[], however, the actual data that is represented is a varint[]
-        Optional<byte[]> rawBlockDataOptional = nbt.getByteArray("BlockData");
-        byte[] rawBlockData = rawBlockDataOptional.orElseThrow(() -> new IllegalArgumentException("BlockData not found in NBT"));
+        byte[] rawBlockData = nbt.getByteArray("BlockData");
         int[] blockData = new int[this.x * this.y * this.z];
         int offset = 0;
         for (int i = 0; i < blockData.length; i++) {
@@ -114,11 +107,7 @@ public final class SpongeSchematic extends StaticSchematic {
 
         private BlockState deserialize() {
             if (this.blockState == null) {
-                Optional<Holder.Reference<Block>> optionalBlockReference = BuiltInRegistries.BLOCK.get(this.resourceLocation);
-                if (optionalBlockReference.isEmpty()) {
-                    throw new IllegalArgumentException("Block not found for resource location: " + this.resourceLocation);
-                }
-                Block block = optionalBlockReference.get().value();
+                Block block = BuiltInRegistries.BLOCK.get(this.resourceLocation);
                 this.blockState = block.defaultBlockState();
 
                 this.properties.keySet().stream().sorted(String::compareTo).forEachOrdered(key -> {
