@@ -83,7 +83,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
         }
         this.directory = directory.toString();
         this.dimension = dimension;
-        System.out.println("Cached world directory: " + directory);
+        // Removed excessive logging
         Baritone.getExecutor().execute(new PackerThread());
         Baritone.getExecutor().execute(() -> {
             try {

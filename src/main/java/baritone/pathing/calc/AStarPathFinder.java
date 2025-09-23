@@ -107,6 +107,17 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
             numNodes++;
             if (goal.isInGoal(currentNode.x, currentNode.y, currentNode.z)) {
                 logDebug("Took " + (System.currentTimeMillis() - startTime) + "ms, " + numMovementsConsidered + " movements considered");
+
+                // Cache successful path nodes
+                PathNode node = currentNode;
+                while (node != null) {
+                    BetterBlockPos pos = new BetterBlockPos(node.x, node.y, node.z);
+                    IntermediateNodeCache.getInstance().cacheNodeData(
+                            pos, goal, node.cost, node.estimatedCostToGoal,
+                            calcContext.hasThrowaway, true); // true = success path
+                    node = node.previous;
+                }
+
                 return Optional.of(new Path(startNode, currentNode, numNodes, goal, calcContext));
             }
             for (Moves moves : allMoves) {
@@ -153,6 +164,19 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                     actionCost *= favoring.calculate(hashCode);
                 }
                 PathNode neighbor = getNodeAtPosition(res.x, res.y, res.z, hashCode);
+
+                // Check intermediate cache for this position
+                BetterBlockPos neighborPos = new BetterBlockPos(res.x, res.y, res.z);
+                IntermediateNodeCache.CachedNodeData cachedData = IntermediateNodeCache.getInstance()
+                        .getCachedData(neighborPos, goal, calcContext.hasThrowaway);
+
+                // If we have cached data and haven't calculated this node yet, use it
+                if (cachedData != null && neighbor.cost == ActionCosts.COST_INF) {
+                    neighbor.cost = cachedData.costFromStart;
+                    neighbor.combinedCost = neighbor.cost + neighbor.estimatedCostToGoal;
+                    // Note: We don't set the previous node from cache as paths need to be properly connected
+                }
+
                 double tentativeCost = currentNode.cost + actionCost;
                 double goalWeight = 0.1;
                 double distancePenalty = goalWeight * goal.heuristic(currentNode.x, currentNode.y, currentNode.z);
@@ -161,6 +185,12 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                     neighbor.previous = currentNode;
                     neighbor.cost = tentativeCost;
                     neighbor.combinedCost = tentativeCost + neighbor.estimatedCostToGoal;
+
+                    // Cache this node's costs for other mobs to use
+                    IntermediateNodeCache.getInstance().cacheNodeData(
+                            neighborPos, goal, neighbor.cost, neighbor.estimatedCostToGoal,
+                            calcContext.hasThrowaway, false);
+
                     if (neighbor.isOpen()) {
                         openSet.update(neighbor);
                     } else {

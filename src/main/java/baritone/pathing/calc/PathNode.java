@@ -31,14 +31,19 @@ public final class PathNode {
     /**
      * The position of this node
      */
-    public final int x;
-    public final int y;
-    public final int z;
+    public int x;
+    public int y;
+    public int z;
 
     /**
      * Cached, should always be equal to goal.heuristic(pos)
      */
-    public final double estimatedCostToGoal;
+    public double estimatedCostToGoal;
+
+    /**
+     * Indicates if this node was created from the pool
+     */
+    public final boolean isPooled;
 
     /**
      * Total cost of getting from start to here
@@ -64,6 +69,10 @@ public final class PathNode {
     public int heapPosition;
 
     public PathNode(int x, int y, int z, Goal goal) {
+        this(x, y, z, goal, false);
+    }
+
+    public PathNode(int x, int y, int z, Goal goal, boolean isPooled) {
         this.previous = null;
         this.cost = ActionCosts.COST_INF;
         this.estimatedCostToGoal = goal.heuristic(x, y, z);
@@ -74,6 +83,24 @@ public final class PathNode {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.isPooled = isPooled;
+    }
+
+    /**
+     * Resets this node with new values for pooling reuse
+     */
+    public void reset(int x, int y, int z, Goal goal) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.previous = null;
+        this.cost = ActionCosts.COST_INF;
+        this.estimatedCostToGoal = goal.heuristic(x, y, z);
+        if (Double.isNaN(estimatedCostToGoal)) {
+            throw new IllegalStateException(goal + " calculated implausible heuristic");
+        }
+        this.heapPosition = -1;
+        this.combinedCost = 0;
     }
 
     public boolean isOpen() {

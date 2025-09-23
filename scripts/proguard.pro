@@ -9,6 +9,9 @@
 -overloadaggressively
 -dontusemixedcaseclassnames
 
+# Ignore warnings about missing references
+-ignorewarnings
+
 # instead of renaming to a, b, c, rename to baritone.a, baritone.b, baritone.c so as to not conflict with minecraft's obfd classes
 -flattenpackagehierarchy
 -repackageclasses 'baritone'
@@ -21,6 +24,18 @@
 -dontwarn baritone.launch.BaritoneForgeModXD
 # progard doesn't like signature polymorphism
 -dontwarn java.lang.invoke.MethodHandle
+
+# Ignore unresolved Minecraft classes (intermediary mappings)
+-dontwarn net.minecraft.class_**
+-dontwarn com.mojang.blaze3d.**
+# Ignore Fabric API and loader classes
+-dontwarn net.fabricmc.**
+-dontwarn org.spongepowered.**
+# Ignore issues with BetterBlockPos and other Baritone classes that reference intermediary mappings
+-dontwarn baritone.api.utils.BetterBlockPos
+-dontwarn baritone.pathing.**
+-dontwarn baritone.process.**
+-dontwarn baritone.utils.schematic.**
 
 # please do not change the comment below
 -keep class baritone.api.** { *; } # this is the keep api

@@ -16,7 +16,6 @@
  */
 
 import baritone.gradle.task.CreateDistTask
-import baritone.gradle.task.ProguardTask
 
 plugins {
     id "com.github.johnrengelman.shadow" version "8.0.0"
@@ -92,20 +91,11 @@ jar {
     }
 }
 
-task proguard(type: ProguardTask) {
-    url 'https://github.com/Guardsquare/proguard/releases/download/v7.5/proguard-7.5.0.zip'
-    extract 'proguard-7.5.0/lib/proguard.jar'
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
-
-task createDist(type: CreateDistTask, dependsOn: proguard)
-
-build.finalizedBy(createDist)
 
 publishing {
     publications {

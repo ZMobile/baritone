@@ -39,6 +39,10 @@ import java.util.Optional;
 public class WorldProvider implements IWorldProvider {
 
     private static final Map<Path, WorldData> worldCache = new HashMap<>();
+    private static volatile boolean worldInitialized = false;
+    private static Level lastInitializedWorld = null;
+    private static WorldData sharedWorldData = null;
+    private static final Object INIT_LOCK = new Object();
 
     private final Baritone baritone;
     private final IPlayerContext ctx;
@@ -87,7 +91,7 @@ public class WorldProvider implements IWorldProvider {
                 Files.createDirectories(worldDataDir);
             } catch (IOException ignored) {}
 
-            System.out.println("Baritone world data dir: " + worldDataDir);
+            // Removed excessive logging
             synchronized (worldCache) {
                 this.currentWorld = worldCache.computeIfAbsent(worldDataDir, d -> new WorldData(d, world.dimensionType()));
             }
@@ -142,19 +146,57 @@ public class WorldProvider implements IWorldProvider {
      * Why does this exist instead of fixing the event? Some mods break the event. Lol.
      */
     private void detectAndHandleBrokenLoading() {
-        if (this.mcWorld != ctx.world()) {
-            if (this.currentWorld != null) {
-                System.out.println("mc.world unloaded unnoticed! Unloading Baritone cache now.");
-                closeWorld();
+        // Fast path - if we already have the correct world data, just return
+        if (this.currentWorld == sharedWorldData && this.mcWorld == ctx.world() && sharedWorldData != null) {
+            return;
+        }
+
+        synchronized (INIT_LOCK) {
+            // Check if world changed
+            if (this.mcWorld != ctx.world()) {
+                this.mcWorld = ctx.world();
+
+                if (ctx.world() == null) {
+                    // World unloaded
+                    this.currentWorld = null;
+                    return;
+                }
+
+                // World loaded - use shared cache
+                if (sharedWorldData != null && lastInitializedWorld == ctx.world()) {
+                    // Reuse existing shared world data
+                    this.currentWorld = sharedWorldData;
+                    return;
+                }
+
+                // Initialize only once for all mobs
+                if (lastInitializedWorld != ctx.world() || sharedWorldData == null) {
+                    // Only the first mob initializes
+                    if (!worldCache.isEmpty()) {
+                        sharedWorldData = worldCache.values().iterator().next();
+                    } else {
+                        initWorld(ctx.world());
+                        if (!worldCache.isEmpty()) {
+                            sharedWorldData = worldCache.values().iterator().next();
+                        }
+                    }
+                    lastInitializedWorld = ctx.world();
+                    worldInitialized = true;
+                }
+                this.currentWorld = sharedWorldData;
+            } else if (this.currentWorld == null && ctx.world() != null) {
+                // Just lost our reference, restore from shared
+                if (sharedWorldData != null) {
+                    this.currentWorld = sharedWorldData;
+                } else if (!worldCache.isEmpty()) {
+                    this.currentWorld = sharedWorldData = worldCache.values().iterator().next();
+                } else {
+                    initWorld(ctx.world());
+                    if (!worldCache.isEmpty()) {
+                        this.currentWorld = sharedWorldData = worldCache.values().iterator().next();
+                    }
+                }
             }
-            if (ctx.world() != null) {
-                System.out.println("mc.world loaded unnoticed! Loading Baritone cache now.");
-                initWorld(ctx.world());
-                System.out.println("Baritone cache loaded.");
-            }
-        } else if (this.currentWorld == null && ctx.world() != null) {
-            //System.out.println("Retrying to load Baritone cache");
-            initWorld(ctx.world());
         }
     }
 }

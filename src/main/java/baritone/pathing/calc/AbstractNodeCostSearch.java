@@ -101,6 +101,8 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
         }
         cancelRequested = false;
         try {
+            // Don't use full path caching as it breaks splicing
+            // Intermediate node caching is handled within the pathfinding algorithm
             IPath path = calculate0(primaryTimeout, failureTimeout).map(IPath::postProcess).orElse(null);
             if (cancelRequested) {
                 return new PathCalculationResult(PathCalculationResult.Type.CANCELLATION);
@@ -121,6 +123,7 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
             if (path.length() < previousLength) {
                 Helper.HELPER.logDebug("Static cutoff " + previousLength + " to " + path.length());
             }
+
             if (goal.isInGoal(path.getDest())) {
                 return new PathCalculationResult(PathCalculationResult.Type.SUCCESS_TO_GOAL, path);
             } else {
@@ -133,6 +136,11 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
         } finally {
             // this is run regardless of what exception may or may not be raised by calculate0
             isFinished = true;
+            // Recycle all nodes back to the pool
+            if (map != null) {
+                PathNodePool.getInstance().recycleAll(map.values());
+                map.clear();
+            }
         }
     }
 
@@ -169,7 +177,8 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
     protected PathNode getNodeAtPosition(int x, int y, int z, long hashCode) {
         PathNode node = map.get(hashCode);
         if (node == null) {
-            node = new PathNode(x, y, z, goal);
+            // Use pool instead of creating new node
+            node = PathNodePool.getInstance().obtain(x, y, z, goal);
             map.put(hashCode, node);
         }
         return node;
