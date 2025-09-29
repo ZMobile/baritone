@@ -24,6 +24,7 @@ import baritone.cache.WorldData;
 import baritone.utils.pathing.BetterWorldBorder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -50,6 +51,7 @@ public class BlockStateInterface {
 
     private LevelChunk prev = null;
     private CachedRegion prevCached = null;
+    private static final ChunkCache chunkCache = ChunkCache.getInstance();
 
     private final boolean useTheRealWorld;
 
@@ -92,13 +94,25 @@ public class BlockStateInterface {
         }
 
         if (useTheRealWorld) {
+            // Try single-chunk cache first for ultra-fast access
             LevelChunk cached = prev;
             if (cached != null && cached.getPos().x == x >> 4 && cached.getPos().z == z >> 4) {
                 return getFromChunk(cached, x, y, z);
             }
-            ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, false);
-            if (chunkAccess != null) {
-                LevelChunk chunk = (LevelChunk) chunkAccess;
+
+            // Use shared chunk cache to avoid synchronization
+            LevelChunk chunk = null;
+            if (world instanceof ServerLevel) {
+                chunk = chunkCache.getChunk((ServerLevel) world, x >> 4, z >> 4);
+            } else {
+                // Fallback for non-server worlds
+                ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, false);
+                if (chunkAccess instanceof LevelChunk) {
+                    chunk = (LevelChunk) chunkAccess;
+                }
+            }
+
+            if (chunk != null) {
                 prev = chunk;
                 return getFromChunk(chunk, x, y, z);
             }
@@ -123,10 +137,23 @@ public class BlockStateInterface {
     }
 
     public boolean isLoaded(int x, int z) {
+        // Try single-chunk cache first
         LevelChunk prevChunk = prev;
         if (prevChunk != null && prevChunk.getPos().x == x >> 4 && prevChunk.getPos().z == z >> 4) {
             return true;
         }
+
+        // Check shared cache without loading
+        if (world instanceof ServerLevel && chunkCache.isChunkLoaded((ServerLevel) world, x >> 4, z >> 4)) {
+            return true;
+        }
+
+        // Finally check with the world
+        if (world instanceof ServerLevel) {
+            return ((ServerLevel) world).getChunkSource().hasChunk(x >> 4, z >> 4);
+        }
+
+        // Fallback - actually try to get chunk
         ChunkAccess chunkAccess = provider.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, false);
         if (chunkAccess != null) {
             prev = (LevelChunk) chunkAccess;

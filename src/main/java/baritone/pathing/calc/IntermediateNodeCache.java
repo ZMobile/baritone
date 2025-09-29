@@ -23,6 +23,8 @@ import baritone.api.utils.BetterBlockPos;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A thread-safe cache for sharing intermediate pathfinding calculations
@@ -51,6 +53,10 @@ public final class IntermediateNodeCache {
     private static final long DEFAULT_CACHE_EXPIRY_MS = 10000; // 10 seconds for regular paths
     private static final long SUCCESS_CACHE_EXPIRY_MS = 30000; // 30 seconds for paths that reach the goal
     private static final int REGION_SIZE = 32; // blocks per region
+
+    // Cleanup management
+    private final AtomicBoolean cleanupInProgress = new AtomicBoolean(false);
+    private volatile long lastCleanupTime = System.currentTimeMillis();
 
     private IntermediateNodeCache() {
         // Private constructor for singleton
@@ -134,20 +140,67 @@ public final class IntermediateNodeCache {
         entry.timestamp = System.currentTimeMillis();
 
         // Global cache size management
-        if (cache.size() > MAX_CACHE_SIZE) {
-            cleanupOldEntries(cache);
+        if (cache.size() > MAX_CACHE_SIZE && !cleanupInProgress.get()) {
+            triggerAsyncCleanup(cache);
         }
     }
 
     /**
-     * Removes expired entries from the cache.
+     * Triggers asynchronous cleanup to avoid lag spikes.
      */
-    private void cleanupOldEntries(Map<CacheKey, CacheEntry> cache) {
-        long currentTime = System.currentTimeMillis();
-        cache.entrySet().removeIf(entry -> {
-            long expiryTime = entry.getValue().isSuccessPath ? SUCCESS_CACHE_EXPIRY_MS : DEFAULT_CACHE_EXPIRY_MS;
-            return currentTime - entry.getValue().timestamp > expiryTime;
+    private void triggerAsyncCleanup(Map<CacheKey, CacheEntry> cache) {
+        // Only allow one cleanup at a time
+        if (!cleanupInProgress.compareAndSet(false, true)) {
+            return;
+        }
+
+        // Don't cleanup too frequently (at most once per second)
+        long now = System.currentTimeMillis();
+        if (now - lastCleanupTime < 1000) {
+            cleanupInProgress.set(false);
+            return;
+        }
+
+        // Run cleanup asynchronously
+        CompletableFuture.runAsync(() -> {
+            try {
+                int removed = cleanupOldEntries(cache);
+                lastCleanupTime = System.currentTimeMillis();
+                if (removed > 0) {
+                    // Optional: log cleanup stats
+                    // System.out.println("IntermediateNodeCache: Removed " + removed + " expired entries");
+                }
+            } finally {
+                cleanupInProgress.set(false);
+            }
         });
+    }
+
+    /**
+     * Removes expired entries from the cache.
+     * Returns the number of entries removed.
+     */
+    private int cleanupOldEntries(Map<CacheKey, CacheEntry> cache) {
+        long currentTime = System.currentTimeMillis();
+        int removed = 0;
+
+        // Remove expired entries in small batches to reduce lock contention
+        var iterator = cache.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            long expiryTime = entry.getValue().isSuccessPath ? SUCCESS_CACHE_EXPIRY_MS : DEFAULT_CACHE_EXPIRY_MS;
+            if (currentTime - entry.getValue().timestamp > expiryTime) {
+                iterator.remove();
+                removed++;
+
+                // Yield periodically to avoid hogging CPU
+                if (removed % 10 == 0) {
+                    Thread.yield();
+                }
+            }
+        }
+
+        return removed;
     }
 
     /**
@@ -224,7 +277,20 @@ public final class IntermediateNodeCache {
 
         void cleanupOldData() {
             long cutoff = System.currentTimeMillis() - 5000; // 5 seconds
-            nodeData.entrySet().removeIf(e -> e.getValue().timestamp < cutoff);
+            // Use iterator to avoid potential lag from removeIf on large maps
+            var iterator = nodeData.entrySet().iterator();
+            int removed = 0;
+            while (iterator.hasNext()) {
+                var entry = iterator.next();
+                if (entry.getValue().timestamp < cutoff) {
+                    iterator.remove();
+                    removed++;
+                    // Yield periodically to avoid hogging CPU
+                    if (removed % 5 == 0) {
+                        Thread.yield();
+                    }
+                }
+            }
         }
     }
 

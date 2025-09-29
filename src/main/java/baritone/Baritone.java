@@ -32,6 +32,7 @@ import baritone.behavior.PathingBehavior;
 import baritone.behavior.WaypointBehavior;
 import baritone.cache.WorldProvider;
 import baritone.command.manager.CommandManager;
+import baritone.event.ChunkCacheUpdater;
 import baritone.event.GameEventHandler;
 import baritone.process.*;
 import baritone.selection.SelectionManager;
@@ -214,6 +215,9 @@ public class Baritone implements IBaritone {
         this.worldProvider = new WorldProvider(this);
         this.selectionManager = new SelectionManager(this);
         this.commandManager = new CommandManager(this);
+
+        // Register chunk cache updater for cache invalidation
+        ChunkCacheUpdater.register(this);
     }
 
 

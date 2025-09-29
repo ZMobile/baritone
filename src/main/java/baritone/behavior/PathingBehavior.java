@@ -30,6 +30,7 @@ import baritone.api.utils.PathCalculationResult;
 import baritone.api.utils.interfaces.IGoalRenderPos;
 import baritone.pathing.calc.AStarPathFinder;
 import baritone.pathing.calc.AbstractNodeCostSearch;
+import baritone.pathing.calc.HighwayCache;
 import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.MovementHelper;
 import baritone.pathing.path.PathExecutor;
@@ -550,6 +551,12 @@ public final class PathingBehavior extends Behavior implements IPathingBehavior,
                             queuePathEvent(PathEvent.CALC_FINISHED_NOW_EXECUTING);
                             current = executor.get();
                             resetEstimatedTicksToGoal(start);
+
+                            // Record path for highway detection
+                            HighwayCache.getInstance().recordPath(
+                                current.getPath().positions(),
+                                context != null ? context.hasThrowaway : false
+                            );
                         } else {
                             logDebug("Warning: discarding orphan path segment with incorrect start");
                         }

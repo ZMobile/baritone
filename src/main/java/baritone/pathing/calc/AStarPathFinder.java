@@ -20,6 +20,8 @@ package baritone.pathing.calc;
 import baritone.Baritone;
 import baritone.api.pathing.calc.IPath;
 import baritone.api.pathing.goals.Goal;
+import baritone.api.pathing.goals.GoalBlock;
+import baritone.api.pathing.goals.GoalXZ;
 import baritone.api.pathing.movement.ActionCosts;
 import baritone.api.utils.BetterBlockPos;
 import baritone.pathing.calc.openset.BinaryHeapOpenSet;
@@ -120,6 +122,47 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
 
                 return Optional.of(new Path(startNode, currentNode, numNodes, goal, calcContext));
             }
+
+            // Check for nearby highways that could help
+            BetterBlockPos currentPos = new BetterBlockPos(currentNode.x, currentNode.y, currentNode.z);
+            // For highways, we'll use the current goal target position based on the goal's heuristic
+            BetterBlockPos goalPos = currentPos; // Default to current if we can't determine goal pos
+            if (goal instanceof GoalBlock) {
+                goalPos = new BetterBlockPos(((GoalBlock) goal).getGoalPos());
+            } else if (goal instanceof GoalXZ) {
+                goalPos = new BetterBlockPos(((GoalXZ) goal).getX(), currentPos.y, ((GoalXZ) goal).getZ());
+            }
+            HighwayCache.Highway joinableHighway = HighwayCache.getInstance()
+                    .findJoinableHighway(currentPos, goalPos, calcContext.hasThrowaway);
+
+            if (joinableHighway != null) {
+                // Calculate cost to join highway
+                double costToJoin = currentPos.distanceSq(joinableHighway.entry);
+                if (costToJoin <= 25) { // Within 5 blocks
+                    // Add highway exit as a virtual node to explore
+                    int exitX = joinableHighway.exit.x;
+                    int exitY = joinableHighway.exit.y;
+                    int exitZ = joinableHighway.exit.z;
+                    long exitHash = BetterBlockPos.longHash(exitX, exitY, exitZ);
+
+                    PathNode highwayExitNode = getNodeAtPosition(exitX, exitY, exitZ, exitHash);
+                    double highwayCost = currentNode.cost + Math.sqrt(costToJoin) + joinableHighway.cost;
+
+                    if (highwayExitNode.cost > highwayCost) {
+                        highwayExitNode.previous = currentNode;
+                        highwayExitNode.cost = highwayCost;
+                        highwayExitNode.combinedCost = highwayCost + highwayExitNode.estimatedCostToGoal;
+                        if (highwayExitNode.isOpen()) {
+                            openSet.update(highwayExitNode);
+                        } else {
+                            openSet.insert(highwayExitNode);
+                        }
+                        // Record highway usage
+                        joinableHighway.recordUsage();
+                    }
+                }
+            }
+
             for (Moves moves : allMoves) {
                 int newX = currentNode.x + moves.xOffset;
                 int newZ = currentNode.z + moves.zOffset;
