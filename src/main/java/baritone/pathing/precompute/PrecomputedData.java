@@ -36,6 +36,8 @@ public class PrecomputedData {
     private static final int CAN_WALK_THROUGH_SPECIAL_MASK = 1 << 4;
     private static final int FULLY_PASSABLE_MASK = 1 << 5;
     private static final int FULLY_PASSABLE_SPECIAL_MASK = 1 << 6;
+    private static final int CAN_PLACE_AGAINST_MASK = 1 << 7;
+    private static final int HAS_FLUID_MASK = 1 << 8;  // Cache FluidState.isEmpty() result
 
     private int fillData(int id, BlockState state) {
         int blockData = 0;
@@ -62,6 +64,16 @@ public class PrecomputedData {
         }
         if (fullyPassableState == MAYBE) {
             blockData |= FULLY_PASSABLE_SPECIAL_MASK;
+        }
+
+        // Precompute canPlaceAgainst - this is expensive due to isBlockNormalCube calling Block.isShapeFullBlock
+        if (MovementHelper.canPlaceAgainstBlockState(state)) {
+            blockData |= CAN_PLACE_AGAINST_MASK;
+        }
+
+        // Cache FluidState.isEmpty() - this was taking 13.8% of CPU time
+        if (!state.getFluidState().isEmpty()) {
+            blockData |= HAS_FLUID_MASK;
         }
 
         blockData |= COMPLETED_MASK;
@@ -113,5 +125,85 @@ public class PrecomputedData {
         } else {
             return (blockData & FULLY_PASSABLE_MASK) != 0;
         }
+    }
+
+    /**
+     * Cached version of canPlaceAgainst that avoids repeated isBlockNormalCube calls.
+     * This is a major optimization as isBlockNormalCube calls Block.isShapeFullBlock which
+     * was taking ~8.6% of CPU time in profiling.
+     */
+    public boolean canPlaceAgainst(BlockState state) {
+        int id = Block.BLOCK_STATE_REGISTRY.getId(state);
+        int blockData = data[id];
+
+        if ((blockData & COMPLETED_MASK) == 0) { // we need to fill in the data
+            blockData = fillData(id, state);
+        }
+
+        return (blockData & CAN_PLACE_AGAINST_MASK) != 0;
+    }
+
+    /**
+     * Cached version of !FluidState.isEmpty().
+     * This was taking 13.8% of CPU time in profiling.
+     */
+    public boolean hasFluid(BlockState state) {
+        int id = Block.BLOCK_STATE_REGISTRY.getId(state);
+        int blockData = data[id];
+
+        if ((blockData & COMPLETED_MASK) == 0) {
+            blockData = fillData(id, state);
+        }
+
+        return (blockData & HAS_FLUID_MASK) != 0;
+    }
+
+    /**
+     * Get raw precomputed data for a block state.
+     * Returns the bitmask directly for callers that need multiple checks.
+     * This avoids repeated Block.BLOCK_STATE_REGISTRY.getId() calls which were taking 15.8% CPU.
+     */
+    public int getData(BlockState state) {
+        int id = Block.BLOCK_STATE_REGISTRY.getId(state);
+        int blockData = data[id];
+
+        if ((blockData & COMPLETED_MASK) == 0) {
+            blockData = fillData(id, state);
+        }
+
+        return blockData;
+    }
+
+    // Direct mask accessors for use with getData()
+    public static boolean canWalkOnFromData(int blockData) {
+        return (blockData & CAN_WALK_ON_MASK) != 0;
+    }
+
+    public static boolean canWalkOnSpecialFromData(int blockData) {
+        return (blockData & CAN_WALK_ON_SPECIAL_MASK) != 0;
+    }
+
+    public static boolean canWalkThroughFromData(int blockData) {
+        return (blockData & CAN_WALK_THROUGH_MASK) != 0;
+    }
+
+    public static boolean canWalkThroughSpecialFromData(int blockData) {
+        return (blockData & CAN_WALK_THROUGH_SPECIAL_MASK) != 0;
+    }
+
+    public static boolean fullyPassableFromData(int blockData) {
+        return (blockData & FULLY_PASSABLE_MASK) != 0;
+    }
+
+    public static boolean fullyPassableSpecialFromData(int blockData) {
+        return (blockData & FULLY_PASSABLE_SPECIAL_MASK) != 0;
+    }
+
+    public static boolean canPlaceAgainstFromData(int blockData) {
+        return (blockData & CAN_PLACE_AGAINST_MASK) != 0;
+    }
+
+    public static boolean hasFluidFromData(int blockData) {
+        return (blockData & HAS_FLUID_MASK) != 0;
     }
 }

@@ -39,6 +39,9 @@ public final class PathNodePool {
     // Pool of available nodes
     private final ConcurrentLinkedQueue<PathNode> pool = new ConcurrentLinkedQueue<>();
 
+    // Track pool size approximately - avoids O(n) ConcurrentLinkedQueue.size() calls
+    private final AtomicInteger poolSize = new AtomicInteger(0);
+
     // Statistics for monitoring
     private final AtomicInteger totalCreated = new AtomicInteger(0);
     private final AtomicInteger poolHits = new AtomicInteger(0);
@@ -63,6 +66,7 @@ public final class PathNodePool {
         PathNode node = pool.poll();
 
         if (node != null) {
+            poolSize.decrementAndGet();
             poolHits.incrementAndGet();
             // Reset the node with new values
             node.reset(x, y, z, goal);
@@ -86,13 +90,15 @@ public final class PathNodePool {
         }
 
         // Only add to pool if we haven't exceeded the maximum size
-        if (pool.size() < MAX_POOL_SIZE) {
+        // Use tracked size instead of O(n) pool.size() call
+        if (poolSize.get() < MAX_POOL_SIZE) {
             // Clear references to help GC
             node.previous = null;
             node.cost = ActionCosts.COST_INF;
             node.heapPosition = -1;
 
             pool.offer(node);
+            poolSize.incrementAndGet();
         }
     }
 
@@ -115,6 +121,7 @@ public final class PathNodePool {
      */
     public void clear() {
         pool.clear();
+        poolSize.set(0);
     }
 
     /**
@@ -125,7 +132,7 @@ public final class PathNodePool {
                 totalCreated.get(),
                 poolHits.get(),
                 poolMisses.get(),
-                pool.size(),
+                poolSize.get(),
                 getHitRate());
     }
 

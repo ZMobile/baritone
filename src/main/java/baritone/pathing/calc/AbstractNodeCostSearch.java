@@ -87,7 +87,10 @@ public abstract class AbstractNodeCostSearch implements IPathFinder, Helper {
         this.startZ = startZ;
         this.goal = goal;
         this.context = context;
-        this.map = new Long2ObjectOpenHashMap<>(Baritone.settings().pathingMapDefaultSize.value, Baritone.settings().pathingMapLoadFactor.value);
+        // Use larger initial capacity to avoid frequent resizing
+        // During bloodmoon with many mobs, pathfinding explores many nodes
+        int initialSize = Math.max(Baritone.settings().pathingMapDefaultSize.value, 4096);
+        this.map = new Long2ObjectOpenHashMap<>(initialSize, Baritone.settings().pathingMapLoadFactor.value);
     }
 
     public void cancel() {

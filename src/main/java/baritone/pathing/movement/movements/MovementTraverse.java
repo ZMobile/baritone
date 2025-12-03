@@ -140,7 +140,8 @@ public class MovementTraverse extends Movement {
                     if (againstX == x && againstZ == z) { // this would be a backplace
                         continue;
                     }
-                    if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) { // found a side place option\
+                    // Use cached version to avoid expensive isBlockNormalCube calls
+                    if (MovementHelper.canPlaceAgainst(context, againstX, againstY, againstZ)) { // found a side place option\
                         return WC + placeCost + hardness1 + hardness2;
                     }
                 }

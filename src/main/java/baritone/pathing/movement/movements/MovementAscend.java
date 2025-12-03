@@ -74,6 +74,29 @@ public class MovementAscend extends Movement {
                 return COST_INF;
             }
         }
+        return costInternal(context, x, y, z, destX, destZ);
+    }
+
+    /**
+     * Optimized cost calculation that takes PathNode directly to avoid ArrayList allocations.
+     */
+    public static double cost(CalculationContext context, int x, int y, int z, int destX, int destZ, baritone.pathing.calc.PathNode previousNode) {
+        // Check previous positions to make sure none are within 4 blocks or less beneath the destination position
+        // Iterate directly through PathNode chain instead of creating ArrayList
+        baritone.pathing.calc.PathNode iteratingNode = previousNode;
+        int i = 0;
+        while (iteratingNode != null && i < 10) {
+            // Check if this previous position is problematic
+            if (iteratingNode.x == destX && iteratingNode.z == destZ && Math.abs(iteratingNode.y - y) <= 4) {
+                return COST_INF;
+            }
+            iteratingNode = iteratingNode.previous;
+            i++;
+        }
+        return costInternal(context, x, y, z, destX, destZ);
+    }
+
+    private static double costInternal(CalculationContext context, int x, int y, int z, int destX, int destZ) {
         BlockState toPlace = context.get(destX, y, destZ);
         double additionalPlacementCost = 0;
         if (!MovementHelper.canWalkOn(context, destX, y, destZ, toPlace)) {
@@ -94,7 +117,8 @@ public class MovementAscend extends Movement {
                 if (againstX == x && againstZ == z) { // we might be able to backplace now, but it doesn't matter because it will have been broken by the time we'd need to use it
                     continue;
                 }
-                if (MovementHelper.canPlaceAgainst(context.bsi, againstX, againstY, againstZ)) {
+                // Use cached version to avoid expensive isBlockNormalCube calls
+                if (MovementHelper.canPlaceAgainst(context, againstX, againstY, againstZ)) {
                     foundPlaceOption = true;
                     break;
                 }

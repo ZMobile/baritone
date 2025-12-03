@@ -23,7 +23,7 @@ import baritone.api.IBaritone;
 import baritone.api.cache.ICachedWorld;
 import baritone.api.cache.IWorldData;
 import baritone.api.utils.Helper;
-import com.google.common.cache.CacheBuilder;
+import java.lang.ref.SoftReference;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -69,8 +69,11 @@ public final class CachedWorld implements ICachedWorld, Helper {
     /**
      * All chunk positions pending packing. This map will be updated in-place if a new update to the chunk occurs
      * while waiting in the queue for the packer thread to get to it.
+     *
+     * Uses ConcurrentHashMap with SoftReference instead of Guava cache to avoid LocalCache$Segment.get() contention
+     * which was causing ~8.6% CPU overhead during mass pathfinding.
      */
-    private final Map<ChunkPos, LevelChunk> toPackMap = CacheBuilder.newBuilder().softValues().<ChunkPos, LevelChunk>build().asMap();
+    private final Map<ChunkPos, SoftReference<LevelChunk>> toPackMap = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final DimensionType dimension;
 
@@ -103,7 +106,8 @@ public final class CachedWorld implements ICachedWorld, Helper {
 
     @Override
     public final void queueForPacking(LevelChunk chunk) {
-        if (toPackMap.put(chunk.getPos(), chunk) == null) {
+        SoftReference<LevelChunk> prev = toPackMap.put(chunk.getPos(), new SoftReference<>(chunk));
+        if (prev == null) {
             toPackQueue.add(chunk.getPos());
         }
     }
@@ -305,7 +309,15 @@ public final class CachedWorld implements ICachedWorld, Helper {
             while (true) {
                 try {
                     ChunkPos pos = toPackQueue.take();
-                    LevelChunk chunk = toPackMap.remove(pos);
+                    SoftReference<LevelChunk> ref = toPackMap.remove(pos);
+                    if (ref == null) {
+                        continue;
+                    }
+                    LevelChunk chunk = ref.get();
+                    if (chunk == null) {
+                        // Chunk was garbage collected, skip
+                        continue;
+                    }
                     if (toPackQueue.size() > Baritone.settings().chunkPackerQueueMaxSize.value) {
                         continue;
                     }

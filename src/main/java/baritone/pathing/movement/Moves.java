@@ -21,11 +21,7 @@ import baritone.api.utils.BetterBlockPos;
 import baritone.pathing.calc.PathNode;
 import baritone.pathing.movement.movements.*;
 import baritone.utils.pathing.MutableMoveResult;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public enum Moves {
     DOWNWARD(0, -1, 0) {
@@ -108,15 +104,8 @@ public enum Moves {
 
         @Override
         public double cost(CalculationContext context, int x, int y, int z, PathNode previousNode) {
-            List<BlockPos> previousPositions = new ArrayList<>();
-            int i = 0;
-            PathNode iteratingNode = previousNode;
-            while (iteratingNode != null && i < 10) {
-                previousPositions.add(new BlockPos(iteratingNode.x, iteratingNode.y, iteratingNode.z));
-                iteratingNode = iteratingNode.previous;
-                i++;
-            }
-            return MovementAscend.cost(context, x, y, z, x, z - 1, previousPositions);
+            // Use optimized PathNode-based method to avoid ArrayList allocations
+            return MovementAscend.cost(context, x, y, z, x, z - 1, previousNode);
         }
     },
 
@@ -128,15 +117,8 @@ public enum Moves {
 
         @Override
         public double cost(CalculationContext context, int x, int y, int z, PathNode previousNode) {
-            List<BlockPos> previousPositions = new ArrayList<>();
-            int i = 0;
-            PathNode iteratingNode = previousNode;
-            while (iteratingNode != null && i < 10) {
-                previousPositions.add(new BlockPos(iteratingNode.x, iteratingNode.y, iteratingNode.z));
-                iteratingNode = iteratingNode.previous;
-                i++;
-            }
-            return MovementAscend.cost(context, x, y, z, x, z + 1, previousPositions);
+            // Use optimized PathNode-based method to avoid ArrayList allocations
+            return MovementAscend.cost(context, x, y, z, x, z + 1, previousNode);
         }
     },
 
@@ -148,15 +130,8 @@ public enum Moves {
 
         @Override
         public double cost(CalculationContext context, int x, int y, int z, PathNode previousNode) {
-            List<BlockPos> previousPositions = new ArrayList<>();
-            int i = 0;
-            PathNode iteratingNode = previousNode;
-            while (iteratingNode != null && i < 10) {
-                previousPositions.add(new BlockPos(iteratingNode.x, iteratingNode.y, iteratingNode.z));
-                iteratingNode = iteratingNode.previous;
-                i++;
-            }
-            return MovementAscend.cost(context, x, y, z, x + 1, z, previousPositions);
+            // Use optimized PathNode-based method to avoid ArrayList allocations
+            return MovementAscend.cost(context, x, y, z, x + 1, z, previousNode);
         }
     },
 
@@ -168,15 +143,8 @@ public enum Moves {
 
         @Override
         public double cost(CalculationContext context, int x, int y, int z, PathNode previousNode) {
-            List<BlockPos> previousPositions = new ArrayList<>();
-            int i = 0;
-            PathNode iteratingNode = previousNode;
-            while (iteratingNode != null && i < 10) {
-                previousPositions.add(new BlockPos(iteratingNode.x, iteratingNode.y, iteratingNode.z));
-                iteratingNode = iteratingNode.previous;
-                i++;
-            }
-            return MovementAscend.cost(context, x, y, z, x - 1, z, previousPositions);
+            // Use optimized PathNode-based method to avoid ArrayList allocations
+            return MovementAscend.cost(context, x, y, z, x - 1, z, previousNode);
         }
     },
 

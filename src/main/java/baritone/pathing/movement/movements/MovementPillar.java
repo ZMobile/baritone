@@ -95,7 +95,8 @@ public class MovementPillar extends Movement {
                 placeCost += 0.1; // slightly (1/200th of a second) penalize pillaring on what's currently air
             }
         }
-        if ((MovementHelper.isLiquid(fromState) && !MovementHelper.canPlaceAgainst(context.bsi, x, y - 1, z, fromDown)) || (MovementHelper.isLiquid(fromDown) && context.assumeWalkOnWater)) {
+        // Use cached version for canPlaceAgainst to avoid expensive isBlockNormalCube calls
+        if ((MovementHelper.isLiquid(fromState) && !MovementHelper.canPlaceAgainst(context, x, y - 1, z)) || (MovementHelper.isLiquid(fromDown) && context.assumeWalkOnWater)) {
             // otherwise, if we're standing in water, we cannot pillar
             // if we're standing on water and assumeWalkOnWater is true, we cannot pillar
             // if we're standing on water and assumeWalkOnWater is false, we must have ascended to here, or sneak backplaced, so it is possible to pillar again
@@ -142,23 +143,25 @@ public class MovementPillar extends Movement {
     }
 
     public static boolean hasAgainst(CalculationContext context, int x, int y, int z) {
-        return MovementHelper.isBlockNormalCube(context.get(x + 1, y, z)) ||
-                MovementHelper.isBlockNormalCube(context.get(x - 1, y, z)) ||
-                MovementHelper.isBlockNormalCube(context.get(x, y, z + 1)) ||
-                MovementHelper.isBlockNormalCube(context.get(x, y, z - 1));
+        // Use precomputed canPlaceAgainst which caches isBlockNormalCube results
+        return context.precomputedData.canPlaceAgainst(context.get(x + 1, y, z)) ||
+                context.precomputedData.canPlaceAgainst(context.get(x - 1, y, z)) ||
+                context.precomputedData.canPlaceAgainst(context.get(x, y, z + 1)) ||
+                context.precomputedData.canPlaceAgainst(context.get(x, y, z - 1));
     }
 
     public static BlockPos getAgainst(CalculationContext context, BetterBlockPos vine) {
-        if (MovementHelper.isBlockNormalCube(context.get(vine.north()))) {
+        // Use precomputed canPlaceAgainst which caches isBlockNormalCube results
+        if (context.precomputedData.canPlaceAgainst(context.get(vine.north()))) {
             return vine.north();
         }
-        if (MovementHelper.isBlockNormalCube(context.get(vine.south()))) {
+        if (context.precomputedData.canPlaceAgainst(context.get(vine.south()))) {
             return vine.south();
         }
-        if (MovementHelper.isBlockNormalCube(context.get(vine.east()))) {
+        if (context.precomputedData.canPlaceAgainst(context.get(vine.east()))) {
             return vine.east();
         }
-        if (MovementHelper.isBlockNormalCube(context.get(vine.west()))) {
+        if (context.precomputedData.canPlaceAgainst(context.get(vine.west()))) {
             return vine.west();
         }
         return null;

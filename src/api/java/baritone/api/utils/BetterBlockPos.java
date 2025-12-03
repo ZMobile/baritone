@@ -228,6 +228,17 @@ public final class BetterBlockPos extends BlockPos {
     @Override
     @Nonnull
     public String toString() {
+        // Optimized: avoid SettingsUtil.maybeCensor() which was causing 14.8% CPU overhead
+        // when toString() was called frequently (e.g., in logging/debugging)
+        return "BetterBlockPos{x=" + x + ",y=" + y + ",z=" + z + "}";
+    }
+
+    /**
+     * Returns a censored string representation if coordinate censoring is enabled.
+     * Use this instead of toString() when displaying to users who may want censoring.
+     */
+    @Nonnull
+    public String toStringCensored() {
         return String.format(
                 "BetterBlockPos{x=%s,y=%s,z=%s}",
                 SettingsUtil.maybeCensor(x),

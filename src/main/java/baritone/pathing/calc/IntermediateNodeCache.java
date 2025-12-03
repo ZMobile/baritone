@@ -20,11 +20,17 @@ package baritone.pathing.calc;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.utils.BetterBlockPos;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A thread-safe cache for sharing intermediate pathfinding calculations
@@ -58,6 +64,15 @@ public final class IntermediateNodeCache {
     private final AtomicBoolean cleanupInProgress = new AtomicBoolean(false);
     private volatile long lastCleanupTime = System.currentTimeMillis();
 
+    // Cached timestamp to avoid frequent System.currentTimeMillis() calls
+    // Updated every ~50ms by the first thread that notices it's stale
+    private final AtomicLong cachedCurrentTime = new AtomicLong(System.currentTimeMillis());
+    private static final long TIME_CACHE_REFRESH_MS = 50;
+
+    // Sampling: only cache every Nth non-success node to reduce overhead
+    private static final int CACHE_SAMPLE_RATE = 4; // Cache 1 in 4 nodes
+    private final ThreadLocal<Integer> sampleCounter = ThreadLocal.withInitial(() -> 0);
+
     private IntermediateNodeCache() {
         // Private constructor for singleton
     }
@@ -67,41 +82,88 @@ public final class IntermediateNodeCache {
     }
 
     /**
+     * Gets a cached current time, refreshing only every TIME_CACHE_REFRESH_MS.
+     * This avoids expensive System.currentTimeMillis() calls on every operation.
+     */
+    private long getCurrentTime() {
+        long cached = cachedCurrentTime.get();
+        long actual = System.currentTimeMillis();
+        if (actual - cached > TIME_CACHE_REFRESH_MS) {
+            // Try to update; if another thread beats us, that's fine
+            cachedCurrentTime.compareAndSet(cached, actual);
+            return actual;
+        }
+        return cached;
+    }
+
+    // Thread-local reusable CacheKey to avoid allocations
+    private static final ThreadLocal<CacheKey> REUSABLE_KEY = ThreadLocal.withInitial(() -> new CacheKey(0, 0, null));
+
+    /**
      * Gets cached cost information for a position-goal pair.
+     * Optimized to minimize allocations and lock contention.
      */
     public CachedNodeData getCachedData(BetterBlockPos pos, Goal goal, boolean canBuild) {
-        int regionX = pos.x >> 5; // divide by 32
-        int regionZ = pos.z >> 5;
-        CacheKey key = new CacheKey(regionX, regionZ, goal);
+        return getCachedData(pos.x, pos.y, pos.z, goal, canBuild);
+    }
+
+    /**
+     * Gets cached cost information using primitive coordinates.
+     * Optimized to minimize allocations and lock contention.
+     */
+    public CachedNodeData getCachedData(int x, int y, int z, Goal goal, boolean canBuild) {
+        int regionX = x >> 5; // divide by 32
+        int regionZ = z >> 5;
+
+        // Reuse thread-local key to avoid allocation
+        CacheKey key = REUSABLE_KEY.get();
+        key.update(regionX, regionZ, goal);
 
         Map<CacheKey, CacheEntry> cache = canBuild ? buildingCache : nonBuildingCache;
-        AtomicInteger hits = canBuild ? buildingHits : nonBuildingHits;
-        AtomicInteger misses = canBuild ? buildingMisses : nonBuildingMisses;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         CacheEntry entry = cache.get(key);
         if (entry == null) {
-            misses.incrementAndGet();
             return null;
         }
 
-        // Check if cache entry is still valid
+        // Check if cache entry is still valid - use cached time to avoid syscall
+        long currentTime = getCurrentTime();
         long expiryTime = entry.isSuccessPath ? SUCCESS_CACHE_EXPIRY_MS : DEFAULT_CACHE_EXPIRY_MS;
-        if (System.currentTimeMillis() - entry.timestamp > expiryTime) {
+        if (currentTime - entry.timestamp > expiryTime) {
             cache.remove(key);
-            misses.incrementAndGet();
             return null;
         }
 
-        // Look for cached data near this position
-        long posKey = BetterBlockPos.longHash(pos);
-        CachedNodeData data = entry.nodeData.get(posKey);
+        // Look for cached data at this position
+        long posKey = BetterBlockPos.longHash(x, y, z);
+        CachedNodeData data = entry.getNodeData(posKey);
 
         if (data != null) {
-            hits.incrementAndGet();
             // Reset timer when path is reused
-            entry.timestamp = System.currentTimeMillis();
-        } else {
-            misses.incrementAndGet();
+            entry.timestamp = currentTime;
         }
 
         return data;
@@ -111,15 +173,22 @@ public final class IntermediateNodeCache {
      * Caches node data for a position-goal pair.
      */
     public void cacheNodeData(BetterBlockPos pos, Goal goal, double costFromStart, double estimatedCostToGoal, boolean canBuild) {
-        cacheNodeData(pos, goal, costFromStart, estimatedCostToGoal, canBuild, false);
+        cacheNodeData(pos.x, pos.y, pos.z, goal, costFromStart, estimatedCostToGoal, canBuild, false);
     }
 
     /**
      * Caches node data for a position-goal pair with success flag.
      */
     public void cacheNodeData(BetterBlockPos pos, Goal goal, double costFromStart, double estimatedCostToGoal, boolean canBuild, boolean isSuccessPath) {
-        int regionX = pos.x >> 5;
-        int regionZ = pos.z >> 5;
+        cacheNodeData(pos.x, pos.y, pos.z, goal, costFromStart, estimatedCostToGoal, canBuild, isSuccessPath);
+    }
+
+    /**
+     * Caches node data using primitive coordinates to avoid object allocation.
+     */
+    public void cacheNodeData(int x, int y, int z, Goal goal, double costFromStart, double estimatedCostToGoal, boolean canBuild, boolean isSuccessPath) {
+        int regionX = x >> 5;
+        int regionZ = z >> 5;
         CacheKey key = new CacheKey(regionX, regionZ, goal);
 
         Map<CacheKey, CacheEntry> cache = canBuild ? buildingCache : nonBuildingCache;
@@ -130,14 +199,24 @@ public final class IntermediateNodeCache {
             entry.isSuccessPath = true;
         }
 
-        // Clean up if getting too large
-        if (entry.nodeData.size() > 100) {
-            entry.cleanupOldData();
+        long currentTime = getCurrentTime();
+
+        // Clean up asynchronously if getting too large - don't block the hot path
+        // Use approximate size to avoid synchronization
+        if (entry.getApproximateSize() > 500 && entry.tryStartCleanup()) {
+            final CacheEntry entryToClean = entry;
+            CompletableFuture.runAsync(() -> {
+                try {
+                    entryToClean.cleanupOldData(getCurrentTime());
+                } finally {
+                    entryToClean.finishCleanup();
+                }
+            });
         }
 
-        long posKey = BetterBlockPos.longHash(pos);
-        entry.nodeData.put(posKey, new CachedNodeData(costFromStart, estimatedCostToGoal, System.currentTimeMillis()));
-        entry.timestamp = System.currentTimeMillis();
+        long posKey = BetterBlockPos.longHash(x, y, z);
+        entry.putNodeData(posKey, new CachedNodeData(costFromStart, estimatedCostToGoal, currentTime));
+        entry.timestamp = currentTime;
 
         // Global cache size management
         if (cache.size() > MAX_CACHE_SIZE && !cleanupInProgress.get()) {
@@ -232,18 +311,23 @@ public final class IntermediateNodeCache {
 
     /**
      * Cache key that combines region and goal.
+     * Mutable for reuse via thread-local to avoid allocations.
      */
     private static class CacheKey {
-        private final int regionX;
-        private final int regionZ;
-        private final Goal goal;
-        private final int hashCode;
+        private int regionX;
+        private int regionZ;
+        private Goal goal;
+        private int hashCode;
 
         CacheKey(int regionX, int regionZ, Goal goal) {
+            update(regionX, regionZ, goal);
+        }
+
+        void update(int regionX, int regionZ, Goal goal) {
             this.regionX = regionX;
             this.regionZ = regionZ;
             this.goal = goal;
-            this.hashCode = 31 * (31 * regionX + regionZ) + goal.hashCode();
+            this.hashCode = 31 * (31 * regionX + regionZ) + (goal != null ? goal.hashCode() : 0);
         }
 
         @Override
@@ -254,7 +338,7 @@ public final class IntermediateNodeCache {
             CacheKey other = (CacheKey) obj;
             return regionX == other.regionX &&
                    regionZ == other.regionZ &&
-                   goal.equals(other.goal);
+                   (goal == other.goal || (goal != null && goal.equals(other.goal)));
         }
 
         @Override
@@ -265,31 +349,99 @@ public final class IntermediateNodeCache {
 
     /**
      * Cache entry containing node data for a region.
+     * Uses primitive long keys to avoid autoboxing overhead.
+     * Uses ReadWriteLock to allow concurrent reads (the common case).
      */
     private static class CacheEntry {
-        final Map<Long, CachedNodeData> nodeData = new ConcurrentHashMap<>();
+        final Long2ObjectOpenHashMap<CachedNodeData> nodeData = new Long2ObjectOpenHashMap<>(128);
         volatile long timestamp;
         volatile boolean isSuccessPath = false;
+        private final AtomicBoolean cleanupInProgress = new AtomicBoolean(false);
+
+        // ReadWriteLock allows multiple concurrent readers
+        private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
+        // Track approximate size to avoid expensive size() calls
+        private final AtomicInteger approximateSize = new AtomicInteger(0);
 
         CacheEntry() {
             this.timestamp = System.currentTimeMillis();
         }
 
-        void cleanupOldData() {
-            long cutoff = System.currentTimeMillis() - 5000; // 5 seconds
-            // Use iterator to avoid potential lag from removeIf on large maps
-            var iterator = nodeData.entrySet().iterator();
-            int removed = 0;
-            while (iterator.hasNext()) {
-                var entry = iterator.next();
-                if (entry.getValue().timestamp < cutoff) {
-                    iterator.remove();
-                    removed++;
-                    // Yield periodically to avoid hogging CPU
-                    if (removed % 5 == 0) {
-                        Thread.yield();
+        /**
+         * Try to start cleanup. Returns true if this thread should do cleanup.
+         */
+        boolean tryStartCleanup() {
+            return cleanupInProgress.compareAndSet(false, true);
+        }
+
+        /**
+         * Mark cleanup as finished.
+         */
+        void finishCleanup() {
+            cleanupInProgress.set(false);
+        }
+
+        /**
+         * Gets approximate size without synchronization.
+         */
+        int getApproximateSize() {
+            return approximateSize.get();
+        }
+
+        /**
+         * Thread-safe put that tracks size. Uses write lock.
+         */
+        void putNodeData(long key, CachedNodeData data) {
+            rwLock.writeLock().lock();
+            try {
+                CachedNodeData old = nodeData.put(key, data);
+                if (old == null) {
+                    approximateSize.incrementAndGet();
+                }
+            } finally {
+                rwLock.writeLock().unlock();
+            }
+        }
+
+        /**
+         * Thread-safe get. Uses read lock for concurrent access.
+         */
+        CachedNodeData getNodeData(long key) {
+            rwLock.readLock().lock();
+            try {
+                return nodeData.get(key);
+            } finally {
+                rwLock.readLock().unlock();
+            }
+        }
+
+        /**
+         * Clean up old data. Uses write lock.
+         */
+        void cleanupOldData(long currentTime) {
+            long cutoff = currentTime - 5000; // 5 seconds
+
+            // Collect keys to remove first, then remove them
+            LongArrayList keysToRemove = new LongArrayList();
+
+            rwLock.writeLock().lock();
+            try {
+                var iterator = nodeData.long2ObjectEntrySet().fastIterator();
+                while (iterator.hasNext()) {
+                    var entry = iterator.next();
+                    if (entry.getValue().timestamp < cutoff) {
+                        keysToRemove.add(entry.getLongKey());
                     }
                 }
+
+                // Remove collected keys
+                for (int i = 0; i < keysToRemove.size(); i++) {
+                    nodeData.remove(keysToRemove.getLong(i));
+                }
+                approximateSize.addAndGet(-keysToRemove.size());
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }
     }

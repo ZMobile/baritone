@@ -38,6 +38,9 @@ public final class BaritonePlayerContext implements IPlayerContext {
     private final IPlayerController playerController;
     private final IPlayer baritonePlayer;
 
+    // Cached world reference to avoid repeated entity().level() calls during pathfinding
+    private volatile Level cachedWorld;
+
     public BaritonePlayerContext(Baritone baritone, MinecraftServer minecraftServer, LivingEntity livingEntity) {
         this.baritone = baritone;
         //this.mc = null;
@@ -45,6 +48,7 @@ public final class BaritonePlayerContext implements IPlayerContext {
         //this.playerController = new BaritonePlayerController(mc);
         this.playerController = null;
         this.baritonePlayer = new BaritonePlayer(livingEntity);
+        this.cachedWorld = livingEntity.level();
     }
 
     @Override
@@ -75,7 +79,20 @@ public final class BaritonePlayerContext implements IPlayerContext {
 
     @Override
     public Level world() {
-        return this.entity().level();
+        // Use cached world reference - much faster than entity().level() chain
+        Level world = this.cachedWorld;
+        if (world == null) {
+            world = this.entity().level();
+            this.cachedWorld = world;
+        }
+        return world;
+    }
+
+    /**
+     * Refreshes the cached world reference. Call this if the entity changes dimensions.
+     */
+    public void refreshWorldCache() {
+        this.cachedWorld = this.entity().level();
     }
 
     @Override

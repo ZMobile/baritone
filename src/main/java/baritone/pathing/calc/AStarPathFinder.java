@@ -92,6 +92,20 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
         int pathingMaxChunkBorderFetch = Baritone.settings().pathingMaxChunkBorderFetch.value; // grab all settings beforehand so that changing settings during pathing doesn't cause a crash or unpredictable behavior
         double minimumImprovement = Baritone.settings().minimumImprovementRepropagation.value ? MIN_IMPROVEMENT : 0;
         Moves[] allMoves = Moves.values();
+
+        // Calculate max search radius based on goal distance
+        int maxSearchRadiusSquared = Integer.MAX_VALUE; // Default to no limit
+        if (goal instanceof GoalBlock) {
+            GoalBlock goalBlock = (GoalBlock) goal;
+            int dx = Math.abs(goalBlock.x - startX);
+            int dy = Math.abs(goalBlock.y - startY);
+            int dz = Math.abs(goalBlock.z - startZ);
+            // Distance from start (mob) to goal (player) + 16 blocks buffer
+            int maxSearchRadius = (int)(Math.sqrt(dx*dx + dy*dy + dz*dz) + 16);
+            maxSearchRadiusSquared = maxSearchRadius * maxSearchRadius;
+            logDebug("Limiting search radius to " + maxSearchRadius + " blocks from start position");
+        }
+
         while (!openSet.isEmpty() && numEmptyChunk < pathingMaxChunkBorderFetch && !cancelRequested) {
             if ((numNodes & (timeCheckInterval - 1)) == 0) { // only call this once every 64 nodes (about half a millisecond)
                 long now = System.currentTimeMillis(); // since nanoTime is slow on windows (takes many microseconds)
@@ -110,12 +124,12 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
             if (goal.isInGoal(currentNode.x, currentNode.y, currentNode.z)) {
                 logDebug("Took " + (System.currentTimeMillis() - startTime) + "ms, " + numMovementsConsidered + " movements considered");
 
-                // Cache successful path nodes
+                // Cache successful path nodes using primitives to avoid allocations
                 PathNode node = currentNode;
+                IntermediateNodeCache cacheInstance = IntermediateNodeCache.getInstance();
                 while (node != null) {
-                    BetterBlockPos pos = new BetterBlockPos(node.x, node.y, node.z);
-                    IntermediateNodeCache.getInstance().cacheNodeData(
-                            pos, goal, node.cost, node.estimatedCostToGoal,
+                    cacheInstance.cacheNodeData(
+                            node.x, node.y, node.z, goal, node.cost, node.estimatedCostToGoal,
                             calcContext.hasThrowaway, true); // true = success path
                     node = node.previous;
                 }
@@ -123,49 +137,26 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                 return Optional.of(new Path(startNode, currentNode, numNodes, goal, calcContext));
             }
 
-            // Check for nearby highways that could help
-            BetterBlockPos currentPos = new BetterBlockPos(currentNode.x, currentNode.y, currentNode.z);
-            // For highways, we'll use the current goal target position based on the goal's heuristic
-            BetterBlockPos goalPos = currentPos; // Default to current if we can't determine goal pos
-            if (goal instanceof GoalBlock) {
-                goalPos = new BetterBlockPos(((GoalBlock) goal).getGoalPos());
-            } else if (goal instanceof GoalXZ) {
-                goalPos = new BetterBlockPos(((GoalXZ) goal).getX(), currentPos.y, ((GoalXZ) goal).getZ());
-            }
-            HighwayCache.Highway joinableHighway = HighwayCache.getInstance()
-                    .findJoinableHighway(currentPos, goalPos, calcContext.hasThrowaway);
-
-            if (joinableHighway != null) {
-                // Calculate cost to join highway
-                double costToJoin = currentPos.distanceSq(joinableHighway.entry);
-                if (costToJoin <= 25) { // Within 5 blocks
-                    // Add highway exit as a virtual node to explore
-                    int exitX = joinableHighway.exit.x;
-                    int exitY = joinableHighway.exit.y;
-                    int exitZ = joinableHighway.exit.z;
-                    long exitHash = BetterBlockPos.longHash(exitX, exitY, exitZ);
-
-                    PathNode highwayExitNode = getNodeAtPosition(exitX, exitY, exitZ, exitHash);
-                    double highwayCost = currentNode.cost + Math.sqrt(costToJoin) + joinableHighway.cost;
-
-                    if (highwayExitNode.cost > highwayCost) {
-                        highwayExitNode.previous = currentNode;
-                        highwayExitNode.cost = highwayCost;
-                        highwayExitNode.combinedCost = highwayCost + highwayExitNode.estimatedCostToGoal;
-                        if (highwayExitNode.isOpen()) {
-                            openSet.update(highwayExitNode);
-                        } else {
-                            openSet.insert(highwayExitNode);
-                        }
-                        // Record highway usage
-                        joinableHighway.recordUsage();
-                    }
-                }
-            }
+            // Highway cache lookup disabled - was causing 12.2% CPU overhead + BetterBlockPos allocations
+            // TODO: Re-enable with periodic checks instead of per-node checks
+            // The highway cache creates too much overhead when checked for every single node
 
             for (Moves moves : allMoves) {
                 int newX = currentNode.x + moves.xOffset;
                 int newZ = currentNode.z + moves.zOffset;
+
+                // Check distance from start position before exploring
+                if (maxSearchRadiusSquared != Integer.MAX_VALUE) {
+                    int searchDx = newX - startX;
+                    int searchDy = (currentNode.y + moves.yOffset) - startY;
+                    int searchDz = newZ - startZ;
+                    int distanceSquared = searchDx*searchDx + searchDy*searchDy + searchDz*searchDz;
+                    if (distanceSquared > maxSearchRadiusSquared) {
+                        // Skip nodes that are too far from the start position
+                        continue;
+                    }
+                }
+
                 if ((newX >> 4 != currentNode.x >> 4 || newZ >> 4 != currentNode.z >> 4) && !calcContext.isLoaded(newX, newZ)) {
                     // only need to check if the destination is a loaded chunk if it's in a different chunk than the start of the movement
                     if (!moves.dynamicXZ) { // only increment the counter if the movement would have gone out of bounds guaranteed
@@ -208,18 +199,6 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                 }
                 PathNode neighbor = getNodeAtPosition(res.x, res.y, res.z, hashCode);
 
-                // Check intermediate cache for this position
-                BetterBlockPos neighborPos = new BetterBlockPos(res.x, res.y, res.z);
-                IntermediateNodeCache.CachedNodeData cachedData = IntermediateNodeCache.getInstance()
-                        .getCachedData(neighborPos, goal, calcContext.hasThrowaway);
-
-                // If we have cached data and haven't calculated this node yet, use it
-                if (cachedData != null && neighbor.cost == ActionCosts.COST_INF) {
-                    neighbor.cost = cachedData.costFromStart;
-                    neighbor.combinedCost = neighbor.cost + neighbor.estimatedCostToGoal;
-                    // Note: We don't set the previous node from cache as paths need to be properly connected
-                }
-
                 double tentativeCost = currentNode.cost + actionCost;
                 double goalWeight = 0.1;
                 double distancePenalty = goalWeight * goal.heuristic(currentNode.x, currentNode.y, currentNode.z);
@@ -228,11 +207,6 @@ public final class AStarPathFinder extends AbstractNodeCostSearch {
                     neighbor.previous = currentNode;
                     neighbor.cost = tentativeCost;
                     neighbor.combinedCost = tentativeCost + neighbor.estimatedCostToGoal;
-
-                    // Cache this node's costs for other mobs to use
-                    IntermediateNodeCache.getInstance().cacheNodeData(
-                            neighborPos, goal, neighbor.cost, neighbor.estimatedCostToGoal,
-                            calcContext.hasThrowaway, false);
 
                     if (neighbor.isOpen()) {
                         openSet.update(neighbor);

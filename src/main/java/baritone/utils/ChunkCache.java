@@ -17,38 +17,38 @@
 
 package baritone.utils;
 
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ChunkPos;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * High-performance chunk cache to avoid synchronization bottlenecks when multiple
- * mobs are pathfinding simultaneously. This cache dramatically reduces calls to
- * ServerChunkManager.getChunk() which was causing thread contention.
+ * High-performance LOCK-FREE chunk cache for maximum throughput during pathfinding.
+ * Uses ConcurrentHashMap for thread-safe access without blocking.
  *
- * This is a singleton shared across all Baritone instances to maximize cache hits.
+ * Designed for blood moon scenarios with many mobs pathfinding simultaneously.
  *
  * @author Enhanced for concurrent mob usage
  */
 public class ChunkCache {
 
-    // Maximum number of chunks to cache (16x16 area = 256 chunks)
-    private static final int MAX_CACHE_SIZE = 256;
+    // Maximum number of chunks to cache (increased for blood moon scenarios)
+    private static final int MAX_CACHE_SIZE = 512;
 
-    // Cache expiry time (5 seconds - chunks shouldn't change that often)
-    private static final long CACHE_EXPIRY_MS = 5000;
+    // Cache expiry time (30 seconds - chunks don't change during pathfinding, cleanup handles staleness)
+    private static final long CACHE_EXPIRY_MS = 30000;
 
-    // The actual cache storage
-    private final Map<Long, CacheEntry> cache = new ConcurrentHashMap<>();
+    // LOCK-FREE cache using ConcurrentHashMap with Long keys
+    // The overhead of Long boxing is worth it for lock-free access
+    private final ConcurrentHashMap<Long, CacheEntry> cache = new ConcurrentHashMap<>(MAX_CACHE_SIZE);
+
+    // Approximate size tracking
+    private final AtomicInteger approximateSize = new AtomicInteger(0);
 
     // Statistics for monitoring
     private final AtomicLong hits = new AtomicLong(0);
@@ -65,40 +65,50 @@ public class ChunkCache {
         // Private constructor for singleton
     }
 
+    /**
+     * Computes chunk key as primitive long.
+     */
+    private static long chunkKeyLong(int chunkX, int chunkZ) {
+        return (((long) chunkX) << 32) | (chunkZ & 0xFFFFFFFFL);
+    }
+
     public static ChunkCache getInstance() {
         return INSTANCE;
     }
 
     /**
      * Gets a chunk from cache or loads it if not cached.
-     * This method is thread-safe and lock-free for cache hits.
+     * LOCK-FREE - maximum throughput for pathfinding.
      */
     public LevelChunk getChunk(ServerLevel world, int chunkX, int chunkZ) {
-        long key = ChunkPos.asLong(chunkX, chunkZ);
+        long key = chunkKeyLong(chunkX, chunkZ);
 
-        // Try to get from cache first
+        // Try to get from cache first - LOCK-FREE
         CacheEntry entry = cache.get(key);
-        if (entry != null && !entry.isExpired()) {
+        if (entry != null) {
+            // Don't check expiry on every access - too expensive
+            // Cleanup will handle expired entries
             hits.incrementAndGet();
             return entry.chunk;
         }
 
-        // Cache miss - need to load chunk
+        // Cache miss - check if chunk is loaded WITHOUT blocking
         misses.incrementAndGet();
 
-        // Load the chunk (this is where the synchronization happens)
-        ChunkAccess chunkAccess = world.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
-        if (!(chunkAccess instanceof LevelChunk)) {
+        // Use getChunkNow which doesn't block - returns null if not loaded
+        LevelChunk chunk = world.getChunkSource().getChunkNow(chunkX, chunkZ);
+        if (chunk == null) {
             return null;
         }
 
-        LevelChunk chunk = (LevelChunk) chunkAccess;
-
-        // Cache it for future use
-        cache.put(key, new CacheEntry(chunk));
+        // Cache it for future use - LOCK-FREE
+        CacheEntry oldEntry = cache.put(key, new CacheEntry(chunk));
+        if (oldEntry == null) {
+            approximateSize.incrementAndGet();
+        }
 
         // Trigger async cleanup if needed
-        if (cache.size() > MAX_CACHE_SIZE && !cleanupInProgress.get()) {
+        if (approximateSize.get() > MAX_CACHE_SIZE && !cleanupInProgress.get()) {
             triggerAsyncCleanup();
         }
 
@@ -110,8 +120,10 @@ public class ChunkCache {
      * Called when a chunk is modified.
      */
     public void invalidateChunk(int chunkX, int chunkZ) {
-        long key = ChunkPos.asLong(chunkX, chunkZ);
-        cache.remove(key);
+        long key = chunkKeyLong(chunkX, chunkZ);
+        if (cache.remove(key) != null) {
+            approximateSize.decrementAndGet();
+        }
     }
 
     /**
@@ -122,32 +134,26 @@ public class ChunkCache {
     }
 
     /**
-     * Checks if a chunk is loaded without actually loading it.
-     * This is much faster than getChunk() for existence checks.
+     * Checks if a chunk is loaded. LOCK-FREE.
      */
     public boolean isChunkLoaded(ServerLevel world, int chunkX, int chunkZ) {
-        long key = ChunkPos.asLong(chunkX, chunkZ);
+        long key = chunkKeyLong(chunkX, chunkZ);
 
-        // Check cache first
-        CacheEntry entry = cache.get(key);
-        if (entry != null && !entry.isExpired()) {
-            hits.incrementAndGet();
+        // Check cache first - LOCK-FREE
+        if (cache.containsKey(key)) {
             return true;
         }
 
         // Check if chunk exists without loading
-        misses.incrementAndGet();
         return world.getChunkSource().hasChunk(chunkX, chunkZ);
     }
 
     /**
-     * Simple cache-only check without world parameter.
-     * Returns true only if chunk is in cache.
+     * Simple cache-only check without world parameter. LOCK-FREE.
      */
     public boolean isChunkLoaded(int chunkX, int chunkZ) {
-        long key = ChunkPos.asLong(chunkX, chunkZ);
-        CacheEntry entry = cache.get(key);
-        return entry != null && !entry.isExpired();
+        long key = chunkKeyLong(chunkX, chunkZ);
+        return cache.containsKey(key);
     }
 
     /**
@@ -155,6 +161,7 @@ public class ChunkCache {
      */
     public void clear() {
         cache.clear();
+        approximateSize.set(0);
         hits.set(0);
         misses.set(0);
     }
@@ -191,28 +198,23 @@ public class ChunkCache {
     }
 
     /**
-     * Removes expired entries from the cache.
-     * Returns the number of entries removed.
+     * Removes expired entries from the cache. LOCK-FREE.
      */
     private int cleanupOldEntries() {
         long now = System.currentTimeMillis();
         long expiry = now - CACHE_EXPIRY_MS;
         int removed = 0;
 
-        // Remove expired entries in small batches to reduce lock contention
+        // Iterate and remove expired entries - ConcurrentHashMap handles this safely
         var iterator = cache.entrySet().iterator();
         while (iterator.hasNext()) {
             var entry = iterator.next();
             if (entry.getValue().timestamp < expiry) {
                 iterator.remove();
                 removed++;
-
-                // Yield periodically to avoid hogging CPU
-                if (removed % 10 == 0) {
-                    Thread.yield();
-                }
             }
         }
+        approximateSize.addAndGet(-removed);
 
         return removed;
     }
@@ -227,7 +229,7 @@ public class ChunkCache {
         double hitRate = total == 0 ? 0.0 : (totalHits * 100.0 / total);
 
         return String.format("ChunkCache [Size: %d, Hits: %d, Misses: %d, Hit Rate: %.2f%%]",
-                cache.size(), totalHits, totalMisses, hitRate);
+                approximateSize.get(), totalHits, totalMisses, hitRate);
     }
 
     /**
@@ -240,10 +242,6 @@ public class ChunkCache {
         CacheEntry(LevelChunk chunk) {
             this.chunk = chunk;
             this.timestamp = System.currentTimeMillis();
-        }
-
-        boolean isExpired() {
-            return System.currentTimeMillis() - timestamp > CACHE_EXPIRY_MS;
         }
     }
 }

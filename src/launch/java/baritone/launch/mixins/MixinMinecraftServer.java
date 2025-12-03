@@ -26,7 +26,6 @@ import baritone.api.utils.MinecraftServerUtil;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.Level;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -110,7 +109,7 @@ public class MixinMinecraftServer {
             method = "createLevels",
             at = @At("HEAD")
     )
-    private void preLoadWorld(ChunkProgressListener listener, CallbackInfo ci) {
+    private void preLoadWorld(CallbackInfo ci) {
         // Get the primary Baritone instance
        for (IBaritone baritone : BaritoneAPI.getProvider().getAllBaritones()) {
             baritone.getGameEventHandler().onWorldEvent(
@@ -126,7 +125,7 @@ public class MixinMinecraftServer {
             method = "createLevels",
             at = @At("RETURN")
     )
-    private void postLoadWorld(ChunkProgressListener listener, CallbackInfo ci) {
+    private void postLoadWorld(CallbackInfo ci) {
         // Get the primary Baritone instance
        for (IBaritone baritone : BaritoneAPI.getProvider().getAllBaritones()) {
             baritone.getGameEventHandler().onWorldEvent(
